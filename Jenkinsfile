@@ -39,7 +39,7 @@ pipeline {
                      --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/pipeline-library/forks
                 curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                      -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                     --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/core-config-bundle/forks
+                     --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/forks
                 curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                      -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                      --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
