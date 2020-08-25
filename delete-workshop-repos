@@ -19,7 +19,7 @@ pipeline {
                                           usernameVariable: 'GITHUB_APP',
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
             sh """
-                curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/core-config-bundle
+                curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/cloudbees-ci-config-bundle
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/pipeline-library
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/pipeline-template-catalog
             """
