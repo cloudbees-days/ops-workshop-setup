@@ -15,7 +15,7 @@ pipeline {
                 cli groovy =<./groovy/ops-create-github-app-credential.groovy
             """
         }
-        withCredentials([usernamePassword(credentialsId: "${org}",
+        withCredentials([usernamePassword(credentialsId: "${githubOrg}",
                                           usernameVariable: 'GITHUB_APP',
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
             sh """
@@ -24,7 +24,7 @@ pipeline {
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/pipeline-template-catalog
             """
         }
-        sh "sed -i \"s/REPLACE_GITHUB_ORG/$org/g\" ./groovy/ops-delete-github-app-credential.groovy" 
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
                 alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
