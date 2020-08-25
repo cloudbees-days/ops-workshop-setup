@@ -43,6 +43,9 @@ pipeline {
                 curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                      -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                      --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks
+                curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                     -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                     --data '{"organization":"${org}"}' https://api.github.com/repos/cloudbees-days/simple-java-maven-app/forks
             """
         }
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$org/g\" ./groovy/ops-delete-github-app-credential.groovy" 
