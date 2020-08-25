@@ -21,6 +21,7 @@ pipeline {
           }
         }
         echo "GitHub Org: ${org}"
+        checkout scm
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$org/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "curl -O http://teams-ops/teams-ops/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
