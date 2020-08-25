@@ -14,7 +14,7 @@ import io.fabric8.kubernetes.client.utils.Serialization
 import jenkins.model.Jenkins
 import org.apache.commons.io.FileUtils
 
-String masterName = "REPLACE_MASTER_NAME" 
+String masterName = "REPLACE_GITHUB_USERNAME" 
 String masterDefinitionYaml = """
 bundle:
   jcasc:
@@ -67,7 +67,7 @@ bundle:
         - id: "REPLACE_JENKINS_USER"
           jenkins: "REPLACE_JENKINS_USER"
           optedIn: true
-          scmId: "REPLACE_MASTER_NAME"
+          scmId: "REPLACE_GITHUB_USERNAME"
           slack: "REPLACE_USER_EMAIL"
           slackWorkspace: "T010A455W77"
   pluginCatalog:
