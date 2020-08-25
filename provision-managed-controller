@@ -33,13 +33,17 @@ pipeline {
                                           usernameVariable: 'GITHUB_APP',
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: """
+            INSTALLATION_ID=\$( curl -s -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" -H "Accept: application/vnd.github.antiope-preview+json" -H "Accept: application/vnd.github.machine-man-preview+json" https://api.github.com/app/installations | jq .[0].id )
+            echo "\$INSTALLATION_ID"
+            INSTALLATION_TOKEN=\$( curl -s -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" -H "Accept: application/vnd.github.antiope-preview+json" -H "Accept: application/vnd.github.machine-man-preview+json" -d '{"permissions":{ "checks":"write"}}' https://api.github.com/app/installations/\$INSTALLATION_ID/access_tokens | jq .token | tr -d '"' )
+            echo "\$INSTALLATION_TOKEN"
             rm -rf ./cloudbees-ci-config-bundle || true
             mkdir -p cloudbees-ci-config-bundle
             cd cloudbees-ci-config-bundle
             git init
             git config user.email "${BUILD_USER_EMAIL}"
             git config user.name "${GitHubUsername}"
-            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
+            git remote add origin https://x-access-token:\$INSTALLATION_TOKEN@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
             git pull origin master
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
