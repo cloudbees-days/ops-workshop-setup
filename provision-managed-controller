@@ -3,6 +3,7 @@ pipeline {
   stages {
     stage('Provision Managed Controller') {
       steps {
+        checkout scm
         echo "GitHub username: ${GitHubUsername}"
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId: ${BUILD_USER_ID}"
