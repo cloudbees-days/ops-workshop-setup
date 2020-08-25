@@ -184,11 +184,12 @@ println("Create/update of master '${masterName}' beginning.")
 
 //Either update or create the mm with this config
 if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
-    updateMM(masterName, masterDefinition)
+    //updateMM(masterName, masterDefinition)
+  return
 } else {
     createMM(masterName, masterDefinition)
 }
-sleep(150)
+sleep(1500)
 println("Finished with master '${masterName}'.\n")
 
 
