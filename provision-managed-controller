@@ -34,7 +34,9 @@ pipeline {
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: """
             rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./pipeline-template-catalog || true
             mkdir -p cloudbees-ci-config-bundle
+            mkdir -p pipeline-template-catalog
             cd cloudbees-ci-config-bundle
             git init
             git config user.email "${BUILD_USER_EMAIL}"
@@ -48,6 +50,15 @@ pipeline {
             sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" jenkins.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
+            git push -u origin master
+            cd ../pipeline-template-catalog
+            git init
+            git config user.email "${BUILD_USER_EMAIL}"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
+            git pull origin master
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" Jenkinsfile
+            git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
             git push -u origin master
           """)
         }
