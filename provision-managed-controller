@@ -71,6 +71,7 @@ pipeline {
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
             sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" jenkins.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on casc-gitops-lab branch for ${GitHubUsername}'
+            git push origin casc-gitops-lab
             cd ../pipeline-template-catalog
             git init
             git config user.email "${BUILD_USER_EMAIL}"
@@ -80,7 +81,7 @@ pipeline {
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
-            git push -u origin mastergit push origin casc-gitops-lab
+            git push -u origin master
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                  --data '{"title":"GitOps lab updates","head":"casc-gitops-lab","base":"master"}' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
