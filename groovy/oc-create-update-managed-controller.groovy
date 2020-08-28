@@ -59,17 +59,6 @@ bundle:
               id: "cloudbees-ci-workshop-github-app"
               owner: "REPLACE_GITHUB_ORG"
               privateKey: "\${gitHubAppPrivateKey}"
-    cloudbees-slack-integration:
-      config:
-        slackToken: "\${slackToken}"
-        slackWorkspace: "T010A455W77"
-        users:
-        - id: "REPLACE_JENKINS_USER"
-          jenkins: "REPLACE_JENKINS_USER"
-          optedIn: true
-          scmId: "REPLACE_GITHUB_USERNAME"
-          slack: "REPLACE_USER_EMAIL"
-          slackWorkspace: "T010A455W77"
   pluginCatalog:
     configurations:
     - description: tier 3 plugins
@@ -104,7 +93,6 @@ bundle:
   - id: cloudbees-monitoring
   - id: cloudbees-msteams
   - id: cloudbees-nodes-plus
-  - id: cloudbees-slack
   - id: cloudbees-template
   - id: cloudbees-view-creation-filter
   - id: cloudbees-workflow-template
