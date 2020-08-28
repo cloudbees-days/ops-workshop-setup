@@ -30,6 +30,7 @@ spec:
         
         echo "begin config bundle updates"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
                 alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
@@ -121,7 +122,6 @@ spec:
         
         echo "provisioning managed controller"
         sh """
-          curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
           sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/oc-create-update-managed-controller.groovy
           sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" ./groovy/oc-create-update-managed-controller.groovy
