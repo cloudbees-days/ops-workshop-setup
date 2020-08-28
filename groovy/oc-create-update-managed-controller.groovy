@@ -99,7 +99,7 @@ private void createMM(String masterName, def masterDefinition) {
     master.save()
     master.onModified()
 
-    setBundleSecurity(masterName, true)
+    setBundleSecurity(masterName)
 
     //ok, now we can actually boot this thing up
     println "Ensuring master '${masterName}' starts..."
@@ -173,13 +173,10 @@ private void updateMM(String masterName, def masterDefinition) {
     }
 }
 
-private static void setBundleSecurity(String masterName, boolean regenerateBundleToken) {
+private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
     accessControl.updateMasterPath(masterName, "teams/" + masterName)
-    if (regenerateBundleToken) {
-        accessControl.regenerate(masterName)
-    }
 }
 
