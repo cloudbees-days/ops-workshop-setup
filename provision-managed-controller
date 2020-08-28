@@ -1,10 +1,23 @@
-library 'pipeline-library@master'
-def kubectl = libraryResource 'podtemplates/kubectl.yml'
 pipeline {
   agent {
     kubernetes {
       label 'kubectl'
-      yaml kubectl
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
     }
   } 
   stages {
