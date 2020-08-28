@@ -117,7 +117,6 @@ spec:
           sh "cp cloudbees-ci-config-bundle/*.yaml ${GitHubUsername}"
           sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GitHubUsername} || true"
           sh "kubectl cp --namespace cloudbees-core ${GitHubUsername} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
-          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- sed -i \"/<\\/entries>/i\\<entry><string>${GitHubUsername}</string><com.cloudbees.opscenter.server.casc.BundleStorage_-AccessControlEntry><secret>{aGVyZWJlZHJhZ29ucwo=}</secret><masterPath>teams/${GitHubUsername}</masterPath></com.cloudbees.opscenter.server.casc.BundleStorage_-AccessControlEntry></entry>\"  /var/jenkins_home/core-casc-security.xml"
         }
         
         echo "provisioning managed controller"
