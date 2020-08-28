@@ -57,7 +57,7 @@ spec:
             rm -rf ./pipeline-template-catalog || true
             mkdir -p cloudbees-ci-config-bundle
             mkdir -p pipeline-template-catalog
-            cd ../pipeline-template-catalog
+            cd pipeline-template-catalog
             git init
             git config user.email "${BUILD_USER_EMAIL}"
             git config user.name "${GitHubOrganization}"
