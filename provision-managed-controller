@@ -65,8 +65,8 @@ spec:
             git pull origin master
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" pipeline-policies/Jenkinsfile
-            sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" pipeline-policies/Jenkinsfile
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" templates/pipeline-policies/Jenkinsfile
+            sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
             git push -u origin master
             cd ../cloudbees-ci-config-bundle
