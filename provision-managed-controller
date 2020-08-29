@@ -65,6 +65,8 @@ spec:
             git pull origin master
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" pipeline-policies/Jenkinsfile
+            sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" pipeline-policies/Jenkinsfile
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
             git push -u origin master
             cd ../cloudbees-ci-config-bundle
@@ -103,10 +105,18 @@ spec:
             echo "create pull requests"
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"GitOps lab updates","head":"casc-gitops-lab","base":"master"}' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
+                 --data '{"title":"GitOps lab updates","head":"casc-gitops-lab","base":"master"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"master"}' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
+                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"master"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
+            
+            echo "create pipeline-policies repo"
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 --data '{"name":"pipeline-policies","description":"This reposiotry will be utilized with the CloudBees CI Workshop Pipeline Policies as Code lab.","auto_init":true,"license_template":"mit","delete_branch_on_merge":true}' \
+                 https://api.github.com/orgs/${GitHubOrganization}/repos
           """)
         }
         
