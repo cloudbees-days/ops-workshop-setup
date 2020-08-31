@@ -1,11 +1,34 @@
 pipeline {
-  agent {label 'default-jnlp'}
+  agent {
+    kubernetes {
+      label 'kubectl'
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
+    }
+  }
   options { 
     buildDiscarder(logRotator(numToKeepStr: '10'))
   }
   stages {
     stage('Delete Repos') {
       steps {
+        script {
+          githubOrg = githubOrg.replaceAll(" ", "-").toLowerCase()
+        }
         echo "GitHub Organization: ${githubOrg}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "curl -O http://teams-ops/teams-ops/jnlpJars/jenkins-cli.jar"
@@ -26,6 +49,14 @@ pipeline {
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/simple-java-maven-app
             """
         }
+        
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli managed-master-deprovision $githubOrg -f
+            """
+        }
+        
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
