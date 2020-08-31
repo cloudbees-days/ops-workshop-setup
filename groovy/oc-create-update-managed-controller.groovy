@@ -14,7 +14,7 @@ import io.fabric8.kubernetes.client.utils.Serialization
 import jenkins.model.Jenkins
 import org.apache.commons.io.FileUtils
 
-String masterName = "REPLACE_GITHUB_USERNAME" 
+String masterName = "REPLACE_GITHUB_ORG" 
 String masterDefinitionYaml = """
 provisioning:
   cpus: 1.5
@@ -25,7 +25,7 @@ provisioning:
     metadata:
       annotations:
         prometheus.io/scheme: 'http'
-        prometheus.io/path: '/${masterName}/prometheus'
+        prometheus.io/path: '/teams-${masterName}/prometheus'
         prometheus.io/port: '8080'
         prometheus.io/scrape: 'true'
     kind: "StatefulSet"
