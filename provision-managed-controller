@@ -159,11 +159,11 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${GitHubUsername}"
-          sh "mkdir -p ${GitHubUsername}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${GitHubUsername}"
-          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GitHubUsername} || true"
-          sh "kubectl cp --namespace cloudbees-core ${GitHubUsername} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "rm -rf ./${GitHubOrganization}"
+          sh "mkdir -p ${GitHubOrganization}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${GitHubOrganization}"
+          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GitHubOrganization} || true"
+          sh "kubectl cp --namespace cloudbees-core ${GitHubOrganization} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
