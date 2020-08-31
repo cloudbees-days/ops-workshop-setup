@@ -57,10 +57,10 @@ spec:
                   alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                   cli delete-job "teams/$githubOrg"
               """
-            }
             } catch(e) {
               echo e
             }
+          }
         }
         
         container('kubectl') {
