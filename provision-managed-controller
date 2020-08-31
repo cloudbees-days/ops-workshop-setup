@@ -25,6 +25,9 @@ spec:
       steps {
         checkout scm
         echo "GitHub username: ${GitHubUsername}"
+        script {
+          GitHubOrganization = GitHubOrganization.toLowerCase()
+        }
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId: ${BUILD_USER_ID}"
         
