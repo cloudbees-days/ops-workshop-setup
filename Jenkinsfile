@@ -38,13 +38,6 @@ pipeline {
                      -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                      https://api.github.com/${org}
             """
-        }
-        sh "sed -i \"s/REPLACE_GITHUB_ORG/$org/g\" ./groovy/ops-delete-github-app-credential.groovy" 
-        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
-            sh """
-                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                cli groovy =<./groovy/ops-delete-github-app-credential.groovy
-            """
         }                                
       }
     }
