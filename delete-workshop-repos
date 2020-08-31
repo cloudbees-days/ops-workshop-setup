@@ -53,8 +53,15 @@ spec:
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
                 alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                cli managed-master-stop-and-deprovision "teams/$githubOrg" -f
+                cli managed-master-stop "teams/$githubOrg" -f
+                sleep 5000
+                cli managed-master-deprovision "teams/$githubOrg" -f
             """
+        }
+        
+        container('kubectl') {
+          sh('kubectl -n core-workshop delete statefulset,pod,pvc,ingress,service -l type=master,tenant=teams-$githubOrg')
+          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${githubOrg} || true"
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-delete-github-app-credential.groovy" 
