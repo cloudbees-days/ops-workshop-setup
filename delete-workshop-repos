@@ -58,7 +58,7 @@ spec:
                   cli delete-job "teams/$githubOrg"
               """
             } catch(e) {
-              echo e
+              echo e.toString()
             }
           }
         }
