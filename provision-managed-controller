@@ -95,7 +95,6 @@ spec:
             
             git pull origin master
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
-            sed -i "s/REPLACE_VERSION/1/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
@@ -107,7 +106,6 @@ spec:
             
             git checkout casc-gitops-lab
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
-            sed -i "s/REPLACE_VERSION/2/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
@@ -117,7 +115,6 @@ spec:
             
             git checkout dev-casc-lab
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
-            sed -i "s/REPLACE_VERSION/3/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
@@ -127,7 +124,6 @@ spec:
 
             git checkout collab-lab
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
-            sed -i "s/REPLACE_VERSION/4/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
