@@ -27,7 +27,7 @@ spec:
     stage('Delete Repos') {
       steps {
         script {
-          githubOrg = githubOrg.replaceAll(" ", "-").toLowerCase()
+          githubOrg = githubOrg.replaceAll(" ", "-")
         }
         echo "GitHub Organization: ${githubOrg}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-create-github-app-credential.groovy"
