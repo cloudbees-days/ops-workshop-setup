@@ -24,12 +24,9 @@ spec:
     stage('Provision Managed Controller') {
       steps {
         checkout scm
-        script {
-          GitHubUsername = GitHubUsername.toLowerCase()
-        }
         echo "GitHub username: ${GitHubUsername}"
         script {
-          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-").toLowerCase()
+          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
         }
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId: ${BUILD_USER_ID}"
