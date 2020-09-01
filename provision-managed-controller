@@ -90,7 +90,7 @@ spec:
             
             git fetch
             git checkout -B cross-team-collab-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > Jenkinsfile
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
             git commit -a -m 'creating ${GitHubOrganization}/pipeline-template-catalog cross-team-collab-lab branch for ${GitHubUsername}'
             git push -u origin cross-team-collab-lab
 
