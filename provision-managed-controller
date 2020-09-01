@@ -94,7 +94,6 @@ spec:
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
             
             git pull origin master
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
