@@ -18,7 +18,7 @@ String masterName = "REPLACE_GITHUB_ORG"
 String masterDefinitionYaml = """
 provisioning:
   cpus: 1.5
-  disk: 10
+  disk: 20
   memory: 4500
   yaml: |
     kind: Service
