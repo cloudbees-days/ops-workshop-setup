@@ -195,6 +195,7 @@ spec:
         sh """
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-create-update-managed-controller.groovy
+          sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" ./groovy/oc-create-update-managed-controller.groovy
         """
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh """
