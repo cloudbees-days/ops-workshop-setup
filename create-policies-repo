@@ -1,0 +1,40 @@
+pipeline {
+  agent {
+    kubernetes {
+      label 'kubectl'
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
+    }
+  } 
+  stages {
+    stage('Provision Managed Controller') {
+      steps {
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
+                                          usernameVariable: 'GITHUB_APP',
+                                          passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
+          echo "create pipeline-policies repo"
+          curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+               -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+               --data '{"name":"pipeline-policies","description":"This reposiotry will be utilized with the CloudBees CI Workshop Pipeline Policies as Code lab.","auto_init":true,"license_template":"mit","delete_branch_on_merge":true}' \
+               https://api.github.com/orgs/${GitHubOrganization}/repos                                 
+        }                                    
+      }
+    }
+  }
+}
+      
