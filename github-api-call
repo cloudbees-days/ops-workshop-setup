@@ -1,0 +1,23 @@
+pipeline {
+  agent { label 'default-jnlp' } 
+  stages {
+    stage('Provision Managed Controller') {
+      steps {
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
+                                          usernameVariable: 'GITHUB_APP',
+                                          passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
+          sh """
+          echo "callilng GitHub API"
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -X ${method} \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 --data '${data}' \
+                 ${apiUrl}                                
+          """
+        }                                    
+      }
+    }
+  }
+}
