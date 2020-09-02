@@ -14,7 +14,7 @@ import io.fabric8.kubernetes.client.utils.Serialization
 import jenkins.model.Jenkins
 import org.apache.commons.io.FileUtils
 
-String masterName = "REPLACE_GITHUB_ORG" 
+String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
   cpus: 1.5
