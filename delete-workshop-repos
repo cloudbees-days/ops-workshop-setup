@@ -1,3 +1,4 @@
+def controllerName
 pipeline {
   agent {
     kubernetes {
@@ -28,6 +29,7 @@ spec:
       steps {
         script {
           githubOrg = githubOrg.replaceAll(" ", "-")
+          controllerName = githubOrg.toLowerCase()
         }
         echo "GitHub Organization: ${githubOrg}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-create-github-app-credential.groovy"
@@ -55,7 +57,7 @@ spec:
             try {
               sh """
                   alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                  cli delete-job "teams/$githubOrg"
+                  cli delete-job "teams/$controllerName"
               """
             } catch(e) {
               echo e.toString()
