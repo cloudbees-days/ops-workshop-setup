@@ -1,4 +1,6 @@
 def controllerName
+def GitHubOrganization
+def GitHubUsername
 pipeline {
   agent {
     kubernetes {
@@ -21,9 +23,23 @@ spec:
       """
     }
   } 
+  triggers {
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-feature-flags-workshop'")
+  } 
   stages {
     stage('Provision Managed Controller') {
+      when {
+        beforeAgent true
+        triggeredBy 'EventTriggerCause'
+      }
       steps {
+        script {
+          echo currentBuild.getBuildCauses()[0].event
+          GitHubOrganization = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.installation.account.login' | tr -d '\n'", 
+                returnStdout: true)
+          GitHubUsername = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.sender.login' | tr -d '\n'", 
+                returnStdout: true)
+        }
         checkout scm
         echo "GitHub username: ${GitHubUsername}"
         script {
