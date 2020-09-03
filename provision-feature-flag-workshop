@@ -35,12 +35,9 @@ spec:
       steps {
         script {
           def event = currentBuild.getBuildCauses()[0].event
-          GitHubOrganization = sh (script: "${event} | jq -r '.installation.account.login' | tr -d '\n'", 
-                returnStdout: true)
-          GitHubUsername = sh (script: "${event} | jq -r '.sender.login' | tr -d '\n'", 
-                returnStdout: true)
+          GitHubOrganization = event.installation.account.login.toString()
+          GitHubUsername = event.sender.login.toString()
         }
-        checkout scm
         echo "GitHub username: ${GitHubUsername}"
         script {
           GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
