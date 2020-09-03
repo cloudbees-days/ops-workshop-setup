@@ -103,8 +103,7 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
-            sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin master
