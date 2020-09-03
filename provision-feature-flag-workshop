@@ -34,7 +34,6 @@ spec:
       }
       steps {
         script {
-          echo currentBuild.getBuildCauses()[0].event
           GitHubOrganization = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.installation.account.login' | tr -d '\n'", 
                 returnStdout: true)
           GitHubUsername = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.sender.login' | tr -d '\n'", 
