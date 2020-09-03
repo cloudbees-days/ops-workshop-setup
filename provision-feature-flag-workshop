@@ -34,9 +34,10 @@ spec:
       }
       steps {
         script {
-          GitHubOrganization = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.installation.account.login' | tr -d '\n'", 
+          def event = currentBuild.getBuildCauses()[0].event
+          GitHubOrganization = sh (script: "${event} | jq -r '.installation.account.login' | tr -d '\n'", 
                 returnStdout: true)
-          GitHubUsername = sh (script: "$currentBuild.getBuildCauses()[0].event | jq -r '.sender.login' | tr -d '\n'", 
+          GitHubUsername = sh (script: "${event} | jq -r '.sender.login' | tr -d '\n'", 
                 returnStdout: true)
         }
         checkout scm
