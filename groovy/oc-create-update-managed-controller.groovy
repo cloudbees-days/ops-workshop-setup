@@ -1,6 +1,4 @@
 //only runs on CJOC
-
-
 import com.cloudbees.masterprovisioning.kubernetes.KubernetesMasterProvisioning
 import com.cloudbees.opscenter.server.casc.BundleStorage
 import com.cloudbees.opscenter.server.model.ManagedMaster
@@ -12,6 +10,8 @@ import nectar.plugins.rbac.groups.GroupContainerLocator;
 import hudson.ExtensionList
 import io.fabric8.kubernetes.client.utils.Serialization
 import jenkins.model.Jenkins
+import hudson.*
+import hudson.model.*
 import org.apache.commons.io.FileUtils
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
@@ -98,6 +98,11 @@ private void createMM(String masterName, def masterDefinition) {
 
   def teamsFolder = Jenkins.instance.getItem('teams')  
   String jenkinsUserId = "REPLACE_JENKINS_USER"
+  def user = User.get(jenkinsUserId, false)
+  if(user==null) {
+    Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cloudbees2020")
+  }
+  
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
