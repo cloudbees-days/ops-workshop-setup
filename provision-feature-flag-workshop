@@ -1,0 +1,133 @@
+def controllerName
+pipeline {
+  agent {
+    kubernetes {
+      label 'kubectl'
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
+    }
+  } 
+  stages {
+    stage('Provision Managed Controller') {
+      steps {
+        checkout scm
+        echo "GitHub username: ${GitHubUsername}"
+        script {
+          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
+          controllerName = GitHubOrganization.toLowerCase()
+        }
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        
+        echo "begin config bundle updates"
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-create-github-app-credential.groovy
+            """
+        }
+        withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
+                                          usernameVariable: 'GITHUB_APP',
+                                          passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
+          sh(script: """
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'  \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
+                 --data '{"owner":"${GitHubOrganization}","name":"cloudbees-ci-config-bundle"}'
+                 
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
+                 --data '{"owner":"${GitHubOrganization}","name":"pipeline-library"}'
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
+                 --data '{"owner":"${GitHubOrganization}","name":"pipeline-template-catalog"}'
+
+            rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./pipeline-template-catalog || true
+            mkdir -p cloudbees-ci-config-bundle
+            mkdir -p pipeline-template-catalog
+            
+            cd pipeline-template-catalog
+            git init
+            git config user.email "cloudbees-ci.bot@cloudbees.com"
+            git config user.name "CloudBees CI Bot"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
+            git pull origin master
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
+            git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
+            git push -u origin master
+
+            cd ../cloudbees-ci-config-bundle
+            git init
+            git config user.email "${BUILD_USER_EMAIL}"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
+            
+            git pull origin master
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$BUILD_USER_ID/g" jenkins.yaml
+            sed -i "s/REPLACE_USER_EMAIL/$BUILD_USER_EMAIL/g" jenkins.yaml
+            git add *
+            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
+            git push origin master
+          """)
+        }
+        
+        echo "creating config bundle on OC"
+        container('kubectl') {
+          sh "rm -rf ./${controllerName}"
+          sh "mkdir -p ${controllerName}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
+          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
+          sh "kubectl cp --namespace cloudbees-core ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+        }
+        
+        echo "provisioning managed controller"
+        sh """
+          sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
+          sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-create-update-managed-controller.groovy
+          sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
+        """
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+          sh """
+            alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+            cli groovy =<./groovy/oc-create-update-managed-controller.groovy
+          """
+        }
+        
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-delete-github-app-credential.groovy
+            """
+        }
+      }
+    }
+  }
+}
