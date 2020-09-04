@@ -1,4 +1,5 @@
 def controllerName
+def gitHubUsername
 pipeline {
   agent {
     kubernetes {
@@ -24,14 +25,32 @@ spec:
   options { 
     buildDiscarder(logRotator(numToKeepStr: '10'))
   }
+  triggers {
+    eventTrigger jmespathQuery("action=='deleted' && installation.app_slug=='cloudbees-feature-flags-workshop'")
+  }
   stages {
+    stage('Get Event Payload') {
+      when {
+        beforeAgent true
+        triggeredBy 'EventTriggerCause'
+      }
+      steps {
+        script {
+          def event = currentBuild.getBuildCauses()[0].event
+          githubOrg = event.installation.account.login.toString()
+          gitHubUsername = event.sender.login.toString()
+        }
+        echo "GitHub Org name: ${githubOrg}"
+        echo "GitHub username: ${GitHubUsername}"
+      }
+    }
     stage('Delete Repos') {
       steps {
         script {
           githubOrg = githubOrg.trim().replaceAll(" ", "-")
           controllerName = githubOrg.toLowerCase()
         }
-        echo "GitHub Organization: ${githubOrg}"
+        echo "GitHub Organization after trim/replace: ${githubOrg}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "curl -O http://teams-ops/teams-ops/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
