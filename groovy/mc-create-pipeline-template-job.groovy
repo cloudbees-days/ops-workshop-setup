@@ -13,7 +13,7 @@ def jenkins = Jenkins.instance
 
 //Pipeline Template Catalog
 SCMSource scm = new GitSCMSource("https://github.com/REPLACE_GITHUB_ORG/pipeline-template-catalog.git");
-scm.setCredentialsId("${credentialId}");
+scm.setCredentialsId("cloudbees-ci-workshop-github-app");
 TemplateCatalog catalog = new TemplateCatalog(scm, "master");
 catalog.setUpdateInterval("1h");
 GlobalTemplateCatalogManagement.get().addCatalog(catalog);
@@ -40,7 +40,7 @@ def frontendJobXml = """
           </entry>
           <entry>
             <string>githubCredentialId</string>
-            <string>cbdays-github-username-pat</string>
+            <string>cloudbees-ci-workshop-github-app</string>
           </entry>
           <entry>
             <string>name</string>
