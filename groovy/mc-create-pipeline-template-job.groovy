@@ -12,7 +12,7 @@ Logger logger = Logger.getLogger("mc-create-pipeline-template-job.groovy");
 def jenkins = Jenkins.instance
 
 //Pipeline Template Catalog
-SCMSource scm = new GitSCMSource("https://github.com/${githubOrg}/pipeline-template-catalog.git");
+SCMSource scm = new GitSCMSource("https://github.com/REPLACE_GITHUB_ORG/pipeline-template-catalog.git");
 scm.setCredentialsId("${credentialId}");
 TemplateCatalog catalog = new TemplateCatalog(scm, "master");
 catalog.setUpdateInterval("1h");
@@ -20,7 +20,6 @@ GlobalTemplateCatalogManagement.get().addCatalog(catalog);
 GlobalTemplateCatalogManagement.get().save();
 logger.info("Creating new Pipeline Template Catalog");
 catalog.updateFromSCM(); 
-
 
 //microblog-fronted job from Pipeline Template
 def name = "microblog-frontend"
@@ -45,11 +44,11 @@ def frontendJobXml = """
           </entry>
           <entry>
             <string>name</string>
-            <string>${name}</string>
+            <string>REPLACE_GITHUB_ORG</string>
           </entry>
           <entry>
             <string>repoOwner</string>
-            <string>${githubOrg}</string>
+            <string>REPLACE_GITHUB_ORG</string>
           </entry>
           <entry>
             <string>repository</string>
@@ -97,7 +96,7 @@ def frontendJobXml = """
         <id>VueJS</id>
         <apiUri>https://api.github.com</apiUri>
         <credentialsId>cloudbees-ci-workshop-github-app</credentialsId>
-        <repoOwner>${githubOrg}</repoOwner>
+        <repoOwner>REPLACE_GITHUB_ORG</repoOwner>
         <repository>microblog-frontend</repository>
         <traits>
           <org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
@@ -128,6 +127,6 @@ def frontendJobXml = """
 </org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
 """
 
-def p = masterFolder.createProjectFromXML(name, new ByteArrayInputStream(frontendJobXml.getBytes("UTF-8")));
+def p = jenkins.createProjectFromXML(name, new ByteArrayInputStream(frontendJobXml.getBytes("UTF-8")));
 
 logger.info("created $name job")
