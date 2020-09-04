@@ -135,7 +135,7 @@ spec:
             git checkout -B development
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/components/Nav.vue > src/components/Nav.vue
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/utils/flags.js > src/utils/flags.js
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/views/Posts.vue > development/src/views/Posts.vue
+            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/views/Posts.vue > src/views/Posts.vue
             git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
             git push -u origin development
           """)
