@@ -121,10 +121,12 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugin-catalog.yaml > plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugins.yaml > plugins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/mc-create-pipeline-template-job.groovy > create-pipeline-template-job.groovy  
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-job.groovy
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin master
