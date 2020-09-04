@@ -49,6 +49,7 @@ spec:
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/pipeline-template-catalog
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/pipeline-policies
                 curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/simple-java-maven-app
+                curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${githubOrg}/microblog-frontend
             """
         }
         
