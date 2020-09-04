@@ -67,7 +67,7 @@ spec:
         }
         
         container('kubectl') {
-          sh('kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service -l type=master,tenant=teams-$githubOrg --now')
+          sh('kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service -l type=master,tenant=teams-$controllerName --now')
           sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${githubOrg} || true"
         }
         
