@@ -138,6 +138,7 @@ spec:
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/microblog-frontend.git
             git pull origin main
             git checkout -B development
+            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/package.json > package.json
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/components/Nav.vue > src/components/Nav.vue
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/utils/flags.js > src/utils/flags.js
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/views/Posts.vue > src/views/Posts.vue
