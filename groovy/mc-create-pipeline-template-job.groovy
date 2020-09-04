@@ -32,7 +32,7 @@ def frontendJobXml = """
         <values class="tree-map">
           <entry>
             <string>deploymentDomain</string>
-            <string>cb-sa.io</string>
+            <string>workshop.cb-sa.io</string>
           </entry>
           <entry>
             <string>gcpProject</string>
