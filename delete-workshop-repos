@@ -28,7 +28,7 @@ spec:
     stage('Delete Repos') {
       steps {
         script {
-          githubOrg = githubOrg.replaceAll(" ", "-")
+          githubOrg = githubOrg.trim().replaceAll(" ", "-")
           controllerName = githubOrg.toLowerCase()
         }
         echo "GitHub Organization: ${githubOrg}"
