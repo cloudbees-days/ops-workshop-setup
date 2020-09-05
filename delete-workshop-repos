@@ -1,6 +1,5 @@
 def controllerName
 def gitHubUsername
-def appSlug
 pipeline {
   agent {
     kubernetes {
