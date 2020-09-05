@@ -1,5 +1,6 @@
 def controllerName
 def gitHubUsername
+def appSlug
 pipeline {
   agent {
     kubernetes {
@@ -38,10 +39,11 @@ spec:
         script {
           def event = currentBuild.getBuildCauses()[0].event
           githubOrg = event.installation.account.login.toString()
+          appSlug = event.installation.app_slug.toString()
           gitHubUsername = event.sender.login.toString()
         }
         echo "GitHub Org name: ${githubOrg}"
-        echo "GitHub username: ${GitHubUsername}"
+        echo "GitHub username: ${gitHubUsername}"
       }
     }
     stage('Delete Repos') {
@@ -52,6 +54,7 @@ spec:
         }
         echo "GitHub Organization after trim/replace: ${githubOrg}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/${appSlug}-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "curl -O http://teams-ops/teams-ops/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
