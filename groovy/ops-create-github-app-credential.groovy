@@ -15,7 +15,7 @@ def credentials = CredentialsProvider.lookupCredentials(
         null
 );
 
-def cred = credentials.findResult { it.id == "cloudbees-ci-workshop-github-app" ? it : null }
+def cred = credentials.findResult { it.id == "REPLACE_BASE_CREDENTIAL_ID" ? it : null }
 
 Credentials newCred = new GitHubAppCredentials(CredentialsScope.GLOBAL, gitHubOrg, "${gitHubOrg} temp github app cred", cred.appID, cred. privateKey)
 newCred.setOwner(gitHubOrg)
