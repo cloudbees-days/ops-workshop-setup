@@ -132,6 +132,15 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin master
             
+            # update microblog-frontend
+            curl \
+              -X PATCH \
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+              -H 'Accept: application/vnd.github.baptiste-preview+json' \
+              -H 'Accept: application/vnd.github.v3+json' \
+              https://api.github.com/repos/${GitHubOrganization}/microblog-frontend \
+              -d '{"homepage":"https://cloudbees-feature-flags.labs.cb-sa.io","has_issues":false,"has_projects":false,"has_wiki":false,"delete_branch_on_merge":true}'
+            
             cd ../microblog-frontend
             git init
             git config user.email "cloudbees-ci.bot@cloudbees.com"
