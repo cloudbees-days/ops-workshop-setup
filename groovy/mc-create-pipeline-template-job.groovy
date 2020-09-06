@@ -24,7 +24,6 @@ if (microBlogJob == null) {
   catalog.updateFromSCM(); 
 
   //microblog-fronted job from Pipeline Template
-  def name = "microblog-frontend"
   def frontendJobXml = """
   <org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
     <properties>
