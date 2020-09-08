@@ -22,7 +22,27 @@ if (configOpsJob == null) {
   GlobalTemplateCatalogManagement.get().save();
   logger.info("Creating new Pipeline Template Catalog");
   catalog.updateFromSCM(); 
-
+  
+  def templateFolderName = "template-jobs"
+  def templateFolderXml = """
+  <com.cloudbees.hudson.plugins.folder.Folder plugin="cloudbees-folder@6.14">
+  <actions/>
+  <description></description>
+  <properties>
+    <com.cloudbees.hudson.plugins.folder.properties.SubItemFilterProperty plugin="cloudbees-folders-plus@3.10">
+      <allowedTypes>
+        <string>workshopCatalog/maven</string>
+        <string>workshopCatalog/pipeline-policies</string>
+        <string>workshopCatalog/casc-bundle</string>
+      </allowedTypes>
+    </com.cloudbees.hudson.plugins.folder.properties.SubItemFilterProperty>
+  </properties>
+  <icon class="com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon"/>
+</com.cloudbees.hudson.plugins.folder.Folder>
+  """
+  
+  def f = jenkins.createProjectFromXML(templateFolderName, new ByteArrayInputStream(templateFolderXml.getBytes("UTF-8")));
+  
   //microblog-fronted job from Pipeline Template
   def configOpsJobXml = """
 <org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
@@ -60,7 +80,7 @@ if (configOpsJob == null) {
 </org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
   """
 
-  def p = jenkins.createProjectFromXML(name, new ByteArrayInputStream(configOpsJobXml.getBytes("UTF-8")));
+  def p = f.createProjectFromXML(name, new ByteArrayInputStream(configOpsJobXml.getBytes("UTF-8")));
 
   logger.info("created $name job")
 } else {
