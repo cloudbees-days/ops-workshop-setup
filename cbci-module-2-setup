@@ -1,0 +1,86 @@
+def controllerName
+def GitHubUsername
+pipeline {
+  agent {
+    kubernetes {
+      label 'kubectl'
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
+    }
+  } 
+  stages {
+    stage('Update Config Bundle') {}
+      steps {
+        script {
+          GitHubUsername = ${BUILD_USER_ID}
+          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
+          controllerName = GitHubOrganization.toLowerCase()
+        }
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        echo "GitHub username: ${GitHubUsername}"
+        
+        echo "begin config bundle updates"
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-feature-flags-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-create-github-app-credential.groovy
+            """
+        }
+        withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
+                                          usernameVariable: 'GITHUB_APP',
+                                          passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
+          sh(script: """
+            rm -rf ./cloudbees-ci-config-bundle || true
+            mkdir -p cloudbees-ci-config-bundle
+
+            cd cloudbees-ci-config-bundle
+            git init
+            git config user.email "cloudbees-ci.bot@cloudbees.com"
+            git config user.name "CloudBees CI Bot"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
+            
+            git pull origin master
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/jenkins.yaml > jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugin-catalog.yaml > plugin-catalog.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugins.yaml > plugins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/mc-create-pipeline-template-job.groovy > create-pipeline-template-job.groovy  
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-job.groovy
+            git add *
+            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
+            git push origin master
+          """)
+        }
+        
+        echo "creating config bundle on OC"
+        container('kubectl') {
+          sh "rm -rf ./${controllerName}"
+          sh "mkdir -p ${controllerName}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
+          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
+          sh "kubectl cp --namespace cloudbees-core ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+        }
+      }
+    }
+  }
+}
