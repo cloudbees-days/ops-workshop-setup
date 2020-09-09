@@ -139,6 +139,8 @@ private void createMM(String masterName, def masterDefinition) {
       group.doAddMember(jenkinsUserId);
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
+      container.addRoleFilter(roleName);
+      container.addRoleFilter("browse");
     }
     sleep(500)
 }
