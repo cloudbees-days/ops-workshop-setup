@@ -86,8 +86,7 @@ spec:
           sh "rm -rf ./${controllerName}"
           sh "mkdir -p ${controllerName}"
           sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace cloudbees-core ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "kubectl cp --namespace cloudbees-core ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/ -c jenkins"
         }
       }
     }
