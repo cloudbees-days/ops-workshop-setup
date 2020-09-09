@@ -1,0 +1,37 @@
+pipeline {
+  agent {
+    kubernetes {
+      label 'workshop-cleanup'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: core-workshop
+labels:
+  component: ci
+spec:
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    command:
+    - cat
+    tty: true
+  securityContext:
+   runAsUser: 1000
+"""
+}
+  }
+  stages {
+    stage('Clean') {
+      steps {
+        container('kubectl') {
+          sh('kubectl -n cloudbees-core delete deployment,pod,pvc,ingress,service -l app.type=workshop')
+          sh('kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service -l type=master,tenant!=teams-ops')
+          sh('kubectl -n cloudbees-core exec cjoc-0 -c jenkins -- bash -c "rm -rf /var/jenkins_home/jobs/teams/jobs/* && mv /var/jenkins_home/users/admin* /var/jenkins_home/. && mv /var/jenkins_home/users/beedemoops* /var/jenkins_home/. && rm -rf /var/jenkins_home/users/* && mv /var/jenkins_home/admin* /var/jenkins_home/users/ && mv /var/jenkins_home/beedemoops* /var/jenkins_home/users/ && cp /var/jenkins_home/users.xml /var/jenkins_home/users/ && rm /var/jenkins_home/run-time-state.mv.db"')
+          sh('kubectl -n cloudbees-core exec cjoc-0 -c jenkins reboot')
+        } 
+      }
+    }
+  }
+}
