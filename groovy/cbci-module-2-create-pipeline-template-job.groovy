@@ -11,7 +11,8 @@ Logger logger = Logger.getLogger("cbci-module-2-create-pipeline-template-job.gro
 
 def jenkins = Jenkins.instance
 def name = "config-bundle-ops"
-def configOpsJob = jenkins.getItemByFullName(name)
+def fullName = "template-jobs/${name}"
+def configOpsJob = jenkins.getItemByFullName(fullName)
 if (configOpsJob == null) {
   //Pipeline Template Catalog
   SCMSource scm = new GitSCMSource("https://github.com/REPLACE_GITHUB_ORG/pipeline-template-catalog.git");
