@@ -139,7 +139,7 @@ spec:
               -H 'Accept: application/vnd.github.baptiste-preview+json' \
               -H 'Accept: application/vnd.github.v3+json' \
               https://api.github.com/repos/${GitHubOrganization}/microblog-frontend \
-              -d '{"homepage":"https://cloudbees-feature-flags.labs.cb-sa.io","has_issues":false,"has_projects":false,"has_wiki":false,"delete_branch_on_merge":true}'
+              -d '{"homepage":"https://cloudbees-feature-flags.labs.cb-sa.io","has_issues":false,"has_projects":false,"has_wiki":false}'
             
             cd ../microblog-frontend
             git init
@@ -157,6 +157,21 @@ spec:
             git add .vuejs
             git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
             git push -u origin development
+          """)
+          
+          waitUntil {
+            script {
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/git/ref/heads/development", returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+          echo "create pull request"
+          sh(script: """
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 --data '{"title":"New Feature","head":"development","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/pulls
           """)
         }
         
