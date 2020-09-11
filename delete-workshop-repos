@@ -89,8 +89,8 @@ spec:
         }
         
         container('kubectl') {
-          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-development --now)
-          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-production --now)
+          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-development --now")
+          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-production --now")
           sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=teams-${controllerName} --now")
           sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${githubOrg} || true"
         }
