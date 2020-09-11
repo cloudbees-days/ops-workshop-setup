@@ -154,6 +154,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/views/Posts.vue > src/views/Posts.vue
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.vuejs > .vuejs
             git add *
+            git add .vuejs
             git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
             git push -u origin development
           """)
