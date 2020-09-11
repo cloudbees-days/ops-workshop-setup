@@ -3,6 +3,15 @@ pipeline {
   stages {
     stage('Provision Managed Controller') {
       steps {
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-feature-flags-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-create-github-app-credential.groovy
+            """
+        }
         echo "GitHub Org Name: ${GitHubOrganization}"
         withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
                                           usernameVariable: 'GITHUB_APP',
@@ -16,6 +25,14 @@ pipeline {
                  --data '${data}' \
                  ${apiUrl}                                
           """
+        }
+        
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-delete-github-app-credential.groovy
+            """
         }                                    
       }
     }
