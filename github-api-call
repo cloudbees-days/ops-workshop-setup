@@ -3,8 +3,9 @@ pipeline {
   stages {
     stage('Provision Managed Controller') {
       steps {
+        echo "Cleaning up for: ${appSlug}"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
-        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-feature-flags-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/${appSlug}/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
