@@ -98,6 +98,7 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
             git push -u origin master
             
