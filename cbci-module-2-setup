@@ -24,7 +24,7 @@ spec:
     }
   }  
   triggers {
-    eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup'")
+    eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
   }
   stages {
     stage('Update Config Bundle') {
