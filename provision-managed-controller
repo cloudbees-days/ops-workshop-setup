@@ -140,6 +140,7 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin cbci-module-2-setup
             
+            git checkout master
             git checkout -B casc-gitops-lab
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/.markerfile > .markerfile
             git add .markerfile
