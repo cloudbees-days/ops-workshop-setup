@@ -84,7 +84,7 @@ if (configOpsJob == null) {
       </factory>
     </org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
     """
-    jenkins.createProjectFromXML(catalogMultibranchName, new ByteArrayInputStream(configOpsJobXml.getBytes("UTF-8")))
+    jenkins.createProjectFromXML(catalogMultibranchName, new ByteArrayInputStream(catalogMultibranchXml.getBytes("UTF-8")))
     
     def templateFolderName = "template-jobs"
     def templateFolderXml = """
