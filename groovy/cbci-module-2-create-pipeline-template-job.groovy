@@ -49,7 +49,7 @@ if (configOpsJob == null) {
       </orphanedItemStrategy>
       <triggers/>
       <disabled>false</disabled>
-      <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@2.5.8">
+      <sources class="jenkins.branch.MultiBranchProject\$BranchSourceList" plugin="branch-api@2.5.8">
         <data>
           <jenkins.branch.BranchSource>
             <source class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.8.3">
