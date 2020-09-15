@@ -123,6 +123,22 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin master
             git fetch
+            
+            git checkout -b cbci-module-2-setup
+            mkdir groovy
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/jenkins.yaml > jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugin-catalog.yaml > plugin-catalog.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugins.yaml > plugins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-module-2-create-pipeline-template-job.groovy > groovy/create-pipeline-template-job.groovy  
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/create-pipeline-template-job.groovy
+            git add *
+            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
+            git push origin cbci-module-2-setup
 
             git checkout -B casc-gitops-lab
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/.markerfile > .markerfile
@@ -162,23 +178,6 @@ spec:
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on collab-lab branch for ${GitHubUsername}'
             git push -u origin collab-lab
-           
-            git checkout dev-casc-lab
-            git checkout -b cbci-module-2-setup
-            mkdir groovy
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/bundle.yaml > bundle.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/jenkins.yaml > jenkins.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugin-catalog.yaml > plugin-catalog.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugins.yaml > plugins.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-module-2-create-pipeline-template-job.groovy > groovy/create-pipeline-template-job.groovy  
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/create-pipeline-template-job.groovy
-            git add *
-            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
-            git push origin cbci-module-2-setup
             git checkout master
             
             echo "create pull requests"
