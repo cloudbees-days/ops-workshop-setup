@@ -163,7 +163,7 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on collab-lab branch for ${GitHubUsername}'
             git push -u origin collab-lab
            
-            git checkout master
+            git checkout dev-casc-lab
             git checkout -b cbci-module-2-setup
             mkdir groovy
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/bundle.yaml > bundle.yaml
