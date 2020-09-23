@@ -41,7 +41,7 @@ spec:
               }
             }
             container('kubectl') {
-              sh("kubectl -n cloudbees-core delete pod -l cloudbees.com/master=teams-${controllerName} --force")
+              sh("kubectl -n cloudbees-core delete pod -l cloudbees.com/master=teams-$it --force")
               sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-$it-development --force")
               sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-$it-production --force")
               sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=teams-$it --force")
