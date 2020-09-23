@@ -27,6 +27,7 @@ spec:
     stage('Delete Controllers') {
       steps {
         echo "controllerNames: ${controllerNames}"
+        sh "curl -O http://teams-ops/teams-ops/jnlpJars/jenkins-cli.jar"
         script {
           String[] controllersList = controllerNames.split(',')
           controllersList.each {
