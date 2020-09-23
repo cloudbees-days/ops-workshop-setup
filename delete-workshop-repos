@@ -93,7 +93,7 @@ spec:
           sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-development --force")
           sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=teams-${controllerName}-production --force")
           sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=teams-${controllerName} --force")
-          sh("kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${githubOrg} || true")
+          sh("kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true")
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$githubOrg/g\" ./groovy/ops-delete-github-app-credential.groovy" 
