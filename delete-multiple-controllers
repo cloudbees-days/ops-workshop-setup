@@ -28,7 +28,8 @@ spec:
       steps {
         echo "controllerNames: ${controllerNames}"
         script {
-          controllerNames.each {
+          String[] controllersList = controllerNames.split(',')
+          controllersList.each {
             withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
               try {
                 sh """
