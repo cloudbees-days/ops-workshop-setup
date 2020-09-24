@@ -1,4 +1,5 @@
 def controllerName
+def targetType
 pipeline {
   agent {
     kubernetes {
@@ -33,7 +34,7 @@ spec:
       steps {
         script {
           def event = currentBuild.getBuildCauses()[0].event
-          def targetType = event.installation.target_type.toString()
+          targetType = event.installation.target_type.toString()
           GitHubOrganization = event.installation.account.login.toString()
           GitHubUsername = event.sender.login.toString()
         }
