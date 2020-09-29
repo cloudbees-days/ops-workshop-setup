@@ -7,7 +7,7 @@ pipeline {
 apiVersion: v1
 kind: Pod
 metadata:
-  namespace: core-workshop
+  namespace: cloudbees-core
 labels:
   component: ci
 spec:
