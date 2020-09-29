@@ -28,7 +28,7 @@ spec:
         container('kubectl') {
           sh('kubectl -n cloudbees-core delete deployment,pod,pvc,ingress,service -l app.type=workshop')
           sh('kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service -l type=master,tenant!=teams-ops')
-          sh('kubectl -n cloudbees-core delete pod -l component!=ops-agent')
+          sh('kubectl -n cloudbees-core delete pod -l component!=ops-agent,tenant!=teams-ops,app.kubernetes.io/component!=cjoc')
           sh('kubectl -n cloudbees-core exec cjoc-0 -c jenkins -- bash -c "rm -rf /var/jenkins_home/jobs/teams/jobs/* && mv /var/jenkins_home/users/admin* /var/jenkins_home/. && mv /var/jenkins_home/users/beedemoops* /var/jenkins_home/. && rm -rf /var/jenkins_home/users/* && mv /var/jenkins_home/admin* /var/jenkins_home/users/ && mv /var/jenkins_home/beedemoops* /var/jenkins_home/users/ && cp /var/jenkins_home/users.xml /var/jenkins_home/users/ && rm /var/jenkins_home/run-time-state.mv.db"')
           sh('kubectl scale sts cjoc --replicas=0 -n cloudbees-core')
           sleep 5
