@@ -4,7 +4,6 @@ import com.cloudbees.opscenter.server.casc.BundleStorage
 import com.cloudbees.opscenter.server.model.ManagedMaster
 import com.cloudbees.opscenter.server.model.OperationsCenter
 import com.cloudbees.opscenter.server.properties.ConnectedMasterLicenseServerProperty
-import com.cloudbees.opscenter.server.security.SecurityEnforcer_-OptOutProperty
 import com.cloudbees.hudson.plugins.folder.Folder;
 import nectar.plugins.rbac.groups.Group;
 import nectar.plugins.rbac.groups.GroupContainerLocator;
