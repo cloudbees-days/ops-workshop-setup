@@ -4,6 +4,7 @@ import com.cloudbees.opscenter.server.casc.BundleStorage
 import com.cloudbees.opscenter.server.model.ManagedMaster
 import com.cloudbees.opscenter.server.model.OperationsCenter
 import com.cloudbees.opscenter.server.properties.ConnectedMasterLicenseServerProperty
+import com.cloudbees.opscenter.server.security.SecurityEnforcer_-OptOutProperty
 import com.cloudbees.hudson.plugins.folder.Folder;
 import nectar.plugins.rbac.groups.Group;
 import nectar.plugins.rbac.groups.GroupContainerLocator;
@@ -106,6 +107,8 @@ private void createMM(String masterName, def masterDefinition) {
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
+    //needed for CasC RBAC
+    master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
     master.save()
     master.onModified()
 
