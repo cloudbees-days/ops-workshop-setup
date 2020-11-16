@@ -134,6 +134,19 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin master
             git fetch
+
+            git checkout -B casc-gitops-lab
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/.markerfile > .markerfile
+            git add .markerfile
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/jenkins.yaml > jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/plugins.yaml > plugins.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on casc-gitops-lab branch for ${GitHubUsername}'
+            git push -u origin casc-gitops-lab
             
             git checkout -b cbci-module-2-setup
             mkdir groovy
@@ -150,19 +163,6 @@ spec:
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin cbci-module-2-setup
-
-            git checkout -B casc-gitops-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/.markerfile > .markerfile
-            git add .markerfile
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/bundle.yaml > bundle.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/jenkins.yaml > jenkins.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/plugins.yaml > plugins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on casc-gitops-lab branch for ${GitHubUsername}'
-            git push -u origin casc-gitops-lab
             
             git checkout -B dev-casc-lab
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/.markerfile > .markerfile
