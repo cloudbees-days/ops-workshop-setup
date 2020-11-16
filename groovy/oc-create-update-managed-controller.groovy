@@ -96,6 +96,7 @@ private void createMM(String masterName, def masterDefinition) {
   def user = User.get(jenkinsUserId, false)
   if(user==null) {
     Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cloudbees2020")
+    Jenkins.instance.securityRealm.createAccount("$jenkinsUserId-manager", "cloudbees2020")
   }
   
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
