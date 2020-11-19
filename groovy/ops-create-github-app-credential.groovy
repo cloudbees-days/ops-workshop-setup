@@ -17,7 +17,7 @@ def credentials = CredentialsProvider.lookupCredentials(
 
 def cred = credentials.findResult { it.id == "REPLACE_BASE_CREDENTIAL_ID" ? it : null }
 
-Credentials newCred = new GitHubAppCredentials(CredentialsScope.GLOBAL, gitHubOrg, "${gitHubOrg} temp github app cred", cred.appID, cred. privateKey)
+Credentials newCred = new GitHubAppCredentials(CredentialsScope.GLOBAL, gitHubOrg, "${gitHubOrg} temp github app cred", cred.appID, cred.privateKey)
 newCred.setOwner(gitHubOrg)
 
 def domain = Domain.global()
