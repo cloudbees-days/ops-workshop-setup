@@ -81,8 +81,6 @@ spec:
           """)
         }
         
-        cbci-update-controller-security-opt-out-authz.groovy
-        
         echo "updating managed controller security opt out mode"
         sh """
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-update-controller-security-opt-out-authz.groovy
