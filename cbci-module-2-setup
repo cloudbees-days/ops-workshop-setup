@@ -81,6 +81,19 @@ spec:
           """)
         }
         
+        cbci-update-controller-security-opt-out-authz.groovy
+        
+        echo "updating managed controller security opt out mode"
+        sh """
+          sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-update-controller-security-opt-out-authz.groovy
+        """
+        withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+          sh """
+            alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+            cli groovy =<./groovy/oc-update-controller-security-opt-out-authz.groovy
+          """
+        }
+        
         echo "creating config bundle on OC"
         container('kubectl') {
           sh "rm -rf ./${controllerName}"
