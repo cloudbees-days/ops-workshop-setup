@@ -15,6 +15,6 @@ println "Master '${masterName}' already exists. Updating it."
 ManagedMaster managedMaster = OperationsCenter.getInstance().getConnectedMasters().find { it.name == masterName } as ManagedMaster
 
 //needed for CasC RBAC
-master.properties.replace(new SecurityEnforcer.OptOutProperty(AuthorizationOptOutMode.INSTANCE, false, null))
-master.save()
-master.onModified()
+managedMaster.properties.replace(new SecurityEnforcer.OptOutProperty(AuthorizationOptOutMode.INSTANCE, false, null))
+managedMaster.save()
+managedMaster.onModified()
