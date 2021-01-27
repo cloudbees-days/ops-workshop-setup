@@ -203,7 +203,6 @@ spec:
             git checkout -B dev-casc-lab
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/.markerfile > .markerfile
             git add .markerfile
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/rbac.yaml > rbac.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/plugins.yaml > plugins.yaml
@@ -211,7 +210,6 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" rbac.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on dev-casc-lab branch for ${GitHubUsername}'
             git push -u origin dev-casc-lab
 
