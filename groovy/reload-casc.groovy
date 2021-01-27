@@ -1,3 +1,4 @@
+import hudson.ExtensionList;
 import com.cloudbees.opscenter.client.casc.ConfigurationUpdaterHelper;
 import com.cloudbees.jenkins.cjp.installmanager.casc.ConfigurationBundle;
 import com.cloudbees.jenkins.cjp.installmanager.casc.ConfigurationBundleManager;
