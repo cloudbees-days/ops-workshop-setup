@@ -97,10 +97,23 @@ spec:
             
             rm -rf ./cloudbees-ci-config-bundle || true
             rm -rf ./pipeline-template-catalog || true
+            rm -rf ./pipeline-library || true
             mkdir -p cloudbees-ci-config-bundle
             mkdir -p pipeline-template-catalog
-            
-            cd pipeline-template-catalog
+            mkdir -p pipeline-library
+
+            cd pipeline-library
+            git init
+            git config user.email "${GitHubUsername}@workshop.cb-sa.io"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-library.git
+            git pull origin master
+            git checkout -B module-2
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
+            git commit -a -m 'updating ${GitHubOrganization}/pipeline-library configBundleUpdate.groovy for ${GitHubUsername}'
+            git push -u origin module-2
+
+            cd ../pipeline-template-catalog
             git init
             git config user.email "${GitHubUsername}@workshop.cb-sa.io"
             git config user.name "${GitHubOrganization}"
