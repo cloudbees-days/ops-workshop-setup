@@ -23,7 +23,7 @@ spec:
     }
   }
   triggers {
-    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-workshop'")
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
   } 
   stages {
     stage('Provision Managed Controller') {
