@@ -40,18 +40,6 @@ provisioning:
             volumeMounts:
             - mountPath: "/var/jenkins_home/jcasc_secrets"
               name: "jcasc-secrets"
-          - name: "smee-client"
-            image: "deltaprojects/smee-client:latest"
-            args: ["-t", "http://managed-master-hibernation-monitor.cloudbees-core.svc.cluster.local/hibernation/ns/\$(NAMESPACE)/queue/\$(CONTROLLER_SUBPATH)/github-webhook/", "--url", "https://smee.io/laoLXS9UiScsQtE"]
-            env:
-            - name: CONTROLLER_SUBPATH
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tenant']
-            - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
           volumes:
           - name: "jcasc-secrets"
             csi:
