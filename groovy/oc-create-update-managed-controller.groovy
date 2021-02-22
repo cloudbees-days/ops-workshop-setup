@@ -17,9 +17,9 @@ import org.apache.commons.io.FileUtils
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
-  cpus: 1.5
+  cpus: 1
   disk: 20
-  memory: 4500
+  memory: 4000
   yaml: |
     kind: Service
     metadata:
