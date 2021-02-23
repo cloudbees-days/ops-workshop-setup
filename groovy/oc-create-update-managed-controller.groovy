@@ -1,4 +1,5 @@
 //only runs on CJOC
+import jenkins.security.ApiTokenProperty
 import com.cloudbees.masterprovisioning.kubernetes.KubernetesMasterProvisioning
 import com.cloudbees.opscenter.server.casc.BundleStorage
 import com.cloudbees.opscenter.server.model.ManagedMaster
@@ -13,6 +14,12 @@ import jenkins.model.Jenkins
 import hudson.*
 import hudson.model.*
 import org.apache.commons.io.FileUtils
+import com.cloudbees.hudson.plugins.folder.*;
+import com.cloudbees.hudson.plugins.folder.properties.*;
+import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty;
+import com.cloudbees.plugins.credentials.impl.*;
+import com.cloudbees.plugins.credentials.*;
+import com.cloudbees.plugins.credentials.domains.*; 
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
@@ -85,6 +92,26 @@ private void createMM(String masterName, def masterDefinition) {
   if(user==null) {
     Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
   }
+  String adminUserId = jenkinsUserId + "-admin"
+  def adminUser = User.get(adminUserId, false)
+  if(user==null) {
+    Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021")
+  }
+  
+  def adminApiTokenName = 'cli-username-token'
+  def user = User.get(adminUser, false)
+  def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+  def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==adminApiTokenName}
+
+  if(tokens.size() != 0) {
+      logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
+      tokens.each {
+          apiTokenProperty.tokenStore.revokeToken(it.getUuid())
+      }
+  }
+
+  def result = apiTokenProperty.tokenStore.generateNewToken(adminApiTokenName).plainValue
+  user.save()
   
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
