@@ -33,7 +33,7 @@ gcloud iam service-accounts add-iam-policy-binding \
   core-cloud-run@core-workshop.iam.gserviceaccount.com
 
 kubectl create ns sda
-kubectl -n sda create configmap cbci-oc-init-groovy --from-file=init_groovy/ --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n sda create configmap cbci-oc-init-groovy --from-file=groovy-init/ --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n sda create configmap cbci-oc-quickstart-groovy --from-file=groovy-quickstart/ --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n sda create configmap cbci-op-casc-bundle --from-file=ops-config-bundle/ --dry-run=client -o yaml | kubectl apply -f -
 
