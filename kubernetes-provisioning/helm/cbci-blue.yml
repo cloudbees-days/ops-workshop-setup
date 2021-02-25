@@ -1,0 +1,351 @@
+# Default values for CloudBees Core
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Installs the nginx ingress controller (optional)
+# Only enable this section if you don't have an existing installation of nginx-ingress controller
+# NOTE: The controller.nodeSelector and defaultBackend.nodeSelector keys "beta.kubernetes.io/os" will need to change to
+# "kubernetes.io/os" to work with Kubernetes versions 1.18 or higher.
+nginx-ingress:
+  Enabled: false
+  controller:
+    ingressClass: nginx
+    nodeSelector:
+      beta.kubernetes.io/os: linux
+    service:
+      externalTrafficPolicy: Local
+  defaultBackend:
+    nodeSelector:
+      beta.kubernetes.io/os: linux
+
+# Sidecar injector (optional)
+# Useful when running infrastructure (GitHub Enterprise, Nexus, etc.) using a self-signed certificate.
+# It allows you to inject certificate bundles in pods running in CloudBees Core so that they can trust provided certificates
+# without having to build custom docker images.
+# Use helm inspect readme cloudbees/cloudbees-sidecar-injector to read more on this optional components
+sidecarinjector:
+  Enabled: false
+
+# Operations Center options
+OperationsCenter:
+  # Disable for particular use case like setting up namespaces to host masters only
+  Enabled: true
+
+  # Operations Center docker image
+  Image:
+    dockerImage: cloudbees/cloudbees-cloud-core-oc:2.263.4.1
+    dockerPullPolicy: Always
+
+  # Platform enables specific settings, option defaults standard
+  # platform specific values are: eks, aws, gke, aks, pks, openshift, openshift4
+  # Note: openshift maps to OpenShift 3.x
+  Platform: gke
+
+  # The hostname used to access Operations Center through the ingress controller.
+  HostName: null
+
+  # ContextPath under which Operations Center will be accessible in the given host.
+  ContextPath: /cjoc
+
+  # Protocol used to access CJOC. Possible values are http/https.
+  Protocol: https
+
+  # Port used to access CJOC. Defaults to 80/443 depending on Protocol. Can be overriden.
+  # Port: 80
+
+  # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container
+  Resources:
+    Limits:
+      # CPU limit to run Operations Center
+      # https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu
+      Cpu: 2
+      # Memory limit to run Operations Center
+      # https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory
+      Memory: 6G
+    Requests:
+      Cpu: 2
+      Memory: 6G
+
+  # Environment variables that get added to the container (useful for e.g. http_proxy)
+  # ContainerEnv:
+  #   - name: http_proxy
+  #     value: "http://192.168.64.1:3128"
+
+  # Additional java options to pass to the Operations Center
+    JavaOpts:
+      -Duser.timezone="America/New_York"
+      -Djenkins.install.SetupWizard.adminInitialApiToken="11c128cbebd236ebe2e856eeb0a7278d35"
+      -Djenkins.install.runSetupWizard=false
+  #   -Dcom.sun.management.jmxremote.port=4000
+  #   -Dcom.sun.management.jmxremote.authenticate=false
+  #   -Dcom.sun.management.jmxremote.ssl=false
+
+  # Container port where JMX is exposed
+  # JMXPort: 4000
+
+  # Additional arguments for jenkins.war
+  # JenkinsOpts: ""
+
+  # Run the Operations Center as a specific user (defaults to uid 1000)
+  # When setting RunAsUser to a different value than 0 also set FsGroup to the same value:
+  # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  # RunAsUser: 1000
+  # RunAsGroup: 1000
+  # Volumes that support ownership management are modified to be owned and writable by the GID specified in fsGroup
+  # Should be set to the same value as RunAsUser to ensure the volume is writable
+  # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#discussion
+  # FsGroup: 1000
+
+  # Controls the service port where Operations Center http port is exposed.
+  # Don't change this parameter unless you know what you are doing
+  ServicePort: 80
+  # Controls the service port where Operations Center TCP port for agents is exposed.
+  # Don't change this parameter unless you know what you are doing
+  ServiceAgentListenerPort: 50000
+
+  # Service Type
+  # Defaults to ClusterIP, since we recommend using an ingress controller.
+  ServiceType: ClusterIP
+
+  # Additional annotations to put on the Operations Center service
+  ServiceAnnotations: {}
+  #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+
+  # Container port for http traffic
+  ContainerPort: 8080
+
+  # Container port for agent listener traffic
+  AgentListenerPort: 50000
+  # Enable Kubernetes Liveness and Readiness Probes
+  HealthProbes: true
+  HealthProbeLivenessFailureThreshold: 12
+
+  # Proxy compatibility for the default CSRF issuer
+  # https://wiki.jenkins.io/display/JENKINS/CSRF+Protection
+  CSRF:
+    ProxyCompatibility: false
+
+  # Only used when ServiceType: LoadBalancer
+  # https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  LoadBalancerSourceRanges:
+  - 0.0.0.0/0
+  # Optionally assign a known public LB IP
+  # LoadBalancerIP: 1.2.3.4
+
+  # Node labels and tolerations for pod assignment
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  NodeSelector: {}
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+  Tolerations: []
+
+  # Additional annotations to put on the pod running Operations Center
+  Annotations: {}
+
+  Ingress:
+    # Ingress class to use for OC and MM ingresses
+    # Should be set to the same value as nginx-ingress.controller.ingressClass if enabled
+    Class: nginx
+    # Annotations to put on Ingress object
+    Annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: 'true'
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    tls:
+      ## Set this to true in order to enable TLS on the ingress record
+      Enable: true
+      SecretName: cbci-tls
+      Host: jenkins.cluster.local
+
+  # OpenShift uses a Route instead of an Ingress, this section is added to match the opensource Jenkins Chart
+  Route:
+    tls:
+      Enable: false
+
+  ## @param ExtraConfigMaps - array of objects - optional
+  ## Extra configmaps deployed with the chart
+  #
+  # ExtraConfigMaps:
+  # - name: my-config-map
+  #   labels:
+  #     key1: value1
+  #   annotations:
+  #     key1: value1
+  #   data:
+  #      myfile.yaml: |
+  #        foo: bar
+
+  ## @param ExtraContainers - array of objects - optional
+  ## Extra containers to add to the pod containing Operations Center.
+  #
+  # ExtraContainers:
+  # - name: sleep
+  #   image: tutum/curl
+  #   command: ["sleep", "infinity"]
+
+  ## @param ExtraGroovyConfiguration - list of objects - optional
+  ## Provides additional init groovy scripts
+  ## Each key becomes a file in /var/jenkins_config
+  #
+  ExtraGroovyConfiguration:
+    z-quickstart-hook.groovy:
+      
+
+  ## @param ExtraVolumes - array of objects - optional
+  ## Extra volumes to add to the pod
+  #
+  # ExtraVolumes:
+  # - name: my-volume
+  #   configMap:
+  #     name: my-config-map
+
+  ## @param ExtraVolumesMounts - array of objects - optional
+  ## Extra volume mounts to add to the container containing Operations Center
+  #
+  # ExtraVolumeMounts:
+  # - name: my-volume
+  #   mountPath: /var/my-path
+  #   readOnly: true
+  ExtraVolumes:
+  - name: init-groovy
+    configMap:
+      name: cbci-oc-init-groovy
+      defaultMode: 420
+  - name: quickstart-groovy
+    configMap:
+      name: cbci-oc-quickstart-groovy
+      defaultMode: 420
+  ExtraVolumeMounts:
+  - name: init-groovy
+    mountPath: /var/jenkins_config/init.groovy.d
+    readOnly: true
+  - name: quickstart-groovy
+    mountPath: /var/jenkins_home/quickstart.groovy.d
+    readOnly: true
+
+# Master options
+Master:
+  Enabled: true
+  # When deploying Master resources, this grants an Operations Center deployed in another namespace the right to deploy masters
+  OperationsCenterNamespace: null
+
+  # Docker image inserted in Operations Center automatically
+  Image:
+    dockerImage: cloudbees/cloudbees-core-mm:2.263.4.1
+    dockerPullPolicy: Always
+  # Additional Java options to pass to managed masters. For example, setting up a JMX port
+  JavaOpts: 
+    -Duser.timezone="America/New_York"
+    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=120
+
+# Agent options
+Agents:
+  Enabled: true
+  SeparateNamespace:
+    # If enabled, agents resources will be created in a separate namespace as well as bindings allowing masters to schedule them.
+    Enabled: false
+    # Namespace where to create agents resources. Defaults to ${namespace}-builds where ${namespace} is the namespace where the chart is installed.
+    Name: null
+    # If true, the second namespace will be created when installing this chart.
+    # Otherwise, the existing namespace should be labeled with "cloudbees.com/role: agents" in order for network policies to work.
+    Create: false
+  Image:
+    # Used to override the default docker image used for agents
+    dockerImage: cloudbees/cloudbees-core-agent:2.263.4.1
+
+Persistence:
+  ## Persistent Volume Storage Class for Jenkins Home
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ##
+  ## If undefined (the default) or set to null, the default storage class will be used,
+  ## unless specified otherwise below.
+  ##
+  ## If setting OperationsCenter.Platform == gke, a storage class backed with
+  ## SSD drives will be created by this chart and used automatically.
+  ##
+  #StorageClass:
+
+  # On AKS, use the following
+  # StorageClass: "managed-premium"
+
+  # Annotations to put on the PVC
+  Annotations: {}
+  AccessMode: ReadWriteOnce
+
+  # Size of the Operations Center volume
+  Size: 20Gi
+
+  # Additional volumes to attach to Operations Center pod
+  volumes:
+#  - name: nothing
+#    emptyDir: {}
+  # Additional volume mounts to attach to Operations Center container
+  mounts:
+#  - mountPath: /var/nothing
+#    name: nothing
+#    readOnly: true
+
+# Master hibernation
+Hibernation:
+  Enabled: true
+  Image:
+    dockerImage: cloudbees/managed-master-hibernation-monitor:230.ee066a318539
+    dockerPullPolicy: IfNotPresent
+
+PodSecurityPolicy:
+  # Requires rbac.installCluster = true
+  #
+  # Enable only if the cluster supports it.
+  # https://kubernetes.io/docs/concepts/policy/pod-security-policy/
+  Enabled: false
+  # Additional annotations to put on the PodSecurityPolicy, e.g. AppArmor/Seccomp settings
+  Annotations: {}
+
+NetworkPolicy:
+  # Enable only if the cluster supports it.
+  # https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  Enabled: false
+
+  # Custom selector for the ingress-controller
+  ingressControllerSelector:
+#    - namespaceSelector:
+#        matchLabels:
+#          name: nginx-ingress
+#      podSelector:
+#        matchLabels:
+#         app: nginx-ingress
+#         component: controller
+
+  # Custom selectors for accessing JMX port
+  JMXSelectors:
+#    - namespaceSelector:
+#        matchLabels:
+#          name: datadog
+#      podSelector:
+#        matchLabels:
+#         app: datadog
+
+## Install Default RBAC roles and bindings
+rbac:
+  # Install role/rolebindings/serviceAccount.
+  # If false (and rbac is enabled in the cluster anyway), provide valid names for
+  # - serviceAccountName
+  # - masterServiceAccountName
+  # - hibernationMonitorServiceAccountName
+  install: true
+
+  # Install clusterrole/clusterrolebinding
+  # These cluster roles are optional but prevent usage of some features, so we recommend setting them up.
+  # Defaults to true, except on Openshift 3 where it defaults to false
+  # Please refer to templates/cjoc-clusterrole-master-management.yaml in the chart
+  #installCluster: true
+
+  # Name of the service account Operations Center will run as
+  serviceAccountName: cjoc
+  # Name of the service account Jenkins masters will run as
+  masterServiceAccountName: jenkins
+  agentsServiceAccountName: jenkins-agents
+  # Name of the service account the Hibernation monitor will run as (if enabled)
+  hibernationMonitorServiceAccountName: managed-master-hibernation-monitor
+
