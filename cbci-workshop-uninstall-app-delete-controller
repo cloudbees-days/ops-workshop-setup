@@ -55,10 +55,10 @@ spec:
         }
         
         container('kubectl') {
-          sh("kubectl -n cloudbees-core delete pod -l cloudbees.com/master=${GITHUB_ORG_LOGIN} --force=true --now=true --wait=false --grace-period=0")
-          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-development  --force=true --now=true --wait=false --grace-period=0")
-          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-production  --force=true --now=true --wait=false --grace-period=0")
-          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=${GITHUB_ORG_LOGIN}  --force=true --now=true --wait=false --grace-period=0")
+          sh("kubectl -n cloudbees-core delete pod -l cloudbees.com/master=${GITHUB_ORG_LOGIN} --force=true --wait=false --grace-period=0")
+          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-development  --force=true --wait=false --grace-period=0")
+          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-production  --force=true --wait=false --grace-period=0")
+          sh("kubectl -n cloudbees-core delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=${GITHUB_ORG_LOGIN}  --force=true --wait=false --grace-period=0")
           sh("kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GITHUB_ORG_LOGIN} || true")
         }
       }
