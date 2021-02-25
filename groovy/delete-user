@@ -1,0 +1,5 @@
+import hudson.model.User
+
+String jenkinsUserId = "REPLACE_JENKINS_USER"
+User u = User.get(jenkinsUserId)
+u.delete()
