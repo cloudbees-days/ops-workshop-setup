@@ -46,7 +46,7 @@ spec:
             try {
               sh """
                   alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                  cli delete-job "$GITHUB_ORG_LOGIN"
+                  cli delete-job "teams/$GITHUB_ORG_LOGIN"
               """
             } catch(e) {
               echo e.toString()
