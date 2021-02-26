@@ -47,15 +47,9 @@ provisioning:
             - name: "SECRETS"
               value: "/var/jenkins_home/jcasc_secrets"
             volumeMounts:
-            - mountPath: "/var/jenkins_config/configure-jenkins.groovy.d/"
-              name: "cbci-mm-init-groovy"
             - mountPath: "/var/jenkins_home/jcasc_secrets"
               name: "jcasc-secrets"
           volumes:
-          - name: cbci-mm-init-groovy
-            configMap:
-              defaultMode: 420
-              name: cbci-mm-init-groovy
           - name: "jcasc-secrets"
             csi:
               driver: secrets-store.csi.k8s.io
