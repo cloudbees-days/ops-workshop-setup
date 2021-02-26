@@ -100,13 +100,12 @@ private void createMM(String masterName, def masterDefinition) {
   }
   String adminUserId = jenkinsUserId + "-admin"
   def adminUser = User.get(adminUserId, false)
-  if(user==null) {
-    Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021")
+  if(adminUser==null) {
+    adminUser = Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
   }
   
   def adminApiTokenName = 'cli-username-token'
-  def user = User.get(adminUser, false)
-  def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+  def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
   def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==adminApiTokenName}
 
   if(tokens.size() != 0) {
@@ -117,7 +116,7 @@ private void createMM(String masterName, def masterDefinition) {
   }
 
   def result = apiTokenProperty.tokenStore.generateNewToken(adminApiTokenName).plainValue
-  user.save()
+  adminUser.save()
   
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
