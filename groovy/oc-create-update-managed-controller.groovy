@@ -21,6 +21,8 @@ import com.cloudbees.plugins.credentials.impl.*;
 import com.cloudbees.plugins.credentials.*;
 import com.cloudbees.plugins.credentials.domains.*; 
 
+import java.util.logging.Logger
+
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
@@ -85,6 +87,7 @@ println("Finished with master '${masterName}'.\n")
 //
 
 private void createMM(String masterName, def masterDefinition) {
+    Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
 
     def configuration = new KubernetesMasterProvisioning()
