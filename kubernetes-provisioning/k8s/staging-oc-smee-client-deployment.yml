@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oc-smee
+  namespace: sda
+  labels:
+    app: smee-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smee-client
+  template:
+    metadata:
+      namespace: sda
+      labels:
+        app: smee-client
+    spec:
+      serviceAccountName: jenkins
+      containers:
+        - name: "oc-smee-client"
+          image: "deltaprojects/smee-client:latest"
+          args: ["-t", "http://cjoc.sda.svc.cluster.local/cjoc/webhooks/fo7jek4/", "--url", "https://staging-smee.workshop.cb-sa.io/JyhsEUN51XEqXQ"]
