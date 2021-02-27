@@ -30,41 +30,6 @@ provisioning:
   disk: 20
   memory: 4000
   yaml: |
-    kind: ConfigMap
-    meta-data:
-      name: "REPLACE_CONTROLLER_NAME-init-groovy"
-    data:
-      03-team-admin-api-token.groovy: |
-        import jenkins.model.Jenkins
-        import jenkins.security.ApiTokenProperty
-        import com.cloudbees.plugins.credentials.domains.Domain
-        import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-        import com.cloudbees.plugins.credentials.CredentialsScope
-        
-        def userName = 'REPLACE_JENKINS_USER-admin'
-        def jenkinsTokenName = 'team-admin-api-token'
-        def user = User.get(userName, false)
-        def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
-        def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
-
-        if(tokens.size() != 0) {
-            logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
-            tokens.each {
-                apiTokenProperty.tokenStore.revokeToken(it.getUuid())
-            }
-        }
-
-        def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
-        user.save()
-
-        def jenkins = Jenkins.instance
-        def domain = Domain.global()
-        def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
-
-        String id = "admin-cli-token"
-        Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
-
-        store.addCredentials(domain, c)
     kind: Service
     metadata:
       annotations:
@@ -98,6 +63,42 @@ provisioning:
             configMap:
               name: REPLACE_CONTROLLER_NAME-init-groovy
               defaultMode: 420
+    kind: ConfigMap
+    meta-data:
+      name: "REPLACE_CONTROLLER_NAME-init-groovy"
+      namespace: sda
+    data:
+      03-team-admin-api-token.groovy: |
+        import jenkins.model.Jenkins
+        import jenkins.security.ApiTokenProperty
+        import com.cloudbees.plugins.credentials.domains.Domain
+        import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
+        import com.cloudbees.plugins.credentials.CredentialsScope
+        
+        def userName = 'REPLACE_JENKINS_USER-admin'
+        def jenkinsTokenName = 'team-admin-api-token'
+        def user = User.get(userName, false)
+        def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+        def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
+
+        if(tokens.size() != 0) {
+            logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
+            tokens.each {
+                apiTokenProperty.tokenStore.revokeToken(it.getUuid())
+            }
+        }
+
+        def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
+        user.save()
+
+        def jenkins = Jenkins.instance
+        def domain = Domain.global()
+        def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
+
+        String id = "admin-cli-token"
+        Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
+
+        store.addCredentials(domain, c)
 """
 
 def yamlMapper = Serialization.yamlMapper()
