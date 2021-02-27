@@ -75,7 +75,8 @@ provisioning:
         import hudson.model.User
         import com.cloudbees.plugins.credentials.domains.Domain
         import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-        import com.cloudbees.plugins.credentials.CredentialsScopeimport java.util.logging.Logger
+        import com.cloudbees.plugins.credentials.CredentialsScope
+        import java.util.logging.Logger
 
         Logger logger = Logger.getLogger("03-team-admin-api-token.groovy")
         
