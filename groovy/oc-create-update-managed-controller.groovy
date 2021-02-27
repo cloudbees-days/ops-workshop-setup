@@ -63,6 +63,7 @@ provisioning:
             configMap:
               name: REPLACE_CONTROLLER_NAME-init-groovy
               defaultMode: 420
+    ---
     kind: ConfigMap
     metadata:
       name: "REPLACE_CONTROLLER_NAME-init-groovy"
@@ -96,9 +97,9 @@ provisioning:
         def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
 
         String id = "admin-cli-token"
-        Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
+        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
 
-        store.addCredentials(domain, c)
+        store.addCredentials(domain, adminApiTokenCred)
 """
 
 def yamlMapper = Serialization.yamlMapper()
