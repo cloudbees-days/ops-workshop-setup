@@ -75,7 +75,9 @@ provisioning:
         import hudson.model.User
         import com.cloudbees.plugins.credentials.domains.Domain
         import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-        import com.cloudbees.plugins.credentials.CredentialsScope
+        import com.cloudbees.plugins.credentials.CredentialsScopeimport java.util.logging.Logger
+
+        Logger logger = Logger.getLogger("03-team-admin-api-token.groovy")
         
         def userName = 'REPLACE_JENKINS_USER-admin'
         def jenkinsTokenName = 'team-admin-api-token'
