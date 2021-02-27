@@ -50,7 +50,7 @@ provisioning:
             - name: "jcasc-secrets"
               mountPath: "/var/jenkins_home/jcasc_secrets"
             - name: REPLACE_CONTROLLER_NAME-init-groovy
-              mountPath: /var/jenkins_config/init.groovy.d
+              mountPath: /var/jenkins_config/configure-jenkins.groovy.d/
               readOnly: true
           volumes:
           - name: "jcasc-secrets"
