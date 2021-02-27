@@ -72,6 +72,7 @@ provisioning:
       03-team-admin-api-token.groovy: |
         import jenkins.model.Jenkins
         import jenkins.security.ApiTokenProperty
+        import hudson.model.User
         import com.cloudbees.plugins.credentials.domains.Domain
         import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
         import com.cloudbees.plugins.credentials.CredentialsScope
