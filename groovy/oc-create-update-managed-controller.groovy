@@ -64,7 +64,7 @@ provisioning:
               name: REPLACE_CONTROLLER_NAME-init-groovy
               defaultMode: 420
     kind: ConfigMap
-    meta-data:
+    metadata:
       name: "REPLACE_CONTROLLER_NAME-init-groovy"
       namespace: sda
     data:
