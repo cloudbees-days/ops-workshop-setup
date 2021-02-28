@@ -22,6 +22,9 @@ spec:
       """
     }
   }
+  environment {
+    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+  }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
   } 
@@ -30,9 +33,6 @@ spec:
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
-      }
-      environment {
-        GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
       }
       steps {
         script {
