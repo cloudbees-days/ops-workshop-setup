@@ -29,25 +29,6 @@ def user = User.get(jenkinsUserId, false)
 if(user==null) {
   Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
 }
-String adminUserId = jenkinsUserId + "-admin"
-def adminUser = User.get(adminUserId, false)
-if(adminUser==null) {
-  Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
-}
-
-def jenkinsTokenName = 'team-admin-api-token'
-def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
-def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
-
-if(tokens.size() != 0) {
-    logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
-    tokens.each {
-        apiTokenProperty.tokenStore.revokeToken(it.getUuid())
-    }
-}
-
-def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
-adminUser.save()
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
@@ -89,29 +70,6 @@ provisioning:
             configMap:
               name: REPLACE_CONTROLLER_NAME-init-groovy
               defaultMode: 420
-    ---
-    kind: ConfigMap
-    metadata:
-      name: "REPLACE_CONTROLLER_NAME-init-groovy"
-      namespace: sda
-    data:
-      07-team-admin-api-token-credential.groovy: |
-        import jenkins.model.Jenkins
-        import com.cloudbees.plugins.credentials.domains.Domain
-        import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-        import com.cloudbees.plugins.credentials.CredentialsScope
-        import java.util.logging.Logger
-
-        Logger logger = Logger.getLogger("07-team-admin-api-token-credential.groovy")
-
-        def jenkins = Jenkins.instance
-        def domain = Domain.global()
-        def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
-
-        String id = "admin-cli-token"
-        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, "${adminUserId}", "${tokenPlainValue}")
-
-        store.addCredentials(domain, adminApiTokenCred)
 """
 
 def yamlMapper = Serialization.yamlMapper()
@@ -182,7 +140,7 @@ private void createMM(String masterName, def masterDefinition) {
     if(!container.getGroups().any{it.name=groupName}) {
       Group group = new Group(container, groupName);
       group.doAddMember("REPLACE_JENKINS_USER");
-      group.doAddMember("REPLACE_JENKINS_USER-admin");
+      group.doAddMember("team-admin");
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
       container.addRoleFilter(roleName);
