@@ -101,14 +101,14 @@ provisioning:
         import com.cloudbees.plugins.credentials.CredentialsScope
         import java.util.logging.Logger
 
-        Logger logger = Logger.getLogger("03-team-admin-api-token.groovy")
+        Logger logger = Logger.getLogger("07-team-admin-api-token-credential.groovy")
 
         def jenkins = Jenkins.instance
         def domain = Domain.global()
         def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
 
         String id = "admin-cli-token"
-        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, ${adminUserId}, ${tokenPlainValue})
+        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, "${adminUserId}", "${tokenPlainValue}")
 
         store.addCredentials(domain, adminApiTokenCred)
 """
