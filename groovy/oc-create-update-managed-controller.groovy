@@ -91,13 +91,13 @@ provisioning:
 
         Logger logger = Logger.getLogger("03-team-admin-api-token.groovy")
         
-        def userName = 'REPLACE_JENKINS_USER-admin'
+        def adminUserId = 'REPLACE_JENKINS_USER-admin'
         def jenkinsTokenName = 'team-admin-api-token'
-        def user = User.get(userName, false)
-        if(user==null) {
-          sleep(2000)
+        def adminUser = User.get(adminUserId, false)
+        if(adminUser==null) {
+          Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
         }
-        def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+        def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
         def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
 
         if(tokens.size() != 0) {
@@ -108,14 +108,14 @@ provisioning:
         }
 
         def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
-        user.save()
+        adminUser.save()
 
         def jenkins = Jenkins.instance
         def domain = Domain.global()
         def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
 
         String id = "admin-cli-token"
-        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, userName, tokenPlainValue)
+        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, adminUserId, tokenPlainValue)
 
         store.addCredentials(domain, adminApiTokenCred)
 """
