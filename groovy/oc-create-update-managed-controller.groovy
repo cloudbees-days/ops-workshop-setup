@@ -22,6 +22,17 @@ import com.cloudbees.plugins.credentials.*;
 import com.cloudbees.plugins.credentials.domains.*; 
 
 import java.util.logging.Logger
+ 
+String jenkinsUserId = "REPLACE_JENKINS_USER"
+def user = User.get(jenkinsUserId, false)
+if(user==null) {
+  Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
+}
+String adminUserId = jenkinsUserId + "-admin"
+def adminUser = User.get(adminUserId, false)
+if(adminUser==null) {
+  Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
+}
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
@@ -83,6 +94,9 @@ provisioning:
         def userName = 'REPLACE_JENKINS_USER-admin'
         def jenkinsTokenName = 'team-admin-api-token'
         def user = User.get(userName, false)
+        if(user==null) {
+          sleep(2000)
+        }
         def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
         def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
 
@@ -101,7 +115,7 @@ provisioning:
         def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
 
         String id = "admin-cli-token"
-        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
+        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, userName, tokenPlainValue)
 
         store.addCredentials(domain, adminApiTokenCred)
 """
@@ -136,19 +150,7 @@ private void createMM(String masterName, def masterDefinition) {
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-
-  def teamsFolder = Jenkins.instance.getItem('teams')  
-  String jenkinsUserId = "REPLACE_JENKINS_USER"
-  def user = User.get(jenkinsUserId, false)
-  if(user==null) {
-    Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
-  }
-  String adminUserId = jenkinsUserId + "-admin"
-  def adminUser = User.get(adminUserId, false)
-  if(adminUser==null) {
-    Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
-  }
-  
+  def teamsFolder = Jenkins.instance.getItem('teams') 
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
@@ -177,6 +179,7 @@ private void createMM(String masterName, def masterDefinition) {
     } else {
         throw "Cannot start the master." as Throwable
     }
+    //configure controller RBAC
     def Jenkins jenkins = Jenkins.getInstance()
     String roleName = "workshop-admin"
     String groupName = "Team Administrators";
@@ -184,8 +187,8 @@ private void createMM(String masterName, def masterDefinition) {
     def container = GroupContainerLocator.locate(groupItem);
     if(!container.getGroups().any{it.name=groupName}) {
       Group group = new Group(container, groupName);
-      group.doAddMember(jenkinsUserId);
-      group.doAddMember(jenkinsUserId + "-admin");
+      group.doAddMember("REPLACE_JENKINS_USER");
+      group.doAddMember("REPLACE_JENKINS_USER-admin");
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
       container.addRoleFilter(roleName);
