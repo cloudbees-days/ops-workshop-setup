@@ -22,7 +22,8 @@ import com.cloudbees.plugins.credentials.*;
 import com.cloudbees.plugins.credentials.domains.*; 
 
 import java.util.logging.Logger
- 
+
+Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
