@@ -34,6 +34,20 @@ if(adminUser==null) {
   Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
 }
 
+def jenkinsTokenName = 'team-admin-api-token'
+def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
+def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
+
+if(tokens.size() != 0) {
+    logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
+    tokens.each {
+        apiTokenProperty.tokenStore.revokeToken(it.getUuid())
+    }
+}
+
+def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
+adminUser.save()
+
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
@@ -80,42 +94,21 @@ provisioning:
       name: "REPLACE_CONTROLLER_NAME-init-groovy"
       namespace: sda
     data:
-      z-team-admin-api-token.groovy: |
+      07-team-admin-api-token-credential.groovy: |
         import jenkins.model.Jenkins
-        import jenkins.security.ApiTokenProperty
-        import hudson.model.User
         import com.cloudbees.plugins.credentials.domains.Domain
         import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
         import com.cloudbees.plugins.credentials.CredentialsScope
         import java.util.logging.Logger
 
         Logger logger = Logger.getLogger("03-team-admin-api-token.groovy")
-        
-        def adminUserId = 'REPLACE_JENKINS_USER-admin'
-        def jenkinsTokenName = 'team-admin-api-token'
-        def adminUser = User.get(adminUserId, false)
-        while(adminUser==null) {
-          adminUser = User.get(adminUserId, false)
-        }
-        def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
-        def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
-
-        if(tokens.size() != 0) {
-            logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
-            tokens.each {
-                apiTokenProperty.tokenStore.revokeToken(it.getUuid())
-            }
-        }
-
-        def tokenPlainValue = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
-        adminUser.save()
 
         def jenkins = Jenkins.instance
         def domain = Domain.global()
         def store = jenkins.getExtensionList("com.cloudbees.plugins.credentials.SystemCredentialsProvider")[0].getStore()
 
         String id = "admin-cli-token"
-        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, adminUserId, tokenPlainValue)
+        def adminApiTokenCred = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "Jenkins API token: "+id, ${adminUserId}, ${tokenPlainValue})
 
         store.addCredentials(domain, adminApiTokenCred)
 """
