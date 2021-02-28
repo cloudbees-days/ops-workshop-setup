@@ -56,9 +56,6 @@ provisioning:
             volumeMounts:
             - name: "jcasc-secrets"
               mountPath: "/var/jenkins_home/jcasc_secrets"
-            - name: REPLACE_CONTROLLER_NAME-init-groovy
-              mountPath: /var/jenkins_config/configure-jenkins.groovy.d/
-              readOnly: true
           volumes:
           - name: "jcasc-secrets"
             csi:
@@ -66,10 +63,6 @@ provisioning:
               readOnly: true
               volumeAttributes:
                 secretProviderClass: "cbci-mc-secret-provider"
-          - name: REPLACE_CONTROLLER_NAME-init-groovy
-            configMap:
-              name: REPLACE_CONTROLLER_NAME-init-groovy
-              defaultMode: 420
 """
 
 def yamlMapper = Serialization.yamlMapper()
