@@ -94,8 +94,8 @@ provisioning:
         def adminUserId = 'REPLACE_JENKINS_USER-admin'
         def jenkinsTokenName = 'team-admin-api-token'
         def adminUser = User.get(adminUserId, false)
-        if(adminUser==null) {
-          Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
+        while(adminUser==null) {
+          adminUser = User.get(adminUserId, false)
         }
         def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
         def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
