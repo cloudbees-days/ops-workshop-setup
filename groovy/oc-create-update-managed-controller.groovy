@@ -80,7 +80,7 @@ provisioning:
       name: "REPLACE_CONTROLLER_NAME-init-groovy"
       namespace: sda
     data:
-      03-team-admin-api-token.groovy: |
+      z-team-admin-api-token.groovy: |
         import jenkins.model.Jenkins
         import jenkins.security.ApiTokenProperty
         import hudson.model.User
