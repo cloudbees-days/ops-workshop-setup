@@ -146,22 +146,8 @@ private void createMM(String masterName, def masterDefinition) {
   String adminUserId = jenkinsUserId + "-admin"
   def adminUser = User.get(adminUserId, false)
   if(adminUser==null) {
-    adminUser = Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
+    Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
   }
-  
-  def adminApiTokenName = 'cli-username-token'
-  def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
-  def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==adminApiTokenName}
-
-  if(tokens.size() != 0) {
-      logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
-      tokens.each {
-          apiTokenProperty.tokenStore.revokeToken(it.getUuid())
-      }
-  }
-
-  def result = apiTokenProperty.tokenStore.generateNewToken(adminApiTokenName).plainValue
-  adminUser.save()
   
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
@@ -199,6 +185,7 @@ private void createMM(String masterName, def masterDefinition) {
     if(!container.getGroups().any{it.name=groupName}) {
       Group group = new Group(container, groupName);
       group.doAddMember(jenkinsUserId);
+      group.doAddMember(jenkinsUserId + "-admin");
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
       container.addRoleFilter(roleName);
