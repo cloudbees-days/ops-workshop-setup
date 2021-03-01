@@ -51,7 +51,7 @@ spec:
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
-                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-create-github-app-credential.groovy
             """
         }
@@ -108,6 +108,14 @@ spec:
           sh "mkdir -p ${controllerName}"
           sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
           sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/ -c jenkins"
+        }
+        
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
+        withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh """
+                alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                cli groovy =<./groovy/ops-delete-github-app-credential.groovy
+            """
         }
       }
     }
