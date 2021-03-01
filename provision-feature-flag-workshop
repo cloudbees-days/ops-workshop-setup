@@ -54,7 +54,7 @@ spec:
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
-                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-create-github-app-credential.groovy
             """
         }
@@ -168,6 +168,11 @@ spec:
             git add .vuejs
             git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
             git push -u origin development
+
+             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                  https://api.github.com/orgs/${GitHubOrganization}/hooks \
+                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/sda/queue/teams-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
           """)
           
           waitUntil {
@@ -191,8 +196,8 @@ spec:
           sh "rm -rf ./${controllerName}"
           sh "mkdir -p ${controllerName}"
           sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace cloudbees-core cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace cloudbees-core ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
+          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
@@ -211,7 +216,7 @@ spec:
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh """
-                alias cli='java -jar jenkins-cli.jar -s http://teams-ops/teams-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+                alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-delete-github-app-credential.groovy
             """
         }
