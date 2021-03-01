@@ -40,13 +40,9 @@ spec:
       }
       steps {
         echo "GitHub Org name: ${GITHUB_ORG_LOGIN}" 
-        
+        //delete controler K8s resources first
         container('kubectl') {
-          sh("kubectl -n sda delete pod -l cloudbees.com/master=${GITHUB_ORG_LOGIN} --force=true --wait=false --grace-period=0")
-          sh("kubectl -n sda delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-development  --force=true --wait=false --grace-period=0")
-          sh("kubectl -n sda delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-production  --force=true --wait=false --grace-period=0")
           sh("kubectl -n sda delete statefulset,pod,pvc,ingress,service,deployment -l type=master,tenant=${GITHUB_ORG_LOGIN}  --force=true --wait=false --grace-period=0")
-          sh("kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GITHUB_ORG_LOGIN} || true")
         }
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
@@ -60,6 +56,14 @@ spec:
               echo e.toString()
             }
           }
+        }
+        container('kubectl') {
+          sh """
+            kubectl -n sda delete pod -l cloudbees.com/master=${GITHUB_ORG_LOGIN} --force=true --wait=false --grace-period=0
+            kubectl -n sda delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-development  --force=true --wait=false --grace-period=0
+            kubectl -n sda delete statefulset,pod,pvc,ingress,service,deployment -l tenant=${GITHUB_ORG_LOGIN}-production  --force=true --wait=false --grace-period=0
+            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${GITHUB_ORG_LOGIN} || true
+          """
         }
       }
     }
