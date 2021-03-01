@@ -1,4 +1,5 @@
 //only runs on CJOC
+import jenkins.security.ApiTokenProperty
 import com.cloudbees.masterprovisioning.kubernetes.KubernetesMasterProvisioning
 import com.cloudbees.opscenter.server.casc.BundleStorage
 import com.cloudbees.opscenter.server.model.ManagedMaster
@@ -13,13 +14,28 @@ import jenkins.model.Jenkins
 import hudson.*
 import hudson.model.*
 import org.apache.commons.io.FileUtils
+import com.cloudbees.hudson.plugins.folder.*;
+import com.cloudbees.hudson.plugins.folder.properties.*;
+import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty;
+import com.cloudbees.plugins.credentials.impl.*;
+import com.cloudbees.plugins.credentials.*;
+import com.cloudbees.plugins.credentials.domains.*; 
+
+import java.util.logging.Logger
+
+Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
+String jenkinsUserId = "REPLACE_JENKINS_USER"
+def user = User.get(jenkinsUserId, false)
+if(user==null) {
+  Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
+}
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
-  cpus: 1.5
+  cpus: 1
   disk: 20
-  memory: 4500
+  memory: 4000
   yaml: |
     kind: Service
     metadata:
@@ -38,20 +54,8 @@ provisioning:
             - name: "SECRETS"
               value: "/var/jenkins_home/jcasc_secrets"
             volumeMounts:
-            - mountPath: "/var/jenkins_home/jcasc_secrets"
-              name: "jcasc-secrets"
-          - name: "smee-client"
-            image: "deltaprojects/smee-client:latest"
-            args: ["-t", "http://managed-master-hibernation-monitor.cloudbees-core.svc.cluster.local/hibernation/ns/\$(NAMESPACE)/queue/\$(CONTROLLER_SUBPATH)/github-webhook/", "--url", "https://smee.io/laoLXS9UiScsQtE"]
-            env:
-            - name: CONTROLLER_SUBPATH
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tenant']
-            - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+            - name: "jcasc-secrets"
+              mountPath: "/var/jenkins_home/jcasc_secrets"
           volumes:
           - name: "jcasc-secrets"
             csi:
@@ -84,20 +88,14 @@ println("Finished with master '${masterName}'.\n")
 //
 
 private void createMM(String masterName, def masterDefinition) {
+    Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
 
     def configuration = new KubernetesMasterProvisioning()
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-
-  def teamsFolder = Jenkins.instance.getItem('teams')  
-  String jenkinsUserId = "REPLACE_JENKINS_USER"
-  def user = User.get(jenkinsUserId, false)
-  if(user==null) {
-    Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
-  }
-  
+  def teamsFolder = Jenkins.instance.getItem('teams') 
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
@@ -126,6 +124,7 @@ private void createMM(String masterName, def masterDefinition) {
     } else {
         throw "Cannot start the master." as Throwable
     }
+    //configure controller RBAC
     def Jenkins jenkins = Jenkins.getInstance()
     String roleName = "workshop-admin"
     String groupName = "Team Administrators";
@@ -133,7 +132,8 @@ private void createMM(String masterName, def masterDefinition) {
     def container = GroupContainerLocator.locate(groupItem);
     if(!container.getGroups().any{it.name=groupName}) {
       Group group = new Group(container, groupName);
-      group.doAddMember(jenkinsUserId);
+      group.doAddMember("REPLACE_JENKINS_USER");
+      group.doAddMember("team-admin");
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
       container.addRoleFilter(roleName);
