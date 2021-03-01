@@ -27,6 +27,9 @@ spec:
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-feature-flags-workshop'")
   } 
+  environment {
+    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+  }
   stages {
     stage('Provision Managed Controller') {
       when {
