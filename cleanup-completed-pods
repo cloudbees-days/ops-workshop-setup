@@ -1,0 +1,36 @@
+
+def controllerName
+def targetType
+pipeline {
+  agent {
+    kubernetes {
+      label 'kubectl'
+      yaml """
+kind: Pod
+metadata:
+  name: kubectl
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    resources:
+      requests:
+        memory: "500Mi"
+    command:
+    - cat
+    tty: true 
+      """
+    }
+  }
+  stages {
+    stage('Deleted Completed Pods') {
+      steps {
+        echo "deleting completed pods in sda namespace"
+        container('kubectl') {
+          sh "kubectl -n sda delete pod --field-selector=status.phase==Succeeded"
+        }
+      }
+    }
+  }
+}
