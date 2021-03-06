@@ -23,6 +23,12 @@ spec:
       """
     }
   }
+  options { 
+    skipDefaultCheckout() 
+  }
+  triggers {
+    cron('H 11 * * 1-5')
+  }
   stages {
     stage('Deleted Completed Pods') {
       steps {
