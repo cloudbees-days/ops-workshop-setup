@@ -30,6 +30,12 @@ if(user==null) {
   Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
 }
 
+String adminUserId = "REPLACE_JENKINS_USER-admin"
+def adminUser = User.get(adminUserId, false)
+if(adminUser==null) {
+  Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021-admin")
+}
+
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
@@ -133,6 +139,7 @@ private void createMM(String masterName, def masterDefinition) {
     if(!container.getGroups().any{it.name=groupName}) {
       Group group = new Group(container, groupName);
       group.doAddMember("REPLACE_JENKINS_USER");
+      group.doAddMember("REPLACE_JENKINS_USER-admin");
       group.doAddMember("team-admin");
       group.doGrantRole(roleName, 0, Boolean.TRUE);
       container.addGroup(group);
