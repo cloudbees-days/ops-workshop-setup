@@ -36,7 +36,7 @@ spec:
         container('kubectl') {
           sh """
             kubectl -n sda delete pod \$(kubectl -n sda get pods -o jsonpath="{.items[?(@.status['containerStatuses'][*].state.terminated.reason=='Completed')].metadata.name}") || true
-            kubectl -n sda delete pod  $(kubectl -n sda get pods -o jsonpath="{.items[?(@.status.reason=='DeadlineExceeded')].metadata.name}") || true
+            kubectl -n sda delete pod  \$(kubectl -n sda get pods -o jsonpath="{.items[?(@.status.reason=='DeadlineExceeded')].metadata.name}") || true
           """
         }
       }
