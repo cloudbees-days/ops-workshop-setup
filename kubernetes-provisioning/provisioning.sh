@@ -4,6 +4,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo add jetstack https://charts.jetstack.io
 helm repo add secrets-store-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/secrets-store-csi-driver/master/charts
 helm repo add cloudbees https://charts.cloudbees.com/public/cloudbees
+helm repo add smee-server https://cloudbees-days.github.io/smee.io/
 
 helm repo update
 
