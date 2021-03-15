@@ -12,10 +12,10 @@ plugins:
 - id: cloudbees-workflow-template
 - id: cloudbees-workflow-ui
 - id: configuration-as-code
+- id: configuration-as-code-groovy
 - id: extended-read-permission
 - id: git
 - id: github-branch-source
-- id: configuration-as-code-groovy
 - id: managed-master-hibernation
 - id: maven-plugin
 - id: notification-api
