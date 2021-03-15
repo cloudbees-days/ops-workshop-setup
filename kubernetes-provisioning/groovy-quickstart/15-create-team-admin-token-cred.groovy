@@ -1,8 +1,8 @@
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
 import hudson.model.User
-import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-import com.cloudbees.plugins.credentials.CredentialsScope
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
 import com.cloudbees.hudson.plugins.folder.*
 import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty
 import java.util.logging.Logger
