@@ -1,10 +1,23 @@
 def controllerName
 def targetType
 pipeline {
-  agent {
-    kubernetes {
-      label 'kubectl'
-      yaml """
+  agent none
+  environment {
+    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+  }
+  triggers {
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
+  } 
+  stages {
+    stage('Provision Managed Controller') {
+      when {
+        beforeAgent true
+        triggeredBy 'EventTriggerCause'
+      }
+      agent {
+        kubernetes {
+          label 'kubectl'
+          yaml """
 kind: Pod
 metadata:
   name: kubectl
@@ -19,20 +32,8 @@ spec:
     command:
     - cat
     tty: true 
-      """
-    }
-  }
-  environment {
-    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
-  }
-  triggers {
-    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
-  } 
-  stages {
-    stage('Provision Managed Controller') {
-      when {
-        beforeAgent true
-        triggeredBy 'EventTriggerCause'
+          """
+        }
       }
       steps {
         script {
