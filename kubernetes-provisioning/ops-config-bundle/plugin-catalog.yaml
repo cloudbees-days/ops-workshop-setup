@@ -1,0 +1,10 @@
+name: cbci-workshop-catalog
+displayName: CloudBees CI Workshop Ops Plugin Catalog
+version: '1
+type: plugin-catalog
+configurations:
+- description: tier 3 plugins
+  includePlugins:
+    cloudbees-casc-api: {version: '0.7'}
+    cloudbees-disk-usage-simple: {version: '0.10'}
+    configuration-as-code-groovy: {version: '1.1'} 
