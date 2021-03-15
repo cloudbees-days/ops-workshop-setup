@@ -17,6 +17,7 @@ if (cbciWorkshopSetupJob == null) {
         <jobProperties/>
         <parameters/>
         <options/>
+        <triggers/>
       </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
     </actions>
     <description>Sets up CBCI workshop based on GitHub App install.</description>
