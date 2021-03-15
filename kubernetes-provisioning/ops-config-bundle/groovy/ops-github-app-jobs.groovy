@@ -52,6 +52,6 @@ if (cbciWorkshopSetupJob == null) {
   </flow-definition>
   """
   
-  jenkins.createProjectFromXML(cbciWorkshopSetupJobName, new ByteArrayInputStream(cbciWorkshopSetupJobXml.getBytes("UTF-8")));
-  hudson.model.Hudson.instance.queue.schedule(job, 0)
+  cbciWorkshopSetupJob = jenkins.createProjectFromXML(cbciWorkshopSetupJobName, new ByteArrayInputStream(cbciWorkshopSetupJobXml.getBytes("UTF-8")));
+  hudson.model.Hudson.instance.queue.schedule(cbciWorkshopSetupJob, 0)
 }
