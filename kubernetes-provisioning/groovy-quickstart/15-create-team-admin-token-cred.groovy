@@ -6,7 +6,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
 import com.cloudbees.plugins.credentials.CredentialsScope
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger("15-create-team-admi-token-cred.groovy")
+Logger logger = Logger.getLogger("15-create-team-admin-token-cred.groovy")
 
 def userName = 'team-admin'
 def user = User.get(userName, false)
