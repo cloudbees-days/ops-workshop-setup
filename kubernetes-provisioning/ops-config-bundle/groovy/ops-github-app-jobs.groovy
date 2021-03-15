@@ -1,5 +1,6 @@
 import jenkins.model.*;
 import hudson.model.*;
+import com.cloudbees.hudson.plugins.folder.Folder;
 import java.util.logging.Logger;
 
 Logger logger = Logger.getLogger("ops-github-app-jobs.groovy");
@@ -56,3 +57,74 @@ if (cbciWorkshopSetupJob == null) {
   cbciWorkshopSetupJob = jenkins.createProjectFromXML(cbciWorkshopSetupJobName, new ByteArrayInputStream(cbciWorkshopSetupJobXml.getBytes("UTF-8")));
   hudson.model.Hudson.instance.queue.schedule(cbciWorkshopSetupJob, 0)
 }
+
+def utilitiyJobsFolderName = "utility-jobs"
+def utilitiyJobsFolder = jenkins.getItemByFullName(utilitiyJobsFolderName)
+if (utilitiyJobsFolder == null) {
+  utilitiyJobsFolder = jenkins.createProject(Folder.class, utilitiyJobsFolderName) 
+  
+  def cleanupCompletedPodsName = "cleanup-completed-pods"
+  def cleanupCompletedPodsJobXml = """
+  <flow-definition plugin="workflow-job@2.40">
+    <actions>
+      <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.7.2"/>
+      <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.7.2">
+        <jobProperties/>
+        <triggers>
+          <string>hudson.triggers.TimerTrigger</string>
+        </triggers>
+        <parameters/>
+        <options>
+          <string>skipDefaultCheckout</string>
+        </options>
+      </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+    </actions>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+      <jenkins.model.BuildDiscarderProperty>
+        <strategy class="hudson.tasks.LogRotator">
+          <daysToKeep>-1</daysToKeep>
+          <numToKeep>10</numToKeep>
+          <artifactDaysToKeep>-1</artifactDaysToKeep>
+          <artifactNumToKeep>-1</artifactNumToKeep>
+        </strategy>
+      </jenkins.model.BuildDiscarderProperty>
+      <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+        <triggers>
+          <hudson.triggers.TimerTrigger>
+            <spec>H 6-22 * * 1-5</spec>
+          </hudson.triggers.TimerTrigger>
+        </triggers>
+      </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+    </properties>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.87">
+      <scm class="hudson.plugins.git.GitSCM" plugin="git@4.5.2">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>https://github.com/cloudbees-days/ops-workshop-setup.git</url>
+            <credentialsId>field-workshops-github-app</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>*/master</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions/>
+      </scm>
+      <scriptPath>cleanup-completed-pods</scriptPath>
+      <lightweight>true</lightweight>
+    </definition>
+    <triggers/>
+    <disabled>false</disabled>
+  </flow-definition>
+  """
+  def cleanupCompletedPodsJob = utilitiyJobsFolder.createProjectFromXML(cleanupCompletedPodsName, new ByteArrayInputStream(cleanupCompletedPodsJobXml.getBytes("UTF-8")));
+  hudson.model.Hudson.instance.queue.schedule(cleanupCompletedPodsJob, 0)
+}
+
+
