@@ -4,6 +4,8 @@ import hudson.model.User
 import com.cloudbees.plugins.credentials.domains.Domain
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
 import com.cloudbees.plugins.credentials.CredentialsScope
+import com.cloudbees.hudson.plugins.folder.*
+import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty
 import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("15-create-team-admin-token-cred.groovy")
