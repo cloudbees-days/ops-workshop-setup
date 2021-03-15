@@ -1,7 +1,6 @@
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
 import hudson.model.User
-import com.cloudbees.plugins.credentials.domains.Domain
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
 import com.cloudbees.plugins.credentials.CredentialsScope
 import com.cloudbees.hudson.plugins.folder.*
@@ -32,7 +31,6 @@ if(user==null) {
   Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, userName, tokenPlainValue)
 
   def jenkins = Jenkins.instance
-  def domain = Domain.global()
 
   def teamsFolder = jenkins.getItem("teams")
   if (teamsFolder == null) {
