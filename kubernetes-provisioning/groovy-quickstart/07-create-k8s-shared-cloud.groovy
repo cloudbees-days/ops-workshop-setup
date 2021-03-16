@@ -6,7 +6,7 @@ Logger logger = Logger.getLogger("07-create-k8s-shared-cloud.groovy")
 
 def j = Jenkins.instance
 
-def name = 'kubernetes shared cloud'
+def name = 'kubernetes-shared-cloud'
 logger.info("creating $name job")
 def job = j.getItem(name)
 if (job != null) {
