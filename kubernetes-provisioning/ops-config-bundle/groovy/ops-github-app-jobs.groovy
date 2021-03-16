@@ -58,6 +58,57 @@ if (cbciWorkshopSetupJob == null) {
   hudson.model.Hudson.instance.queue.schedule(cbciWorkshopSetupJob, 0)
 }
 
+def cbciWorkshopMod2SetupJobName = "cbci-workshop-setup"
+def cbciWorkshopMod2SetupJob = jenkins.getItemByFullName(cbciWorkshopMod2SetupJobName)
+if (cbciWorkshopMod2SetupJob == null) {
+  def cbciWorkshopMod2SetupJobXml = """
+<flow-definition plugin="workflow-job@2.40">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.7.2"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.7.2">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.32.0">
+      <projectUrl>https://github.com/cloudbees-days/ops-workshop-setup/</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.87">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@4.5.2">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>https://github.com/cloudbees-days/ops-workshop-setup.git</url>
+          <credentialsId>field-workshops-github-app</credentialsId>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>master</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <gitTool>Default</gitTool>
+      <extensions/>
+    </scm>
+    <scriptPath>cbci-module-2-setup</scriptPath>
+    <lightweight>true</lightweight>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
+  """
+  
+  cbciWorkshopMod2SetupJob = jenkins.createProjectFromXML(cbciWorkshopMod2SetupJobName, new ByteArrayInputStream(cbciWorkshopMod2SetupJobXml.getBytes("UTF-8")));
+  hudson.model.Hudson.instance.queue.schedule(cbciWorkshopMod2SetupJob, 0)
+}
+
 def utilitiyJobsFolderName = "utility-jobs"
 def utilitiyJobsFolder = jenkins.getItemByFullName(utilitiyJobsFolderName)
 if (utilitiyJobsFolder == null) {
