@@ -22,7 +22,7 @@ def plugins = filePath.toFile() as String[]
 def pm = Jenkins.instance.pluginManager
 plugins.each { pluginName ->
   logger.info("installing $pluginName")
-  jenkins.instance.updateCenter.getPlugin(pluginName).deploy()
+  jenkins.instance.updateCenter.getPlugin(pluginName).deploy(true)
 }
 
 disableScript.createNewFile()
