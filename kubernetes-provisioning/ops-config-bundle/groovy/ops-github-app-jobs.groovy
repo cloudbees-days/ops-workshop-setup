@@ -58,7 +58,7 @@ if (cbciWorkshopSetupJob == null) {
   hudson.model.Hudson.instance.queue.schedule(cbciWorkshopSetupJob, 0)
 }
 
-def cbciWorkshopMod2SetupJobName = "cbci-workshop-setup"
+def cbciWorkshopMod2SetupJobName = "cbci-workshop-module-2-setup"
 def cbciWorkshopMod2SetupJob = jenkins.getItemByFullName(cbciWorkshopMod2SetupJobName)
 if (cbciWorkshopMod2SetupJob == null) {
   def cbciWorkshopMod2SetupJobXml = """
