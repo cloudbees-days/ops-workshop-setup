@@ -2,10 +2,20 @@ def controllerName
 def GitHubOrganization
 def GitHubUsername
 pipeline {
-  agent {
-    kubernetes {
-      label 'kubectl'
-      yaml """
+  agent none  
+  triggers {
+    eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
+  }
+  stages {
+    stage('Update Config Bundle') {
+      when {
+        beforeAgent true
+        triggeredBy 'EventTriggerCause'
+      }
+      agent {
+        kubernetes {
+          label 'kubectl'
+          yaml """
 kind: Pod
 metadata:
   name: kubectl
@@ -20,17 +30,8 @@ spec:
     command:
     - cat
     tty: true 
-      """
-    }
-  }  
-  triggers {
-    eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
-  }
-  stages {
-    stage('Update Config Bundle') {
-      when {
-        beforeAgent true
-        triggeredBy 'EventTriggerCause'
+          """
+        }
       }
       steps {
         script {
