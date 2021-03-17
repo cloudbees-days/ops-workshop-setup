@@ -6,7 +6,8 @@ pipeline {
   environment {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     targetType = event.installation.target_type.toString()
-    GitHubOrganization = event.installation.account.login.toString()
+    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+    controllerName = GitHubOrganization.toLowerCase()
     GitHubUsername = event.sender.login.toString()
   }
   triggers {
@@ -44,10 +45,6 @@ spec:
         checkout scm
         echo "GitHub target type (should be Organization): ${targetType}"
         echo "GitHub username: ${GitHubUsername}"
-        script {
-          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
-          controllerName = GitHubOrganization.toLowerCase()
-        }
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId will be: ${GitHubUsername}"
         
