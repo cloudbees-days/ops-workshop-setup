@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 
 Logger logger = Logger.getLogger("cbci-pipeline-workshop-create-jobs.groovy");
 
-def jenkins = Jenkins.instance
-def templateFolderName = "template-jobs"
-def templateFolderJob = jenkins.getItemByFullName(templateFolderName)
+def jenkins = Jenkins.instance;
+def templateFolderName = "template-jobs";
+def templateFolderJob = jenkins.getItemByFullName(templateFolderName);
 if (templateFolderJob == null) {
   //Pipeline Template Catalog
   SCMSource scm = new GitSCMSource("https://github.com/REPLACE_GITHUB_ORG/pipeline-template-catalog.git");
@@ -22,7 +22,6 @@ if (templateFolderJob == null) {
   GlobalTemplateCatalogManagement.get().save();
   logger.info("Creating new Pipeline Template Catalog");
   catalog.updateFromSCM(); 
-    
     
     def templateFolderXml = """
     <com.cloudbees.hudson.plugins.folder.Folder plugin="cloudbees-folder@6.14">
@@ -37,11 +36,11 @@ if (templateFolderJob == null) {
     </properties>
     <icon class="com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon"/>
   </com.cloudbees.hudson.plugins.folder.Folder>
-  """
+  """;
   
   def f = jenkins.createProjectFromXML(templateFolderName, new ByteArrayInputStream(templateFolderXml.getBytes("UTF-8")));
 
-  logger.info("created $name job")
+  logger.info("created $name job");
 } else {
-  logger.info("$name job already exists")
+  logger.info("$name job already exists");
 }
