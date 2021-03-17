@@ -168,7 +168,7 @@ spec:
           sh(script: '''
             rm -rf ./$controllerName
             mkdir -p $controllerName
-            cp cloudbees-ci-config-bundle/*.yaml $controllerName"
+            cp cloudbees-ci-config-bundle/*.yaml $controllerName
             kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$controllerName || true
             kubectl cp --namespace sda $controllerName cjoc-0:/var/jenkins_home/jcasc-bundles-store/
           ''')
