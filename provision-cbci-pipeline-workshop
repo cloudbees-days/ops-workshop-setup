@@ -67,7 +67,7 @@ spec:
         withCredentials([usernamePassword(credentialsId: "${GitHubOrganization}",
                                           usernameVariable: 'GITHUB_APP',
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
-          sh(script: """
+          sh(script: '''
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer $GITHUB_ACCESS_TOKEN' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer $GITHUB_ACCESS_TOKEN' https://api.github.com/repos/${GitHubOrganization}/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer $GITHUB_ACCESS_TOKEN' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog
@@ -166,37 +166,39 @@ spec:
                   -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                   https://api.github.com/orgs/${GitHubOrganization}/hooks \
                   --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/sda/queue/teams-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
-          """)
+          ''')
         }
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${controllerName}"
-          sh "mkdir -p ${controllerName}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh(script: '''
+            rm -rf ./${controllerName}
+            mkdir -p ${controllerName}
+            cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
+            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true
+            kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/
+          ''')
         }
         
         echo "provisioning managed controller"
-        sh """
+        sh '''
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-create-update-managed-controller.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
-        """
+        '''
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
-          sh """
+          sh '''
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
             cli groovy =<./groovy/oc-create-update-managed-controller.groovy
-          """
+          '''
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
-            sh """
+            sh '''
                 alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-delete-github-app-credential.groovy
-            """
+            '''
         }
       }
     }
