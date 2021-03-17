@@ -113,7 +113,7 @@ spec:
             git commit -am 'updating $GitHubOrganization/helloworld-nodejs hello.js for $GitHubUsername'
             git push origin main
 
-            cd pipeline-library
+            cd ../pipeline-library
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
