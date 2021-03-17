@@ -40,7 +40,7 @@ if (templateFolderJob == null) {
   
   def f = jenkins.createProjectFromXML(templateFolderName, new ByteArrayInputStream(templateFolderXml.getBytes("UTF-8")));
 
-  logger.info("created $name job");
+  logger.info("created $templateFolderName job");
 } else {
-  logger.info("$name job already exists");
+  logger.info("$templateFolderName job already exists");
 }
