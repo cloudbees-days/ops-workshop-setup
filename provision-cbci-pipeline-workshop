@@ -1,9 +1,13 @@
 def controllerName
 def targetType
+def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
   environment {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+    targetType = event.installation.target_type.toString()
+    GitHubOrganization = event.installation.account.login.toString()
+    GitHubUsername = event.sender.login.toString()
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
@@ -36,12 +40,6 @@ spec:
         }
       }
       steps {
-        script {
-          def event = currentBuild.getBuildCauses()[0].event
-          targetType = event.installation.target_type.toString()
-          GitHubOrganization = event.installation.account.login.toString()
-          GitHubUsername = event.sender.login.toString()
-        }
         echo "installation.account.login:${GitHubOrganization}"
         checkout scm
         echo "GitHub target type (should be Organization): ${targetType}"
