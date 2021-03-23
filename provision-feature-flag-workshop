@@ -25,7 +25,7 @@ spec:
     }
   } 
   triggers {
-    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-feature-flags-workshop'")
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-feature-management-ws'")
   } 
   environment {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
