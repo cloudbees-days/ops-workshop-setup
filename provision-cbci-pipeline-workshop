@@ -7,7 +7,7 @@ pipeline {
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     controllerName = GitHubOrganization.toLowerCase()
     GitHubUsername = event.sender.login.toString()
-    WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIXcbci.workshop.cb-sa.io"
+    WEBHOOK_BASE_URL = $ENVIRONMENT_PREFIXcbci.workshop.cb-sa.io
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
