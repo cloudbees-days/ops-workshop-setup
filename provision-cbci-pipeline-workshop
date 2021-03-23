@@ -102,6 +102,8 @@ spec:
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
             
+            sleep 5
+            
             cd helloworld-nodejs
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
