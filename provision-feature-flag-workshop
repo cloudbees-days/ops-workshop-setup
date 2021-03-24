@@ -50,6 +50,7 @@ spec:
           controllerName = GitHubOrganization.toLowerCase()
         }
         echo "GitHub Org Name: ${GitHubOrganization}"
+        echo "smee filter -- installation.account.login:${GitHubOrganization}"
         
         echo "begin config bundle updates"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
