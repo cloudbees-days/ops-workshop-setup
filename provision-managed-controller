@@ -43,7 +43,7 @@ spec:
           GitHubOrganization = event.installation.account.login.toString()
           GitHubUsername = event.sender.login.toString()
           if(targetType != "Organization") {
-            error "Installing Workshop GitHub App is only supports GitHub Organizations, not Users"
+            error "Installing Workshop GitHub App only supports GitHub Organizations, not Users."
           }
         }
         echo "installation.account.login:${GitHubOrganization}"
