@@ -42,20 +42,20 @@ spec:
           targetType = event.installation.target_type.toString()
           GitHubOrganization = event.installation.account.login.toString()
           GitHubUsername = event.sender.login.toString()
-          if(targetType != "Organization") {
-            error "Installing Workshop GitHub App only supports GitHub Organizations, not Users."
-          }
         }
         echo "installation.account.login:${GitHubOrganization}"
         checkout scm
         echo "GitHub target type (should be Organization): ${targetType}"
         echo "GitHub username: ${GitHubUsername}"
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        echo "Jenkins userId will be: ${GitHubUsername}"
         script {
           GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
           controllerName = GitHubOrganization.toLowerCase()
+          if(targetType != "Organization") {
+            error "Installing Workshop GitHub App only supports GitHub Organizations, not Users."
+          }
         }
-        echo "GitHub Org Name: ${GitHubOrganization}"
-        echo "Jenkins userId will be: ${GitHubUsername}"
         
         echo "begin config bundle updates"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
