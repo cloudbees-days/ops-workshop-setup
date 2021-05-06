@@ -196,6 +196,6 @@ private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.updateRegex(masterName, folderName + "/" + masterName)
+    accessControl.updateRegex(masterName, "teams/" + masterName)
 }
 
