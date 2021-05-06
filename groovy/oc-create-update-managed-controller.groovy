@@ -25,7 +25,7 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
-String controllerFolder = "teams"
+String controllerFolderName = "teams"
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
   Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
@@ -48,7 +48,7 @@ provisioning:
     metadata:
       annotations:
         prometheus.io/scheme: 'http'
-        prometheus.io/path: '/teams-${masterName}/prometheus'
+        prometheus.io/path: '/${controllerFolderName}-${masterName}/prometheus'
         prometheus.io/port: '8080'
         prometheus.io/scrape: 'true'
     kind: "StatefulSet"
@@ -102,7 +102,7 @@ private void createMM(String masterName, def masterDefinition) {
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-  def teamsFolder = Jenkins.instance.getItem(controllerFolder) 
+  def teamsFolder = Jenkins.instance.getItem(controllerFolderName) 
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
@@ -196,6 +196,6 @@ private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.setRegex(controllerFolder + "/" + masterName)
+    accessControl.setRegex(controllerFolderName + "/" + masterName)
 }
 
