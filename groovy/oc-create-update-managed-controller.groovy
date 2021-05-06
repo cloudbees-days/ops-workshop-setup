@@ -25,7 +25,7 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
-String folderName = "teams"
+
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
   Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
@@ -48,7 +48,7 @@ provisioning:
     metadata:
       annotations:
         prometheus.io/scheme: 'http'
-        prometheus.io/path: '/${folderName}-${masterName}/prometheus'
+        prometheus.io/path: '/teams-${masterName}/prometheus'
         prometheus.io/port: '8080'
         prometheus.io/scrape: 'true'
     kind: "StatefulSet"
@@ -102,7 +102,7 @@ private void createMM(String masterName, def masterDefinition) {
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-  def teamsFolder = Jenkins.instance.getItem(folderName) 
+  def teamsFolder = Jenkins.instance.getItem("teams") 
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
