@@ -9,6 +9,7 @@ import com.cloudbees.opscenter.client.casc.ConfigurationStatus;
 ConfigurationUpdaterHelper.checkForUpdates();
 ConfigurationBundleService service = ExtensionList.lookupSingleton(ConfigurationBundleService.class);
 ConfigurationBundle bundle = ConfigurationBundleManager.get().getConfigurationBundle();
+println "isHotReloadable: " + service. isHotReloadable(bundle)
 service.reloadIfIsHotReloadable(bundle);
 
 ConfigurationStatus.INSTANCE.setUpdateAvailable(false);
