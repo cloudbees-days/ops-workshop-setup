@@ -25,6 +25,7 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
+
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
   Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
@@ -101,13 +102,15 @@ private void createMM(String masterName, def masterDefinition) {
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-  def teamsFolder = Jenkins.instance.getItem('teams') 
+  def teamsFolder = Jenkins.instance.getItem("teams") 
   ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
     //needed for CasC RBAC
     //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
-    master.save()
+  //set casc bundle
+  master.getProperties().replace(new com.cloudbees.opscenter.server.casc.config.ConnectedMasterCascProperty(masterName))
+  master.save()
     master.onModified()
 
     setBundleSecurity(masterName)
@@ -193,6 +196,6 @@ private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.updateMasterPath(masterName, "teams/" + masterName)
+    accessControl.updateRegex(masterName, "teams/" + masterName)
 }
 
