@@ -37,6 +37,10 @@ if(adminUser==null) {
   Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021")
 }
 
+String controllerFolderName = "REPLACE_FOLDER_NAME"
+if(controllerFolderName.equals("REPLACE_FOLDER_NAME")) {
+  controllerFolderName = "teams"
+}
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
 provisioning:
@@ -48,7 +52,7 @@ provisioning:
     metadata:
       annotations:
         prometheus.io/scheme: 'http'
-        prometheus.io/path: '/teams-${masterName}/prometheus'
+        prometheus.io/path: '/${controllerFolderName}-${masterName}/prometheus'
         prometheus.io/port: '8080'
         prometheus.io/scrape: 'true'
     kind: "StatefulSet"
@@ -102,8 +106,8 @@ private void createMM(String masterName, def masterDefinition) {
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-  def teamsFolder = Jenkins.instance.getItem("teams") 
-  ManagedMaster master = teamsFolder.createProject(ManagedMaster.class, masterName)
+  def controllerFolder = Jenkins.instance.getItem($controllerFolderName) 
+  ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
     //needed for CasC RBAC
@@ -111,7 +115,7 @@ private void createMM(String masterName, def masterDefinition) {
   //set casc bundle
   master.getProperties().replace(new com.cloudbees.opscenter.server.casc.config.ConnectedMasterCascProperty(masterName))
   master.save()
-    master.onModified()
+  master.onModified()
 
     setBundleSecurity(masterName)
 
@@ -196,6 +200,6 @@ private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.updateRegex(masterName, "teams/" + masterName)
+    accessControl.updateRegex(masterName, controllerFolderName + "/" + masterName)
 }
 
