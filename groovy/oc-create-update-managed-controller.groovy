@@ -38,8 +38,10 @@ if(adminUser==null) {
 }
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
-if(controllerFolderName.equals("REPLACE_FOLDER_NAME")) {
-  controllerFolderName = "teams"
+if(!controllerFolderName.equals("REPLACE_FOLDER_NAME")) {
+  //do nothing - use the replaced value
+} else {
+   controllerFolderName = "teams"
 }
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String masterDefinitionYaml = """
