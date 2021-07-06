@@ -143,7 +143,7 @@ spec:
             
           waitUntil {
             script {
-              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/master''', returnStdout: true
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/configuration-bundles/git/ref/heads/main''', returnStdout: true
               echo "returned status: ${status}"
               return (status=="200")
             }
@@ -166,7 +166,7 @@ spec:
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             
             git add *
-            git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
+            git commit -a -m 'updating $GitHubOrganization/configuration-bundles bundle for $GitHubUsername'
             git push -u origin main
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
@@ -181,7 +181,7 @@ spec:
           sh(script: '''
             rm -rf ./$controllerName
             mkdir -p $controllerName
-            cp cloudbees-ci-config-bundle/*.yaml $controllerName
+            cp configuration-bundles/*.yaml $controllerName
             kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$controllerName || true
             kubectl cp --namespace sda $controllerName cjoc-0:/var/jenkins_home/jcasc-bundles-store/
           ''')
