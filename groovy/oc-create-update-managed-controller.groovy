@@ -172,7 +172,7 @@ private void updateMM(String masterName, def masterDefinition) {
         }
     }
 
-    setBundleSecurity(masterName, false)
+    setRegex(masterName)
 
     managedMaster.configuration = currentConfiguration
     managedMaster.save()
@@ -199,10 +199,10 @@ private void updateMM(String masterName, def masterDefinition) {
     }
 }
 
-private static void setBundleSecurity(String masterName) {
+private static void setRegex(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.updateRegex(masterName, cascRegexPath)
+  accessControl.updateRegex(masterName, "${cascRegexPath}")
 }
 
