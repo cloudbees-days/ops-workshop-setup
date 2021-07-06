@@ -96,7 +96,13 @@ spec:
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
             
-            sleep 5
+            waitUntil {
+              script {
+                def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-library/git/ref/heads/master", returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd pipeline-library
             git init
@@ -108,6 +114,14 @@ spec:
             rm Jenkinsfile
             git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
             git push origin master
+            
+            waitUntil {
+              script {
+                def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/master", returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd ../pipeline-template-catalog
             git init
@@ -120,6 +134,14 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
             git push -u origin master
+            
+            waitUntil {
+              script {
+                def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/master", returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd ../cloudbees-ci-config-bundle
             git init
