@@ -86,10 +86,10 @@ println("Create/update of master '${masterName}' beginning with CasC RegEx: ${ca
 
 //Either update or create the mm with this config
 if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
-    //updateMM(masterName, masterDefinition, cascRegexPath)
+    //updateMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
   return
 } else {
-    createMM(masterName, masterDefinition, cascRegexPath)
+    createMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
 }
 sleep(2500)
 println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.\n")
@@ -101,7 +101,7 @@ println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.
 //
 //
 
-private void createMM(String masterName, def masterDefinition, String cascRegexPath, String controllerFolderName) {
+private void createMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
     Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
 
@@ -159,7 +159,7 @@ private void createMM(String masterName, def masterDefinition, String cascRegexP
   sleep(500)
 }
 
-private void updateMM(String masterName, def masterDefinition, String cascRegexPath) {
+private void updateMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
     println "Master '${masterName}' already exists. Updating it."
 
     ManagedMaster managedMaster = OperationsCenter.getInstance().getConnectedMasters().find { it.name == masterName } as ManagedMaster
