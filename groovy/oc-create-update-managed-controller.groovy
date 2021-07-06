@@ -38,7 +38,7 @@ if(adminUser==null) {
 }
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
-if(!controllerFolderName.equals("REPLACE_FOLDER_NAME")) {
+if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
   //do nothing - use the replaced value
 } else {
    controllerFolderName = "teams"
@@ -144,7 +144,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
   def Jenkins jenkins = Jenkins.getInstance()
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
-  def groupItem = teamsFolder.getItem(masterName);
+  def groupItem = controllerFolder.getItem(masterName);
   def container = GroupContainerLocator.locate(groupItem);
   if(!container.getGroups().any{it.name=groupName}) {
     Group group = new Group(container, groupName);
