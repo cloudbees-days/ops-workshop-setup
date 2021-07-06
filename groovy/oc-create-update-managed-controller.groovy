@@ -44,6 +44,7 @@ if(!controllerFolderName.equals("REPLACE_FOLDER_NAME")) {
    controllerFolderName = "teams"
 }
 String masterName = "REPLACE_CONTROLLER_NAME" 
+String cascRegexPath = "${controllerFolderName}/${masterName}"
 String masterDefinitionYaml = """
 provisioning:
   cpus: 1
@@ -202,6 +203,6 @@ private static void setBundleSecurity(String masterName) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize()
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-    accessControl.updateRegex(masterName, controllerFolderName + "/" + masterName)
+    accessControl.updateRegex(masterName, cascRegexPath)
 }
 
