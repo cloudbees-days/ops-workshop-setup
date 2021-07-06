@@ -82,17 +82,17 @@ provisioning:
 def yamlMapper = Serialization.yamlMapper()
 Map masterDefinition = yamlMapper.readValue(masterDefinitionYaml, Map.class);
 
-println("Create/update of master '${masterName}' beginning.")
+println("Create/update of master '${masterName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
 if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
-    //updateMM(masterName, masterDefinition)
+    //updateMM(masterName, masterDefinition, cascRegexPath)
   return
 } else {
-    createMM(masterName, masterDefinition)
+    createMM(masterName, masterDefinition, cascRegexPath)
 }
 sleep(2500)
-println("Finished with master '${masterName}'.\n")
+println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.\n")
 
 
 //
@@ -101,7 +101,7 @@ println("Finished with master '${masterName}'.\n")
 //
 //
 
-private void createMM(String masterName, def masterDefinition) {
+private void createMM(String masterName, def masterDefinition, String cascRegexPath) {
     Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
 
@@ -120,46 +120,46 @@ private void createMM(String masterName, def masterDefinition) {
   master.save()
   master.onModified()
 
-    setBundleSecurity(masterName)
+  setRegex(masterName, cascRegexPath)
 
-    //ok, now we can actually boot this thing up
-    println "Ensuring master '${masterName}' starts..."
-    def validActionSet = master.getValidActionSet()
-    if (validActionSet.contains(ManagedMaster.Action.ACKNOWLEDGE_ERROR)) {
-        master.acknowledgeErrorAction()
-        sleep(50)
-    }
+  //ok, now we can actually boot this thing up
+  println "Ensuring master '${masterName}' starts..."
+  def validActionSet = master.getValidActionSet()
+  if (validActionSet.contains(ManagedMaster.Action.ACKNOWLEDGE_ERROR)) {
+      master.acknowledgeErrorAction()
+      sleep(50)
+  }
 
-    validActionSet = master.getValidActionSet()
-    if (validActionSet.contains(ManagedMaster.Action.START)) {
-        master.startAction();
-        sleep(50)
-    } else if (validActionSet.contains(ManagedMaster.Action.PROVISION_AND_START)) {
-        master.provisionAndStartAction();
-        sleep(50)
-    } else {
-        throw "Cannot start the master." as Throwable
-    }
-    //configure controller RBAC
-    def Jenkins jenkins = Jenkins.getInstance()
-    String roleName = "workshop-admin"
-    String groupName = "Team Administrators";
-    def groupItem = teamsFolder.getItem(masterName);
-    def container = GroupContainerLocator.locate(groupItem);
-    if(!container.getGroups().any{it.name=groupName}) {
-      Group group = new Group(container, groupName);
-      group.doAddMember("REPLACE_JENKINS_USER");
-      group.doAddMember("REPLACE_JENKINS_USER-admin");
-      group.doAddMember("team-admin");
-      group.doGrantRole(roleName, 0, Boolean.TRUE);
-      container.addGroup(group);
-      container.addRoleFilter(roleName);
-      container.addRoleFilter("browse");
-    }
-    sleep(500)
+  validActionSet = master.getValidActionSet()
+  if (validActionSet.contains(ManagedMaster.Action.START)) {
+      master.startAction();
+      sleep(50)
+  } else if (validActionSet.contains(ManagedMaster.Action.PROVISION_AND_START)) {
+      master.provisionAndStartAction();
+      sleep(50)
+  } else {
+      throw "Cannot start the master." as Throwable
+  }
+  //configure controller RBAC
+  def Jenkins jenkins = Jenkins.getInstance()
+  String roleName = "workshop-admin"
+  String groupName = "Team Administrators";
+  def groupItem = teamsFolder.getItem(masterName);
+  def container = GroupContainerLocator.locate(groupItem);
+  if(!container.getGroups().any{it.name=groupName}) {
+    Group group = new Group(container, groupName);
+    group.doAddMember("REPLACE_JENKINS_USER");
+    group.doAddMember("REPLACE_JENKINS_USER-admin");
+    group.doAddMember("team-admin");
+    group.doGrantRole(roleName, 0, Boolean.TRUE);
+    container.addGroup(group);
+    container.addRoleFilter(roleName);
+    container.addRoleFilter("browse");
+  }
+  sleep(500)
 }
 
-private void updateMM(String masterName, def masterDefinition) {
+private void updateMM(String masterName, def masterDefinition, String cascRegexPath) {
     println "Master '${masterName}' already exists. Updating it."
 
     ManagedMaster managedMaster = OperationsCenter.getInstance().getConnectedMasters().find { it.name == masterName } as ManagedMaster
@@ -172,7 +172,7 @@ private void updateMM(String masterName, def masterDefinition) {
         }
     }
 
-    setRegex(masterName)
+    setRegex(masterName, cascRegexPath)
 
     managedMaster.configuration = currentConfiguration
     managedMaster.save()
@@ -199,10 +199,10 @@ private void updateMM(String masterName, def masterDefinition) {
     }
 }
 
-private static void setRegex(String masterName) {
+private static void setRegex(String masterName, String cascRegexPath) {
     sleep(100)
-    ExtensionList.lookupSingleton(BundleStorage.class).initialize()
-    BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl()
-  accessControl.updateRegex(masterName, "${cascRegexPath}")
+    ExtensionList.lookupSingleton(BundleStorage.class).initialize();
+    BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl();
+    accessControl.updateRegex(masterName, cascRegexPath);
 }
 
