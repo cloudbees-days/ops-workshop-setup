@@ -107,10 +107,6 @@ spec:
             rm Jenkinsfile
             git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
             git push origin master
-            git checkout -B module-2
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
-            git commit -a -m 'updating $GitHubOrganization/pipeline-library configBundleUpdate.groovy for $GitHubUsername'
-            git push -u origin module-2
 
             cd ../pipeline-template-catalog
             git init
@@ -123,12 +119,6 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
             git push -u origin master
-            
-            git fetch
-            git checkout -B cross-team-collab-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
-            git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
-            git push -u origin cross-team-collab-lab
 
             cd ../cloudbees-ci-config-bundle
             git init
