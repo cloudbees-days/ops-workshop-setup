@@ -1,6 +1,7 @@
 def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
+  options { timeout(time: 10, unit: 'MINUTES') }
   environment {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
@@ -96,9 +97,8 @@ spec:
             mkdir -p pipeline-library
             
             sleep 5
-            
 
-            cd ../pipeline-library
+            cd pipeline-library
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
