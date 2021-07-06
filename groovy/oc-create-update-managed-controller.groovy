@@ -38,11 +38,14 @@ if(adminUser==null) {
 }
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
+println("controllerFolderName is ${controllerFolderName}")
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
   //do nothing - use the replaced value
 } else {
    controllerFolderName = "teams"
 }
+println("controllerFolderName is ${controllerFolderName}")
+
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String cascRegexPath = "${controllerFolderName}/${masterName}"
 String masterDefinitionYaml = """
