@@ -38,7 +38,6 @@ if(adminUser==null) {
 }
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
-println("controllerFolderName is ${controllerFolderName}")
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
   //do nothing - use the replaced value
 } else {
@@ -92,6 +91,7 @@ if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == 
     //updateMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
   return
 } else {
+    setRegex(masterName, cascRegexPath)
     createMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
 }
 sleep(2500)
@@ -103,7 +103,6 @@ println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.
 // only function definitions below here
 //
 //
-
 private void createMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
     Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
@@ -122,8 +121,6 @@ private void createMM(String masterName, String cascRegexPath, String controller
   master.getProperties().replace(new com.cloudbees.opscenter.server.casc.config.ConnectedMasterCascProperty(masterName))
   master.save()
   master.onModified()
-
-  setRegex(masterName, cascRegexPath)
 
   //ok, now we can actually boot this thing up
   println "Ensuring master '${masterName}' starts..."
@@ -174,9 +171,7 @@ private void updateMM(String masterName, String cascRegexPath, String controller
             println "Master '${masterName}' had provisioning configuration item '${k}' change. Updating it."
         }
     }
-
-    setRegex(masterName, cascRegexPath)
-
+  
     managedMaster.configuration = currentConfiguration
     managedMaster.save()
 
