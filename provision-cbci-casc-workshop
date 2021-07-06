@@ -66,7 +66,7 @@ spec:
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: '''
             echo $GitHubOrganization
-            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/cloudbees-ci-config-bundle
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/configuration-bundles
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
             
@@ -74,8 +74,8 @@ spec:
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"cloudbees-ci-config-bundle"}'
+                 https://api.github.com/repos/cloudbees-days/configuration-bundles/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"configuration-bundles"}'
                  
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -89,11 +89,11 @@ spec:
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
             
-            rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./configuration-bundles || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
             
-            mkdir -p cloudbees-ci-config-bundle
+            mkdir -p configuration-bundles
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
           ''')
@@ -150,35 +150,23 @@ spec:
           }
 
           sh(script: '''
-            cd cloudbees-ci-config-bundle
+            cd configuration-bundles
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-config-bundle.git
+            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/configuration-bundles.git
             
-            git pull origin master
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
-            git add .markerfile
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml
+            git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/jenkins.yaml > jenkins.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugin-catalog.yaml > plugin-catalog.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugins.yaml > plugins.yaml
-
-            mkdir groovy
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-pipeline-workshop-create-jobs.groovy > groovy/cbci-pipeline-workshop-create-jobs.groovy 
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/cbci-pipeline-workshop-create-jobs.groovy
-
-            
             git add *
             git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
-            git push origin master
+            git push origin main
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
