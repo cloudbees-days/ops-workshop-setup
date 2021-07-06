@@ -21,7 +21,7 @@ import com.cloudbees.plugins.credentials.impl.*;
 import com.cloudbees.plugins.credentials.*;
 import com.cloudbees.plugins.credentials.domains.*; 
 import com.cloudbees.opscenter.server.casc.config.ConnectedMasterCascProperty;
-import com.cloudbees.opscenter.server.casc.config.ConnectedMasterTokenPropert;
+import com.cloudbees.opscenter.server.casc.config.ConnectedMasterTokenProperty;
 
 import java.util.logging.Logger
 
@@ -121,7 +121,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
     //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
   //set casc bundle
   master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-  master.properties.replace(new com.cloudbees.opscenter.server.casc.config.ConnectedMasterCascProperty(masterName))
+  master.properties.replace(new ConnectedMasterCascProperty(masterName))
   master.save()
   master.onModified()
 
