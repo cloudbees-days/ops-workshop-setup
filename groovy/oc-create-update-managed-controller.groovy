@@ -101,7 +101,7 @@ println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.
 //
 //
 
-private void createMM(String masterName, def masterDefinition, String cascRegexPath) {
+private void createMM(String masterName, def masterDefinition, String cascRegexPath, String controllerFolderName) {
     Logger logger = Logger.getLogger("oc-create-update-managed-controller")
     println "Master '${masterName}' does not exist yet. Creating it now."
 
@@ -109,7 +109,7 @@ private void createMM(String masterName, def masterDefinition, String cascRegexP
     masterDefinition.provisioning.each { k, v ->
         configuration["${k}"] = v
     }
-  def controllerFolder = Jenkins.instance.getItem($controllerFolderName) 
+  def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
   ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
