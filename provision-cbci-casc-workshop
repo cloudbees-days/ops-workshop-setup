@@ -155,6 +155,7 @@ spec:
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/configuration-bundles.git
+            git checkout -b main
             
             git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
@@ -166,7 +167,7 @@ spec:
             
             git add *
             git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
-            git push origin main
+            git push -u origin main
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
