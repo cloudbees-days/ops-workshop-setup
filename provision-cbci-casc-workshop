@@ -173,13 +173,13 @@ spec:
 
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 "https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/empty/rename" \
+                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/empty/rename \
                  --data '{"'"new_name"'":"'"$controllerName"'"}'
                  
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 "https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/dev-empty/rename" \
-                 --data '{"'"new_name"'":"'"$devControllerName"'"}''
+                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/dev-empty/rename \
+                 --data '{"'"new_name"'":"'"$devControllerName"'"}'
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
