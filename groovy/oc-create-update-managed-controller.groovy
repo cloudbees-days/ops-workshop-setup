@@ -30,13 +30,13 @@ String jenkinsUserId = "REPLACE_JENKINS_USER"
 
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
-  Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "cb2021")
+  Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
 
 String adminUserId = "REPLACE_JENKINS_USER-admin"
 def adminUser = User.get(adminUserId, false)
 if(adminUser==null) {
-  Jenkins.instance.securityRealm.createAccount(adminUserId, "cb2021")
+  Jenkins.instance.securityRealm.createAccount(adminUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
