@@ -185,6 +185,14 @@ spec:
                   --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/operations-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
         }
+        echo "creating config bundle on OC"
+        container('kubectl') {
+          sh "rm -rf ./${controllerName}"
+          sh "mkdir -p ${controllerName}"
+          sh "cp configuration-bundles/*.yaml ${controllerName}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
+          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+        }
         
         echo "provisioning managed controller"
         sh '''
