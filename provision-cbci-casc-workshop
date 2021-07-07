@@ -179,8 +179,8 @@ spec:
           sh(script: '''
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 "https://api.github.com/repos/configuration-bundles/git/refs" \
-                 --data  "{\"ref\": \"refs/heads/$controllerName\",\"sha\": \"$COMMIT_SHA\"}"
+                 "https://api.github.com/repos/$GitHubOrganization/configuration-bundles/git/refs" \
+                 --data  '{"'"ref"'": "'"refs/heads/$controllerName"'","'"sha"'": "'"$COMMIT_SHA"'"}'
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
