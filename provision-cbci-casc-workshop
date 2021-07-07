@@ -190,17 +190,6 @@ spec:
           ''')
         }
         
-        echo "creating config bundle on OC"
-        container('kubectl') {
-          sh(script: '''
-            rm -rf ./$controllerName
-            mkdir -p $controllerName
-            cp configuration-bundles/*.yaml $controllerName
-            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$controllerName || true
-            kubectl cp --namespace sda $controllerName cjoc-0:/var/jenkins_home/jcasc-bundles-store/
-          ''')
-        }
-        
         echo "provisioning managed controller"
         sh '''
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
