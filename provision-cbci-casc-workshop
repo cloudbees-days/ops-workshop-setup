@@ -168,13 +168,19 @@ spec:
             git add *
             git commit -a -m 'updating $GitHubOrganization/configuration-bundles bundle for $GitHubUsername'
             git push -u origin main
-            
-            SHA=git rev-parse HEAD | tr -d '\n'
-            echo "$SHA"
+          ''')
+          
+          dir('configuration-bundles') {
+            script {
+              env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse origin/main | tr -d '\n'")
+            }
+          }
+          
+          sh(script: '''
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  "https://api.github.com/repos/configuration-bundles/git/refs" \
-                 --data  "{\"ref\": \"refs/heads/$controllerName\",\"sha\": \"$SHA\"}"
+                 --data  "{\"ref\": \"refs/heads/$controllerName\",\"sha\": \"$COMMIT_SHA\"}"
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
