@@ -152,6 +152,23 @@ spec:
           }
 
           sh(script: '''
+
+            cd ../configuration-bundles
+            git init
+            git config user.email "${GitHubUsername}@workshop.cb-sa.io"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/configuration-bundles.git
+            
+            git checkout -b empty
+            git pull origin empty
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            git add *
+            git commit -a -m 'updating ${GitHubOrganization}/configuration-bundles for ${GitHubUsername}'
+            git push origin empty
+            
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/empty/rename \
