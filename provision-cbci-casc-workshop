@@ -169,7 +169,7 @@ spec:
             git commit -a -m 'updating $GitHubOrganization/configuration-bundles bundle for $GitHubUsername'
             git push -u origin main
             
-            SHA=git rev-parse HEAD
+            SHA=git rev-parse HEAD | tr -d '\n'
             echo "$SHA"
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
