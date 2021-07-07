@@ -24,7 +24,6 @@ pipeline {
       }
       agent {
         kubernetes {
-          label 'kubectl'
           yaml """
 kind: Pod
 metadata:
