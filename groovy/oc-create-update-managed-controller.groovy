@@ -93,7 +93,7 @@ if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == 
     //updateMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
   return
 } else {
-    setRegex(masterName, cascRegexPath)
+    
     createMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
 }
 sleep(2500)
@@ -106,22 +106,29 @@ println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.
 //
 //
 private void createMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
-    Logger logger = Logger.getLogger("oc-create-update-managed-controller")
-    println "Master '${masterName}' does not exist yet. Creating it now."
+  Logger logger = Logger.getLogger("oc-create-update-managed-controller")
+  println "Master '${masterName}' does not exist yet. Creating it now."
+  String workshopId = "REPLACE_WORKSHOP_ID"
 
-    def configuration = new KubernetesMasterProvisioning()
-    masterDefinition.provisioning.each { k, v ->
-        configuration["${k}"] = v
-    }
+  def configuration = new KubernetesMasterProvisioning()
+  masterDefinition.provisioning.each { k, v ->
+      configuration["${k}"] = v
+  }
+  if(!workshopId.equals("cloudbees-ci-casc-workshop")) {
+    setRegex(masterName, cascRegexPath)
+  }
+  
   def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
   ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
     master.setConfiguration(configuration)
     master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
     //needed for CasC RBAC
     //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
-  //set casc bundle
-  master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-  master.properties.replace(new ConnectedMasterCascProperty(masterName))
+  //set casc bundle, but not for CasC workshop
+  if(!workshopId.equals("cloudbees-ci-casc-workshop")) {
+    master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
+    master.properties.replace(new ConnectedMasterCascProperty(masterName))
+  }
   master.save()
   master.onModified()
 
