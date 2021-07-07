@@ -114,9 +114,8 @@ private void createMM(String masterName, String cascRegexPath, String controller
   masterDefinition.provisioning.each { k, v ->
       configuration["${k}"] = v
   }
-  if(!workshopId.equals("cloudbees-ci-casc-workshop")) {
-    setRegex(masterName, cascRegexPath)
-  }
+  
+  setRegex(masterName, cascRegexPath)
   
   def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
   ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
@@ -125,13 +124,9 @@ private void createMM(String masterName, String cascRegexPath, String controller
     //needed for CasC RBAC
     //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
   //set casc bundle, but not for CasC workshop
-  if(!workshopId.equals("cloudbees-ci-casc-workshop")) {
-    master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-    master.properties.replace(new ConnectedMasterCascProperty(masterName))
-  } else {
-    master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-    master.properties.replace(new ConnectedMasterCascProperty("base"))
-  }
+  master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
+  master.properties.replace(new ConnectedMasterCascProperty(masterName))
+  
   master.save()
   master.onModified()
 
