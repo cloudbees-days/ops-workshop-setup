@@ -128,6 +128,9 @@ private void createMM(String masterName, String cascRegexPath, String controller
   if(!workshopId.equals("cloudbees-ci-casc-workshop")) {
     master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
     master.properties.replace(new ConnectedMasterCascProperty(masterName))
+  } else {
+    master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
+    master.properties.replace(new ConnectedMasterCascProperty("base"))
   }
   master.save()
   master.onModified()
