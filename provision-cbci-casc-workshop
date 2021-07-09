@@ -159,25 +159,20 @@ spec:
             git config user.name "${GitHubOrganization}"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/configuration-bundles.git
             
-            git checkout -b empty
-            git pull origin empty
+            git checkout -b ops-controller
+            git pull origin ops-controller
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/configuration-bundles for ${GitHubUsername}'
-            git push origin empty
+            git push origin ops-controller
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/empty/rename \
+                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/ops-controller/rename \
                  --data '{"'"new_name"'":"'"$controllerName"'"}'
-                 
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/dev-empty/rename \
-                 --data '{"'"new_name"'":"'"$devControllerName"'"}'
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
