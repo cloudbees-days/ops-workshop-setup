@@ -41,7 +41,11 @@ if(adminUser==null) {
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
-  //do nothing - use the replaced value
+  def controllerFolder = jenkins.getItem(controllerFolderName)
+  if (controllerFolder == null) {
+      controllerFolder("$controllerFolderName Folder does not exist so creating")
+      controllerFolder = jenkins.createProject(Folder.class, controllerFolderName);
+  }
 } else {
    controllerFolderName = "teams"
 }
@@ -115,7 +119,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
       configuration["${k}"] = v
   }
   
-  setRegex(masterName, cascRegexPath)
+  setRegex("$controllerFolderName-$masterName", cascRegexPath)
   
   def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
   ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
@@ -125,7 +129,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
     //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
   //set casc bundle, but not for CasC workshop
   master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-  master.properties.replace(new ConnectedMasterCascProperty(masterName))
+  master.properties.replace(new ConnectedMasterCascProperty("$controllerFolderName-$masterName"))
   
   master.save()
   master.onModified()
@@ -152,17 +156,17 @@ private void createMM(String masterName, String cascRegexPath, String controller
   def Jenkins jenkins = Jenkins.getInstance()
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
-  def groupItem = controllerFolder.getItem(masterName);
-  def container = GroupContainerLocator.locate(groupItem);
-  if(!container.getGroups().any{it.name=groupName}) {
-    Group group = new Group(container, groupName);
+  def folderGroupItem = jenkins.getItem(controllerFolder);
+  def folderContainer = GroupContainerLocator.locate(folderGroupItem);
+  if(!folderContainer.getGroups().any{it.name=groupName}) {
+    Group group = new Group(folderContainer, groupName);
     group.doAddMember("REPLACE_JENKINS_USER");
     group.doAddMember("REPLACE_JENKINS_USER-admin");
     group.doAddMember("team-admin");
     group.doGrantRole(roleName, 0, Boolean.TRUE);
-    container.addGroup(group);
-    container.addRoleFilter(roleName);
-    container.addRoleFilter("browse");
+    folderContainer.addGroup(group);
+    folderContainer.addRoleFilter(roleName);
+    folderContainer.addRoleFilter("browse");
   }
   sleep(500)
 }
@@ -205,10 +209,10 @@ private void updateMM(String masterName, String cascRegexPath, String controller
     }
 }
 
-private static void setRegex(String masterName, String cascRegexPath) {
+private static void setRegex(String bundleName, String cascRegexPath) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize();
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl();
-    accessControl.updateRegex(masterName, cascRegexPath);
+    accessControl.updateRegex(bundleName, cascRegexPath);
 }
 
