@@ -7,11 +7,10 @@ pipeline {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    controllerNameRaw = "ops-"+"$GitHubOrganization"
-    controllerName = controllerNameRaw.toLowerCase()
-    devControllerName = GitHubOrganization.toLowerCase()
     GitHubUsername = event.sender.login.toString()
-    controllerFolder = "operations"
+    controllerFolder = GitHubOrganization.toLowerCase()
+    controllerName = "ops-controller"
+    bundleName = "${controllerFolder}-${controllerName}"
     workshopId = "cloudbees-ci-casc-workshop"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
   }
@@ -91,11 +90,11 @@ spec:
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
             
-            rm -rf ./configuration-bundles || true
+            rm -rf ./ops-controller || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
             
-            mkdir -p configuration-bundles
+            mkdir -p ops-controller
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
           ''')
@@ -145,7 +144,7 @@ spec:
             
           waitUntil {
             script {
-              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/configuration-bundles/git/ref/heads/ops-controller''', returnStdout: true
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/ops-controller/git/ref/heads/main''', returnStdout: true
               echo "returned status: ${status}"
               return (status=="200")
             }
@@ -153,40 +152,35 @@ spec:
 
           sh(script: '''
 
-            cd configuration-bundles
+            cd ops-controller
             git init
             git config user.email "${GitHubUsername}@workshop.cb-sa.io"
             git config user.name "${GitHubOrganization}"
-            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/configuration-bundles.git
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/ops-controller.git
             
-            git checkout -b ops-controller
-            git pull origin ops-controller
+            git checkout -b main
+            git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/configuration-bundles for ${GitHubUsername}'
-            git push origin ops-controller
+            git push origin main
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/$GitHubOrganization/configuration-bundles/branches/ops-controller/rename \
-                 --data '{"'"new_name"'":"'"$controllerName"'"}'
-            
-             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                  https://api.github.com/orgs/$GitHubOrganization/hooks \
-                  --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/operations-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 https://api.github.com/orgs/$GitHubOrganization/hooks \
+                 --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/operations-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
         }
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${controllerName}"
-          sh "mkdir -p ${controllerName}"
-          sh "cp configuration-bundles/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "rm -rf ./${bundleName}"
+          sh "mkdir -p ${bundleName}"
+          sh "cp ops-controller/*.yaml ${controllerName}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
