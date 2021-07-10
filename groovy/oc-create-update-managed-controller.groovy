@@ -43,13 +43,13 @@ String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
   def controllerFolder = Jenkins.instance.getItem(controllerFolderName)
   if (controllerFolder == null) {
-      controllerFolder("$controllerFolderName Folder does not exist so creating")
+      logger.info("$controllerFolderName Folder does not exist so creating")
       controllerFolder = Jenkins.instance.createProject(Folder.class, controllerFolderName);
   }
 } else {
    controllerFolderName = "teams"
 }
-println("controllerFolderName is ${controllerFolderName}")
+logger.info("controllerFolderName is ${controllerFolderName}")
 
 String masterName = "REPLACE_CONTROLLER_NAME" 
 String cascRegexPath = "${controllerFolderName}/${masterName}"
@@ -90,7 +90,7 @@ provisioning:
 def yamlMapper = Serialization.yamlMapper()
 Map masterDefinition = yamlMapper.readValue(masterDefinitionYaml, Map.class);
 
-println("Create/update of master '${masterName}' beginning with CasC RegEx: ${cascRegexPath}.")
+logger.info("Create/update of master '${masterName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
 if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
@@ -100,7 +100,7 @@ if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == 
     createMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
 }
 sleep(2500)
-println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.\n")
+logger.info("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.\n")
 
 
 //
@@ -110,7 +110,7 @@ println("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.
 //
 private void createMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
   Logger logger = Logger.getLogger("oc-create-update-managed-controller")
-  println "Master '${masterName}' does not exist yet. Creating it now."
+  logger.info "Master '${masterName}' does not exist yet. Creating it now."
   String workshopId = "REPLACE_WORKSHOP_ID"
 
   def configuration = new KubernetesMasterProvisioning()
@@ -134,7 +134,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
   master.onModified()
 
   //ok, now we can actually boot this thing up
-  println "Ensuring master '${masterName}' starts..."
+  logger.info "Ensuring master '${masterName}' starts..."
   def validActionSet = master.getValidActionSet()
   if (validActionSet.contains(ManagedMaster.Action.ACKNOWLEDGE_ERROR)) {
       master.acknowledgeErrorAction()
