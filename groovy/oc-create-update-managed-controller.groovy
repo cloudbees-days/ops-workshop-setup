@@ -154,7 +154,7 @@ private void createMM(String masterName, String cascRegexPath, String controller
   //configure controller RBAC
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
-  def folderGroupItem = Jenkins.instance.getItem(controllerFolder);
+  def folderGroupItem = Jenkins.instance.getItem(controllerFolderName);
   def folderContainer = GroupContainerLocator.locate(folderGroupItem);
   if(!folderContainer.getGroups().any{it.name=groupName}) {
     Group group = new Group(folderContainer, groupName);
