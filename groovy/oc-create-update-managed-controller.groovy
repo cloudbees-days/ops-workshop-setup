@@ -154,18 +154,19 @@ private void createMM(String masterName, String cascRegexPath, String controller
   //configure controller RBAC
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
+  
   def folderGroupItem = Jenkins.instance.getItem(controllerFolderName);
   def folderContainer = GroupContainerLocator.locate(folderGroupItem);
-  if(!folderContainer.getGroups().any{it.name=groupName}) {
-    Group group = new Group(folderContainer, groupName);
-    group.doAddMember("REPLACE_JENKINS_USER");
-    group.doAddMember("REPLACE_JENKINS_USER-admin");
-    group.doAddMember("team-admin");
-    group.doGrantRole(roleName, 0, Boolean.TRUE);
-    folderContainer.addGroup(group);
-    folderContainer.addRoleFilter(roleName);
-    folderContainer.addRoleFilter("browse");
-  }
+  
+  Group group = new Group(folderContainer, groupName);
+  group.doAddMember("REPLACE_JENKINS_USER");
+  group.doAddMember("REPLACE_JENKINS_USER-admin");
+  group.doAddMember("team-admin");
+  group.doGrantRole(roleName, 0, Boolean.TRUE);
+  folderContainer.addGroup(group);
+  folderContainer.addRoleFilter(roleName);
+  folderContainer.addRoleFilter("browse");
+  
   sleep(500)
 }
 
