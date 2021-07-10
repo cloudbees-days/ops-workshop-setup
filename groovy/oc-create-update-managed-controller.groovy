@@ -41,10 +41,10 @@ if(adminUser==null) {
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
-  def controllerFolder = jenkins.getItem(controllerFolderName)
+  def controllerFolder = Jenkins.instance.getItem(controllerFolderName)
   if (controllerFolder == null) {
       controllerFolder("$controllerFolderName Folder does not exist so creating")
-      controllerFolder = jenkins.createProject(Folder.class, controllerFolderName);
+      controllerFolder = Jenkins.instance.createProject(Folder.class, controllerFolderName);
   }
 } else {
    controllerFolderName = "teams"
@@ -94,7 +94,6 @@ println("Create/update of master '${masterName}' beginning with CasC RegEx: ${ca
 
 //Either update or create the mm with this config
 if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
-    //updateMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
   return
 } else {
     
@@ -153,10 +152,9 @@ private void createMM(String masterName, String cascRegexPath, String controller
       throw "Cannot start the master." as Throwable
   }
   //configure controller RBAC
-  def Jenkins jenkins = Jenkins.getInstance()
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
-  def folderGroupItem = jenkins.getItem(controllerFolder);
+  def folderGroupItem = Jenkins.instance.getItem(controllerFolder);
   def folderContainer = GroupContainerLocator.locate(folderGroupItem);
   if(!folderContainer.getGroups().any{it.name=groupName}) {
     Group group = new Group(folderContainer, groupName);
@@ -169,44 +167,6 @@ private void createMM(String masterName, String cascRegexPath, String controller
     folderContainer.addRoleFilter("browse");
   }
   sleep(500)
-}
-
-private void updateMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
-    println "Master '${masterName}' already exists. Updating it."
-
-    ManagedMaster managedMaster = OperationsCenter.getInstance().getConnectedMasters().find { it.name == masterName } as ManagedMaster
-
-    def currentConfiguration = managedMaster.configuration
-    masterDefinition.provisioning.each { k, v ->
-        if (currentConfiguration["${k}"] != v) {
-            currentConfiguration["${k}"] = v
-            println "Master '${masterName}' had provisioning configuration item '${k}' change. Updating it."
-        }
-    }
-  
-    managedMaster.configuration = currentConfiguration
-    managedMaster.save()
-
-    println "Restarting master '${masterName}'."
-    def validActionSet = managedMaster.getValidActionSet()
-    if (validActionSet.contains(ManagedMaster.Action.ACKNOWLEDGE_ERROR)) {
-        managedMaster.acknowledgeErrorAction()
-        sleep(50)
-    }
-
-    validActionSet = managedMaster.getValidActionSet()
-    if (validActionSet.contains(ManagedMaster.Action.RESTART)) {
-        managedMaster.restartAction(false);
-        sleep(50)
-    } else if (validActionSet.contains(ManagedMaster.Action.START)) {
-        managedMaster.startAction();
-        sleep(50)
-    } else if (validActionSet.contains(ManagedMaster.Action.PROVISION_AND_START)) {
-        managedMaster.provisionAndStartAction();
-        sleep(50)
-    } else {
-        throw "Cannot (re)start the master." as Throwable
-    }
 }
 
 private static void setRegex(String bundleName, String cascRegexPath) {
