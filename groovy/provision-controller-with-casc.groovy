@@ -51,9 +51,9 @@ if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
 }
 logger.info("controllerFolderName is ${controllerFolderName}")
 
-String masterName = "REPLACE_CONTROLLER_NAME" 
-String cascRegexPath = "${controllerFolderName}/${masterName}"
-String masterDefinitionYaml = """
+String controllerName = "REPLACE_CONTROLLER_NAME" 
+String cascRegexPath = "${controllerFolderName}/${controllerName}"
+String controllerDefinitionYaml = """
 provisioning:
   cpus: 1
   disk: 20
@@ -63,7 +63,7 @@ provisioning:
     metadata:
       annotations:
         prometheus.io/scheme: 'http'
-        prometheus.io/path: '/${controllerFolderName}-${masterName}/prometheus'
+        prometheus.io/path: '/${controllerFolderName}-${controllerName}/prometheus'
         prometheus.io/port: '8080'
         prometheus.io/scrape: 'true'
     kind: "StatefulSet"
@@ -88,19 +88,19 @@ provisioning:
 """
 
 def yamlMapper = Serialization.yamlMapper()
-Map masterDefinition = yamlMapper.readValue(masterDefinitionYaml, Map.class);
+Map controllerDefinition = yamlMapper.readValue(controllerDefinitionYaml, Map.class);
 
-logger.info("Create/update of master '${masterName}' beginning with CasC RegEx: ${cascRegexPath}.")
+logger.info("Create/update of controller '${controllerName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
-if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == masterName }) {
+if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == controllerName }) {
   return
 } else {
     
-    createMM(masterName, cascRegexPath, controllerFolderName, masterDefinition)
+    createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition)
 }
 sleep(2500)
-logger.info("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPath}.\n")
+logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cascRegexPath}.\n")
 
 
 //
@@ -108,49 +108,49 @@ logger.info("Finished with master '${masterName}' with CasC RegEx: ${cascRegexPa
 // only function definitions below here
 //
 //
-private void createMM(String masterName, String cascRegexPath, String controllerFolderName, def masterDefinition) {
+private void createMM(String controllerName, String cascRegexPath, String controllerFolderName, def controllerDefinition) {
   Logger logger = Logger.getLogger("oc-create-update-managed-controller")
-  logger.info "Master '${masterName}' does not exist yet. Creating it now."
-  String workshopId = "REPLACE_WORKSHOP_ID"
+  logger.info "controller '${controllerName}' does not exist yet. Creating it now."
 
   def configuration = new KubernetesMasterProvisioning()
-  masterDefinition.provisioning.each { k, v ->
+  controllerDefinition.provisioning.each { k, v ->
       configuration["${k}"] = v
   }
   
-  setRegex("$controllerFolderName-$masterName", cascRegexPath)
+  setRegex("$controllerFolderName-$controllerName", cascRegexPath)
   
   def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
-  ManagedMaster master = controllerFolder.createProject(ManagedMaster.class, masterName)
-    master.setConfiguration(configuration)
-    master.properties.replace(new ConnectedMasterLicenseServerProperty(null))
+  ManagedMaster controller = controllerFolder.createProject(ManagedMaster.class, controllerName)
+    controller.setConfiguration(configuration)
+    controller.properties.replace(new ConnectedMasterLicenseServerProperty(null))
     //needed for CasC RBAC
-    //master.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
+    //controller.properties.replace(new com.cloudbees.opscenter.server.security.SecurityEnforcer.OptOutProperty(com.cloudbees.opscenter.server.sso.AuthorizationOptOutMode.INSTANCE, false, null))
   //set casc bundle, but not for CasC workshop
-  master.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
-  master.properties.replace(new ConnectedMasterCascProperty("$controllerFolderName-$masterName"))
+  controller.properties.replace(new ConnectedMasterTokenProperty(hudson.util.Secret.fromString(UUID.randomUUID().toString())))
+  controller.properties.replace(new ConnectedMasterCascProperty("$controllerFolderName-$controllerName"))
   
-  master.save()
-  master.onModified()
+  controller.save()
+  controller.onModified()
 
   //ok, now we can actually boot this thing up
-  logger.info "Ensuring master '${masterName}' starts..."
-  def validActionSet = master.getValidActionSet()
+  logger.info "Ensuring controller '${controllerName}' starts..."
+  def validActionSet = controller.getValidActionSet()
   if (validActionSet.contains(ManagedMaster.Action.ACKNOWLEDGE_ERROR)) {
-      master.acknowledgeErrorAction()
+      controller.acknowledgeErrorAction()
       sleep(50)
   }
 
-  validActionSet = master.getValidActionSet()
+  validActionSet = controller.getValidActionSet()
   if (validActionSet.contains(ManagedMaster.Action.START)) {
-      master.startAction();
+      controller.startAction();
       sleep(50)
   } else if (validActionSet.contains(ManagedMaster.Action.PROVISION_AND_START)) {
-      master.provisionAndStartAction();
+      controller.provisionAndStartAction();
       sleep(50)
   } else {
-      throw "Cannot start the master." as Throwable
+      throw "Cannot start the controller." as Throwable
   }
+  
   //configure controller RBAC
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
