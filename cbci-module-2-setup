@@ -41,7 +41,7 @@ spec:
         }
         script {
           GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
-          controllerName = GitHubOrganization.toLowerCase()
+          controllerName = GitHubUsername.toLowerCase() + "-controller"
         }
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "GitHub username: ${GitHubUsername}"
