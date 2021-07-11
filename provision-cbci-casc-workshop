@@ -187,6 +187,7 @@ spec:
         echo "provisioning managed controller"
         sh '''
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
