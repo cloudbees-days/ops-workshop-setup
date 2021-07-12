@@ -27,6 +27,7 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
+def controllerFolder
 
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
@@ -41,7 +42,7 @@ if(adminUser==null) {
 
 String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
-  def controllerFolder = Jenkins.instance.getItem(controllerFolderName)
+  controllerFolder = Jenkins.instance.getItem(controllerFolderName)
   if (controllerFolder == null) {
       logger.info("$controllerFolderName Folder does not exist so creating")
       controllerFolder = Jenkins.instance.createProject(Folder.class, controllerFolderName);
@@ -95,12 +96,13 @@ Map controllerDefinition = yamlMapper.readValue(controllerDefinitionYaml, Map.cl
 logger.info("Create/update of controller '${controllerName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
-/*if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == controllerName }) {
+controllerFolder.getItem(controllerName)
+if (controllerName != null) {
   return
-} else {*/
-    
+} else {
+    //item with controller name does not exist in target folder
     createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition)
-//}
+}
 sleep(2500)
 logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cascRegexPath}.\n")
 
