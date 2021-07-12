@@ -25,7 +25,7 @@ import com.cloudbees.opscenter.server.casc.config.ConnectedMasterTokenProperty;
 
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger("oc-create-update-managed-controller.groovy")
+Logger logger = Logger.getLogger("provision-controller-with-casc.groovy")
 String jenkinsUserId = "REPLACE_JENKINS_USER"
 def controllerFolder
 
@@ -96,8 +96,8 @@ Map controllerDefinition = yamlMapper.readValue(controllerDefinitionYaml, Map.cl
 logger.info("Create/update of controller '${controllerName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
-controllerFolder.getItem(controllerName)
-if (controllerName != null) {
+def existingController = controllerFolder.getItem(controllerName)
+if (existingController != null) {
   return
 } else {
     //item with controller name does not exist in target folder
