@@ -95,12 +95,12 @@ Map controllerDefinition = yamlMapper.readValue(controllerDefinitionYaml, Map.cl
 logger.info("Create/update of controller '${controllerName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
-if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == controllerName }) {
+/*if (OperationsCenter.getInstance().getConnectedMasters().any { it?.getName() == controllerName }) {
   return
-} else {
+} else {*/
     
     createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition)
-}
+//}
 sleep(2500)
 logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cascRegexPath}.\n")
 
