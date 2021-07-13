@@ -275,22 +275,22 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"main"}' \
+                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"casc-gitops-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"main"}' \
+                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"pipeline-policies-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"main"}' \
+                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"rbac-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Cross Team Collaboration Lab: Enable Notifications","head":"collab-lab","base":"main"}' \
+                 --data '{"title":"Cross Team Collaboration Lab: Enable Notifications","head":"collab-lab","base":"dev-casc-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
 
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
