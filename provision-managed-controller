@@ -151,6 +151,7 @@ spec:
             git config user.name "${GitHubOrganization}"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
             git pull origin main
+            git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
@@ -171,6 +172,7 @@ spec:
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
             
             git pull origin main
+            git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
@@ -298,7 +300,7 @@ spec:
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                   https://api.github.com/orgs/${GitHubOrganization}/hooks \
-                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/teams-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
+                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
           """)
         }
         
