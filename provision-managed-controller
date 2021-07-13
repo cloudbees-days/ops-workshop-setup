@@ -6,10 +6,9 @@ pipeline {
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     targetType = event.installation.target_type.toString()
-    GitHubOrganization = event.installation.account.login.toString()
+    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString()
     controllerFolder = GitHubOrganization.toLowerCase()
-    GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
     controllerName = GitHubUsername.toLowerCase() + "-controller"
   }
   triggers {
