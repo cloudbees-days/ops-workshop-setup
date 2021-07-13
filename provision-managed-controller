@@ -2,15 +2,6 @@ def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
   options { timeout(time: 10, unit: 'MINUTES') }
-  environment {
-    WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
-    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
-    targetType = event.installation.target_type.toString()
-    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubUsername = event.sender.login.toString().toLowerCase()
-    controllerFolder = GitHubOrganization.toLowerCase()
-    controllerName = "${GitHubUsername}-controller"
-  }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
   } 
@@ -19,6 +10,15 @@ pipeline {
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
+      }
+      environment {
+        WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
+        GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+        targetType = event.installation.target_type.toString()
+        GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+        GitHubUsername = event.sender.login.toString().toLowerCase()
+        controllerFolder = GitHubOrganization.toLowerCase()
+        controllerName = "${GitHubUsername}-controller"
       }
       agent {
         kubernetes {
