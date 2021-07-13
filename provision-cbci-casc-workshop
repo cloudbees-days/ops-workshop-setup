@@ -170,6 +170,7 @@ spec:
             git push origin main
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'Accept: application/vnd.github.nebula-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/orgs/${GitHubOrganization}/repos \
                  --data '{"name":"dev-controller","description":"Example repository to be used for dynamic provisioning of a CloudBees CI managed controller with CasC.","visibility":"public","auto_init":true,"license_template":"mit"}'
