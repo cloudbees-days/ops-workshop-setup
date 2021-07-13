@@ -19,6 +19,7 @@ pipeline {
         GitHubUsername = event.sender.login.toString().toLowerCase()
         controllerFolder = GitHubOrganization.toLowerCase()
         controllerName = "${GitHubUsername}-controller"
+        bundleDir = "${controllerFolder}-${controllerName}"
       }
       agent {
         kubernetes {
@@ -306,11 +307,11 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${controllerName}"
-          sh "mkdir -p ${controllerName}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "rm -rf ./${bundleDir}"
+          sh "mkdir -p ${bundleDir}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleDir}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleDir} || true"
+          sh "kubectl cp --namespace sda ${bundleDir} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
