@@ -60,13 +60,6 @@ provisioning:
   disk: 20
   memory: 4000
   yaml: |
-    kind: Service
-    metadata:
-      annotations:
-        prometheus.io/scheme: 'http'
-        prometheus.io/path: '/${controllerFolderName}-${controllerName}/prometheus'
-        prometheus.io/port: '8080'
-        prometheus.io/scrape: 'true'
     kind: "StatefulSet"
     spec:
       template:
