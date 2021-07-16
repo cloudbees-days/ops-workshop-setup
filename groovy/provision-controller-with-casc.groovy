@@ -78,6 +78,8 @@ provisioning:
               value: "/var/jenkins_home/jcasc_secrets"
             - name: "GITHUB_ORGANIZATION"
               value: "REPLACE_GITHUB_ORG"
+            - name: "GITHUB_USER"
+              value: "REPLACE_GITHUB_USERNAME"
             volumeMounts:
             - name: "jcasc-secrets"
               mountPath: "/var/jenkins_home/jcasc_secrets"
