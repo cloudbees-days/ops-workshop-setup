@@ -1,18 +1,21 @@
 def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
+  options { timeout(time: 10, unit: 'MINUTES') }
   environment {
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString()
-    controllerName = GitHubUsername.toLowerCase() + "-controller"
     controllerFolder = GitHubOrganization.toLowerCase()
+    controllerName = "ops-controller"
+    bundleName = "${controllerFolder}-${controllerName}"
+    workshopId = "cloudbees-ci-casc-workshop"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
   }
   triggers {
-    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-casc-workshop'")
   } 
   stages {
     stage('Provision Managed Controller') {
@@ -22,7 +25,6 @@ pipeline {
       }
       agent {
         kubernetes {
-          label 'kubectl'
           yaml """
 kind: Pod
 metadata:
@@ -51,7 +53,7 @@ spec:
         
         echo "begin config bundle updates"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
-        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-ci-pipeline-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-ci-casc-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
         
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
@@ -65,17 +67,17 @@ spec:
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: '''
             echo $GitHubOrganization
-            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/cloudbees-ci-config-bundle
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/ops-controller
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
-            curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/helloworld-nodejs
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/dev-controller
             
             sleep 5
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"cloudbees-ci-config-bundle"}'
+                 https://api.github.com/repos/cloudbees-days/ops-controller/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"ops-controller","include_all_branches":true}'
                  
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -88,120 +90,111 @@ spec:
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
-
-            curl  -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/helloworld-nodejs/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"helloworld-nodejs"}'
             
-            rm -rf ./helloworld-nodejs || true
-            rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./ops-controller || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
             
-            mkdir -p helloworld-nodejs
-            mkdir -p cloudbees-ci-config-bundle
+            mkdir -p ops-controller
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
-            
-            sleep 5
-            
-            cd helloworld-nodejs
-            git init
-            git config user.email "$GitHubUsername@workshop.cb-sa.io"
-            git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/helloworld-nodejs.git
-            git pull origin main
-            git checkout main
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" hello.js
-            git commit -am 'updating $GitHubOrganization/helloworld-nodejs hello.js for $GitHubUsername'
-            git push origin main
-
-            cd ../pipeline-library
+          ''')
+          
+          waitUntil {
+            script {
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-library/git/ref/heads/main''', returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+          
+          sh(script: '''
+            cd pipeline-library
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-library.git
-            git pull origin master
-            git checkout master
+            git pull origin main
+            git checkout main
             rm Jenkinsfile
             git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
-            git push origin master
-            git checkout -B module-2
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
-            git commit -a -m 'updating $GitHubOrganization/pipeline-library configBundleUpdate.groovy for $GitHubUsername'
-            git push -u origin module-2
-
-            cd ../pipeline-template-catalog
+            git push origin main
+          ''')
+          
+          waitUntil {
+            script {
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/main''', returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+          
+          sh(script: '''
+            cd pipeline-template-catalog
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-template-catalog.git
-            git pull origin master
+            git pull origin main
+            git checkout main
             rm Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
-            git push -u origin master
+            git push origin main
+          ''')
             
-            git fetch
-            git checkout -B cross-team-collab-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
-            git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
-            git push -u origin cross-team-collab-lab
+          waitUntil {
+            script {
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/ops-controller/git/ref/heads/main''', returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
 
-            cd ../cloudbees-ci-config-bundle
+          sh(script: '''
+            cd ops-controller
             git init
-            git config user.email "$GitHubUsername@workshop.cb-sa.io"
-            git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-config-bundle.git
+            git config user.email "${GitHubUsername}@workshop.cb-sa.io"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/ops-controller.git
             
-            git pull origin master
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
-            git add .markerfile
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml
+            git checkout -b main
+            git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
-            
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/jenkins.yaml > jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugin-catalog.yaml > plugin-catalog.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugins.yaml > plugins.yaml
-
-            mkdir groovy
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-pipeline-workshop-create-jobs.groovy > groovy/cbci-pipeline-workshop-create-jobs.groovy 
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/cbci-pipeline-workshop-create-jobs.groovy
-
-            
             git add *
-            git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
-            git push origin master
+            git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
+            git push origin main
             
-             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                  https://api.github.com/orgs/$GitHubOrganization/hooks \
-                  --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/teams-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'Accept: application/vnd.github.nebula-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 https://api.github.com/orgs/${GitHubOrganization}/repos \
+                 --data '{"name":"dev-controller","description":"Example repository to be used for dynamic provisioning of a CloudBees CI managed controller with CasC.","visibility":"public","auto_init":true,"license_template":"mit"}'
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 https://api.github.com/orgs/$GitHubOrganization/hooks \
+                 --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
         }
-        
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh(script: '''
-            rm -rf ./$controllerName
-            mkdir -p $controllerName
-            cp cloudbees-ci-config-bundle/*.yaml $controllerName
-            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$controllerName || true
-            kubectl cp --namespace sda $controllerName cjoc-0:/var/jenkins_home/jcasc-bundles-store/
-          ''')
+          sh "rm -rf ./${bundleName}"
+          sh "mkdir -p ${bundleName}"
+          sh "cp ops-controller/*.yaml ${bundleName}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
         sh '''
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
@@ -210,7 +203,7 @@ spec:
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh '''
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-            cli groovy =<./groovy/oc-create-update-managed-controller.groovy
+            cli groovy =<./groovy/provision-controller-with-casc.groovy
           '''
         }
         

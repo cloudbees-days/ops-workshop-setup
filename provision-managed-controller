@@ -1,11 +1,7 @@
-def controllerName
-def targetType
+def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
   options { timeout(time: 10, unit: 'MINUTES') }
-  environment {
-    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
-  }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
   } 
@@ -14,6 +10,16 @@ pipeline {
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
+      }
+      environment {
+        WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
+        GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+        targetType = event.installation.target_type.toString()
+        GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+        GitHubUsername = event.sender.login.toString().toLowerCase()
+        controllerFolder = GitHubOrganization.toLowerCase()
+        controllerName = "${GitHubUsername}-controller"
+        bundleDir = "${controllerFolder}-${controllerName}"
       }
       agent {
         kubernetes {
@@ -37,12 +43,6 @@ spec:
         }
       }
       steps {
-        script {
-          def event = currentBuild.getBuildCauses()[0].event
-          targetType = event.installation.target_type.toString()
-          GitHubOrganization = event.installation.account.login.toString()
-          GitHubUsername = event.sender.login.toString()
-        }
         echo "installation.account.login:${GitHubOrganization}"
         checkout scm
         echo "GitHub target type (should be Organization): ${targetType}"
@@ -50,8 +50,6 @@ spec:
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId will be: ${GitHubUsername}"
         script {
-          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
-          controllerName = GitHubOrganization.toLowerCase()
           if(targetType != "Organization") {
             error "Installing Workshop GitHub App only supports GitHub Organizations, not Users."
           }
@@ -107,7 +105,23 @@ spec:
 
           waitUntil {
             script {
-              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/master", returnStdout: true
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/main", returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+
+          waitUntil {
+            script {
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-library/git/ref/heads/main", returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+
+          waitUntil {
+            script {
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/main", returnStdout: true
               echo "returned status: ${status}"
               return (status=="200")
             }
@@ -142,7 +156,7 @@ spec:
             git config user.email "${GitHubUsername}@workshop.cb-sa.io"
             git config user.name "${GitHubOrganization}"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-library.git
-            git pull origin master
+            git pull origin main
             git checkout -B module-2
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-library configBundleUpdate.groovy for ${GitHubUsername}'
@@ -153,13 +167,14 @@ spec:
             git config user.email "${GitHubUsername}@workshop.cb-sa.io"
             git config user.name "${GitHubOrganization}"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
-            git pull origin master
+            git pull origin main
+            git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
-            git push -u origin master
+            git push -u origin main
             
             git fetch
             git checkout -B cross-team-collab-lab
@@ -173,14 +188,15 @@ spec:
             git config user.name "${GitHubOrganization}"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
             
-            git pull origin master
+            git pull origin main
+            git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
-            git push origin master
+            git push origin main
             git fetch
 
             git checkout -b casc-gitops-lab
@@ -260,70 +276,72 @@ spec:
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on collab-lab branch for ${GitHubUsername}'
             git push -u origin collab-lab
-            git checkout master
+            git checkout main
             
             echo "create pull requests"
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Cross Team Collaboration: Add Event Trigger","head":"cross-team-collab-lab","base":"master"}' \
+                 --data '{"title":"Cross Team Collaboration: Add Event Trigger","head":"cross-team-collab-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"GitOps lab updates","head":"casc-gitops-lab","base":"master"}' \
+                 --data '{"title":"GitOps lab updates","head":"casc-gitops-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"master"}' \
+                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"casc-gitops-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"master"}' \
+                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"pipeline-policies-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"master"}' \
+                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"rbac-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Cross Team Collaboration Lab: Enable Notifications","head":"collab-lab","base":"master"}' \
+                 --data '{"title":"Cross Team Collaboration Lab: Enable Notifications","head":"collab-lab","base":"dev-casc-lab"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
 
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CloudBees CI Module 2 Setup","head":"cbci-module-2-setup","base":"master"}' \
+                 --data '{"title":"CloudBees CI Module 2 Setup","head":"cbci-module-2-setup","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
 
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                   https://api.github.com/orgs/${GitHubOrganization}/hooks \
-                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/teams-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
+                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
           """)
         }
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${controllerName}"
-          sh "mkdir -p ${controllerName}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${controllerName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${controllerName} || true"
-          sh "kubectl cp --namespace sda ${controllerName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "rm -rf ./${bundleDir}"
+          sh "mkdir -p ${bundleDir}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleDir}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleDir} || true"
+          sh "kubectl cp --namespace sda ${bundleDir} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
         sh """
-          sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
-          sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-create-update-managed-controller.groovy
-          sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/oc-create-update-managed-controller.groovy
+          sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/provision-controller-with-casc.groovy 
         """
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh """
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-            cli groovy =<./groovy/oc-create-update-managed-controller.groovy
+            cli groovy =<./groovy/provision-controller-with-casc.groovy
           """
         }
         
