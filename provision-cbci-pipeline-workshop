@@ -7,8 +7,8 @@ pipeline {
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString()
-    echo "GitHubUsername is [" + GitHubUsername + "]"
-    controllerName = GitHubUsername.toLowerCase() + "-controller"
+    whatEven = GitHubUsername.toLowerCase()
+    controllerName = "$whatEven" + "-controller"
     controllerFolder = GitHubOrganization.toLowerCase()
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
   }
