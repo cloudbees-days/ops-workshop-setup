@@ -124,8 +124,8 @@ spec:
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-library.git
-            git pull origin master
-            git checkout master
+            git pull origin main
+            git checkout main
             rm Jenkinsfile
             git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
             git push origin master
@@ -139,12 +139,12 @@ spec:
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-template-catalog.git
-            git pull origin master
+            git pull origin main
             rm Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
-            git push -u origin master
+            git push -u origin main
             
             git fetch
             git checkout -B cross-team-collab-lab
@@ -158,7 +158,7 @@ spec:
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-config-bundle.git
             
-            git pull origin master
+            git pull origin main
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
             git add .markerfile
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml
@@ -180,7 +180,7 @@ spec:
             
             git add *
             git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
-            git push origin master
+            git push origin main
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
