@@ -128,7 +128,7 @@ spec:
             git checkout main
             rm Jenkinsfile
             git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
-            git push origin master
+            git push origin main
             git checkout -B module-2
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
             git commit -a -m 'updating $GitHubOrganization/pipeline-library configBundleUpdate.groovy for $GitHubUsername'
