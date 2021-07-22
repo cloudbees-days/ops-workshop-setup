@@ -16,7 +16,7 @@ if (templateFolderJob == null) {
   //Pipeline Template Catalog
   SCMSource scm = new GitSCMSource("https://github.com/REPLACE_GITHUB_ORG/pipeline-template-catalog.git");
   scm.setCredentialsId("cloudbees-ci-pipeline-workshop-github-app");
-  TemplateCatalog catalog = new TemplateCatalog(scm, "master");
+  TemplateCatalog catalog = new TemplateCatalog(scm, "main");
   catalog.setUpdateInterval("1h");
   GlobalTemplateCatalogManagement.get().addCatalog(catalog);
   GlobalTemplateCatalogManagement.get().save();
