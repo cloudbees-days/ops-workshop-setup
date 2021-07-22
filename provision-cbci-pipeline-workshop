@@ -160,6 +160,7 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-config-bundle.git
             
             git pull origin main
+            git checkout main
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
             git add .markerfile
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml
