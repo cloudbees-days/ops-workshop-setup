@@ -6,11 +6,12 @@ pipeline {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubUsername = event.sender.login.toString()
+    GitHubUsername = event.sender.login.toString().toLowerCase()
     whatEven = GitHubUsername.toLowerCase()
-    controllerName = "$whatEven" + "-controller"
-    controllerFolder = GitHubOrganization.toLowerCase()
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
+    controllerFolder = GitHubOrganization.toLowerCase()
+    controllerName = "${GitHubUsername}-controller"
+    bundleDir = "${controllerFolder}-${controllerName}"
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
@@ -194,11 +195,11 @@ spec:
         echo "creating config bundle on OC"
         container('kubectl') {
           sh(script: '''
-            rm -rf ./$controllerName
-            mkdir -p $controllerName
-            cp cloudbees-ci-config-bundle/*.yaml $controllerName
-            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$controllerName || true
-            kubectl cp --namespace sda $controllerName cjoc-0:/var/jenkins_home/jcasc-bundles-store/
+            rm -rf ./$bundleDir
+            mkdir -p $bundleDir
+            cp cloudbees-ci-config-bundle/*.yaml $bundleDir
+            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$bundleDir || true
+            kubectl cp --namespace sda $bundleDir cjoc-0:/var/jenkins_home/jcasc-bundles-store/
           ''')
         }
         
