@@ -68,7 +68,9 @@ spec:
             git config user.email "cloudbees-ci.bot@cloudbees.com"
             git config user.name "CloudBees CI Bot"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
-            git pull origin master
+            git pull origin main
+            git checkout main
+
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
