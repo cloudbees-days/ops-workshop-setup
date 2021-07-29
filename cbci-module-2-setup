@@ -82,16 +82,6 @@ spec:
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                  -X DELETE \
-                 https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/refs/heads/pipeline-policies-lab
-            
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 -X DELETE \
-                 https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/refs/heads/rbac-lab
-            
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 -X DELETE \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/refs/heads/cbci-module-2-setup
           """)
         }
