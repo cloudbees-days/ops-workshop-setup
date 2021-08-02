@@ -26,20 +26,31 @@ pipeline {
         kubernetes {
           label 'kubectl'
           yaml """
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: kubectl
 spec:
-  serviceAccountName: jenkins
-  containers:
-  - name: kubectl
-    image: gcr.io/cloud-builders/kubectl
-    resources:
-      requests:
-        memory: "500Mi"
-    command:
-    - cat
-    tty: true 
+  replicas: 4
+  selector:
+    matchLabels:
+      name: kubectl
+  template:
+    metadata:
+      name: kubectl
+      labels:
+        name: kubectl
+    spec:
+      serviceAccountName: jenkins
+      containers:
+      - name: kubectl
+        image: gcr.io/cloud-builders/kubectl
+        resources:
+          requests:
+            memory: "500Mi"
+        command:
+        - cat
+        tty: true 
           """
         }
       }
