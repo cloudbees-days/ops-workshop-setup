@@ -50,27 +50,7 @@ if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
 } else {
    controllerFolderName = "teams"
 }
-//create API token credential for admin user
-def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
-def jenkinsTokenName = 'REPLACE_JENKINS_USER-admin-api-token'
-def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
-if(tokens.size() != 0) {
-    logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
-    tokens.each {
-        apiTokenProperty.tokenStore.revokeToken(it.getUuid())
-    }
-}
 
-def result = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
-adminUser.save()
-
-String id = "admin-cli-token"
-Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, adminUserId, result)
-
-AbstractFolder<?> folderAbs = AbstractFolder.class.cast(controllerFolder)
-FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredentialsProperty.class)
-property = new FolderCredentialsProperty([c])
-folderAbs.addProperty(property)
 
 logger.info("controllerFolderName is ${controllerFolderName}")
 
@@ -171,6 +151,28 @@ private void createMM(String controllerName, String cascRegexPath, String contro
   } else {
       throw "Cannot start the controller." as Throwable
   }
+  
+  //create API token credential for admin user
+  def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
+  def jenkinsTokenName = 'REPLACE_JENKINS_USER-admin-api-token'
+  def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
+  if(tokens.size() != 0) {
+      logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
+      tokens.each {
+          apiTokenProperty.tokenStore.revokeToken(it.getUuid())
+      }
+  }
+
+  def result = apiTokenProperty.tokenStore.generateNewToken(jenkinsTokenName).plainValue
+  adminUser.save()
+
+  String id = "admin-cli-token"
+  Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description:"+id, adminUserId, result)
+
+  AbstractFolder<?> folderAbs = AbstractFolder.class.cast(controllerFolder)
+  FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredentialsProperty.class)
+  property = new FolderCredentialsProperty([c])
+  folderAbs.addProperty(property)  
   
   //configure controller RBAC
   String roleName = "workshop-admin"
