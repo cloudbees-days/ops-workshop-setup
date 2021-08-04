@@ -30,9 +30,19 @@ String jenkinsUserId = "REPLACE_JENKINS_USER"
 def controllerFolder
 
 def user = User.get(jenkinsUserId, false)
+try {
+  logger.info("user full name: " + user.getFullName())
+} catch(Exception ex) {
+  //
+}
 if(user==null) {
   user = Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
+
+while(user == null) {
+  user = User.get(jenkinsUserId, false)
+}
+
 user.save()
 
 String adminUserId = "REPLACE_JENKINS_USER-admin"
