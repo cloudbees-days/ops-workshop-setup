@@ -26,24 +26,6 @@ import com.cloudbees.opscenter.server.casc.config.ConnectedMasterTokenProperty;
 import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("provision-controller-with-casc.groovy")
-String jenkinsUserId = "REPLACE_JENKINS_USER"
-def controllerFolder
-
-def user = User.get(jenkinsUserId, false)
-try {
-  logger.info("user full name: " + user.getFullName())
-} catch(Exception ex) {
-  //
-}
-if(user==null) {
-  user = Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
-}
-
-while(user == null) {
-  user = User.get(jenkinsUserId, false)
-}
-
-user.save()
 
 String adminUserId = "REPLACE_JENKINS_USER-admin"
 def adminUser = User.get(adminUserId, false)
@@ -51,6 +33,7 @@ if(adminUser==null) {
   Jenkins.instance.securityRealm.createAccount(adminUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
 
+def controllerFolder
 String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
   controllerFolder = Jenkins.instance.getItem(controllerFolderName)
@@ -87,6 +70,21 @@ AbstractFolder<?> folderAbs = AbstractFolder.class.cast(controllerFolder)
 FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredentialsProperty.class)
 property = new FolderCredentialsProperty([c])
 folderAbs.addProperty(property)  
+
+String jenkinsUserId = "REPLACE_JENKINS_USER"
+def user = User.get(jenkinsUserId, false)
+try {
+  logger.info("user full name: " + user.getFullName())
+} catch(Exception ex) {
+  //
+}
+if(user==null) {
+  user = Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
+}
+while(user == null) {
+  user = User.get(jenkinsUserId, false)
+}
+user.save()
 
 logger.info("controllerFolderName is ${controllerFolderName}")
 
