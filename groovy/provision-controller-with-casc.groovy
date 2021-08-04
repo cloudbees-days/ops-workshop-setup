@@ -152,6 +152,11 @@ private void createMM(String controllerName, String cascRegexPath, String contro
       throw "Cannot start the controller." as Throwable
   }
   
+  def adminUser = User.get(adminUserId, false)
+  while(adminUser == null) {
+    adminUser = User.get(adminUserId, false)
+  }
+  
   //create API token credential for admin user
   def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
   def jenkinsTokenName = 'REPLACE_JENKINS_USER-admin-api-token'
