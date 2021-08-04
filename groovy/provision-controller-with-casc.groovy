@@ -31,8 +31,9 @@ def controllerFolder
 
 def user = User.get(jenkinsUserId, false)
 if(user==null) {
-  Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
+  user = Jenkins.instance.securityRealm.createAccount(jenkinsUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
+user.save()
 
 String adminUserId = "REPLACE_JENKINS_USER-admin"
 def adminUser = User.get(adminUserId, false)
