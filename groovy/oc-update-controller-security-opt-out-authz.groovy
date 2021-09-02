@@ -9,12 +9,16 @@ import jenkins.model.Jenkins
 import hudson.*
 import hudson.model.*
 
+String controllerFolderName = "REPLACE_GITHUB_ORG"
 String masterName = "REPLACE_CONTROLLER_NAME" 
 
+def controllerFolder = Jenkins.instance.getItem(controllerFolderName)
+
 println "Master '${masterName}' already exists. Updating it."
-ManagedMaster managedMaster = OperationsCenter.getInstance().getConnectedMasters().find { it.name == masterName } as ManagedMaster
+ManagedMaster managedMaster = controllerFolder.getItem(masterName)
+
 
 //needed for CasC RBAC
 managedMaster.properties.replace(new SecurityEnforcer.OptOutProperty(AuthorizationOptOutMode.INSTANCE, false, null))
 managedMaster.save()
-managedMaster.onModified()
+
