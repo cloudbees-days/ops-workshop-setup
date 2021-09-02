@@ -88,6 +88,7 @@ spec:
         
         echo "updating managed controller security opt out mode"
         sh """
+          sed -i "s/REPLACE_GITHUB_ORG/$controllerFolder/g" ./groovy/oc-update-controller-security-opt-out-authz.groovy 
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/oc-update-controller-security-opt-out-authz.groovy
         """
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
