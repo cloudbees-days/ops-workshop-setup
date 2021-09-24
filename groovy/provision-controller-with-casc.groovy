@@ -107,7 +107,7 @@ provisioning:
   cpus: 1
   disk: 20
   memory: 4000
-  domain: "${jenkinsUserId}-${controllerName}"
+  domain: "${controllerFolderName}-${controllerName}"
   yaml: |
     kind: "StatefulSet"
     spec:
