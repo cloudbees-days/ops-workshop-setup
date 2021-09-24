@@ -28,12 +28,13 @@ spec:
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
+    GitHubApp = event.installation.app_slug.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString()
     controllerFolder = GitHubOrganization.toLowerCase()
-    controllerName = GitHubUsername.toLowerCase()
+    controllerName = "controller"
     bundleName = "${controllerFolder}-${controllerName}"
-    workshopId = "cloudbees-ci-casc-workshop"
+    workshopId = "cloudbees-fm-workshop"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
   }
   stages {
@@ -174,7 +175,7 @@ spec:
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                   https://api.github.com/orgs/${GitHubOrganization}/hooks \
-                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/sda/queue/${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
+                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/sda/queue/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
           """)
           
           waitUntil {
@@ -205,9 +206,11 @@ spec:
         echo "provisioning managed controller"
         sh """
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/provision-controller-with-casc.groovy 
         """
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
