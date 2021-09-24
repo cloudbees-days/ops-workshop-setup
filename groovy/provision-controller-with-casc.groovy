@@ -124,6 +124,8 @@ provisioning:
               value: "REPLACE_GITHUB_USERNAME"
             - name: "GITHUB_APP"
               value: "REPLACE_GITHUB_APP"
+            - name: "CONTROLLER_SUBDOMAIN"
+              value: "${controllerFolderName}-${controllerName}"
             - name: "ENVIRONMENT_PREFIX"
               value: "${environmentPrefix}"
             volumeMounts:
