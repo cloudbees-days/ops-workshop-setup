@@ -16,7 +16,7 @@ pipeline {
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
   }
   triggers {
-    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-casc-workshop'")
+    eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-casc-workshop'")
   } 
   stages {
     stage('Provision Managed Controller') {
@@ -54,7 +54,7 @@ spec:
         
         echo "begin config bundle updates"
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
-        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/cloudbees-ci-casc-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/${ENVIRONMENT_PREFIX}cloudbees-ci-casc-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
         
         sh "curl -O http://cjoc/cjoc/jnlpJars/jenkins-cli.jar"
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
