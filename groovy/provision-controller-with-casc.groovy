@@ -33,13 +33,25 @@ if(adminUser==null) {
   Jenkins.instance.securityRealm.createAccount(adminUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
 }
 
+def environmentPrefix = "REPLACE_ENVIRONMENT_PREFIX"
+if(environmentPrefix.startsWith("REPLACE_")) {
+  environmentPrefix = ""
+}
+
+def workshopFolderName = "REPLACE_GITHUB_APP"
+def workshopFolder = Jenkins.instance.getItem(workshopFolderName)
+if (workshopFolder == null) {
+    logger.info("$workshopFolderName Folder does not exist so creating")
+    workshopFolder = Jenkins.instance.createProject(Folder.class, workshopFolderName);
+}
+
 def controllerFolder
 String controllerFolderName = "REPLACE_FOLDER_NAME"
 if(!controllerFolderName.startsWith("REPLACE_FOLDER")) {
-  controllerFolder = Jenkins.instance.getItem(controllerFolderName)
+  controllerFolder = workshopFolder.getItem(controllerFolderName)
   if (controllerFolder == null) {
       logger.info("$controllerFolderName Folder does not exist so creating")
-      controllerFolder = Jenkins.instance.createProject(Folder.class, controllerFolderName);
+      controllerFolder = workshopFolder.createProject(Folder.class, controllerFolderName);
   }
 } else {
    controllerFolderName = "teams"
@@ -89,12 +101,13 @@ user.save()
 logger.info("controllerFolderName is ${controllerFolderName}")
 
 String controllerName = "REPLACE_CONTROLLER_NAME" 
-String cascRegexPath = "${controllerFolderName}/${controllerName}"
+String cascRegexPath = "${workshopFolderName}/${controllerFolderName}/${controllerName}"
 String controllerDefinitionYaml = """
 provisioning:
   cpus: 1
   disk: 20
   memory: 4000
+  domain: "${jenkinsUserId}-${controllerName}"
   yaml: |
     kind: "StatefulSet"
     spec:
@@ -109,6 +122,10 @@ provisioning:
               value: "REPLACE_GITHUB_ORG"
             - name: "GITHUB_USER"
               value: "REPLACE_GITHUB_USERNAME"
+            - name: "GITHUB_APP"
+              value: "REPLACE_GITHUB_APP"
+            - name: "ENVIRONMENT_PREFIX"
+              value: "${environmentPrefix}"
             volumeMounts:
             - name: "jcasc-secrets"
               mountPath: "/var/jenkins_home/jcasc_secrets"
@@ -132,7 +149,7 @@ if (existingController != null) {
   return
 } else {
     //item with controller name does not exist in target folder
-    createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition)
+    createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition, workshopFolder)
 }
 sleep(2500)
 logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cascRegexPath}.\n")
@@ -143,7 +160,7 @@ logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cas
 // only function definitions below here
 //
 //
-private void createMM(String controllerName, String cascRegexPath, String controllerFolderName, def controllerDefinition) {
+private void createMM(String controllerName, String cascRegexPath, String controllerFolderName, def controllerDefinition, def workshopFolder) {
   Logger logger = Logger.getLogger("oc-create-update-managed-controller")
   logger.info "controller '${controllerName}' does not exist yet. Creating it now."
 
@@ -154,7 +171,7 @@ private void createMM(String controllerName, String cascRegexPath, String contro
   
   setRegex("$controllerFolderName-$controllerName", cascRegexPath)
   
-  def controllerFolder = Jenkins.instance.getItem(controllerFolderName) 
+  def controllerFolder = workshopFolder.getItem(controllerFolderName) 
   ManagedMaster controller = controllerFolder.createProject(ManagedMaster.class, controllerName)
     controller.setConfiguration(configuration)
     controller.properties.replace(new ConnectedMasterLicenseServerProperty(null))
@@ -189,7 +206,7 @@ private void createMM(String controllerName, String cascRegexPath, String contro
   String roleName = "workshop-admin"
   String groupName = "Team Administrators";
   
-  def folderGroupItem = Jenkins.instance.getItem(controllerFolderName);
+  def folderGroupItem = workshopFolder.getItem(controllerFolderName);
   def folderContainer = GroupContainerLocator.locate(folderGroupItem);
   
   Group group = new Group(folderContainer, groupName);
@@ -210,4 +227,3 @@ private static void setRegex(String bundleName, String cascRegexPath) {
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl();
     accessControl.updateRegex(bundleName, cascRegexPath);
 }
-
