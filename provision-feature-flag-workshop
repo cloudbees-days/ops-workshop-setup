@@ -116,6 +116,8 @@ spec:
             git config user.email "cloudbees-ci.bot@cloudbees.com"
             git config user.name "CloudBees CI Bot"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
+            
+            git checkout -b main
             git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
@@ -129,6 +131,7 @@ spec:
             git config user.name "CloudBees CI Bot"
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/cloudbees-ci-config-bundle.git
             
+            git checkout -b main
             git pull origin main
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugin-catalog.yaml > plugin-catalog.yaml
