@@ -219,7 +219,7 @@ spec:
         withCredentials([usernamePassword(credentialsId: 'admin-cli-token', usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh """
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-            cli groovy =<./groovy/oc-create-update-managed-controller.groovy
+            cli groovy =<./groovy/provision-controller-with-casc.groovy
           """
         }
         
