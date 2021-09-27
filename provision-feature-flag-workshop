@@ -170,6 +170,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.vuejs > .vuejs
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.env.development > .env.development
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.env.production > .env.production
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" .env
             git add *
             git add .vuejs
             git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
