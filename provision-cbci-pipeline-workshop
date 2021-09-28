@@ -108,7 +108,7 @@ spec:
             mkdir -p cloudbees-ci-config-bundle
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
-          """)
+          ''')
           
           waitUntil {
             script {
@@ -118,7 +118,7 @@ spec:
             }
           }
           
-          sh(script: """
+          sh(script: '''
             
             cd helloworld-nodejs
             git init
@@ -130,7 +130,7 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" hello.js
             git commit -am 'updating $GitHubOrganization/helloworld-nodejs hello.js for $GitHubUsername'
             git push origin main
-          """)
+          ''')
           
           waitUntil {
             script {
@@ -140,7 +140,7 @@ spec:
             }
           }
           
-          sh(script: """
+          sh(script: '''
 
             cd ../pipeline-library
             git init
@@ -156,7 +156,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
             git commit -a -m 'updating $GitHubOrganization/pipeline-library configBundleUpdate.groovy for $GitHubUsername'
             git push -u origin module-2
-          """)
+          ''')
           
           waitUntil {
             script {
@@ -166,7 +166,7 @@ spec:
             }
           }
           
-          sh(script: """
+          sh(script: '''
 
             cd ../pipeline-template-catalog
             git init
@@ -186,7 +186,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
             git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
             git push -u origin cross-team-collab-lab
-          """)
+          ''')
           
           waitUntil {
             script {
@@ -196,7 +196,7 @@ spec:
             }
           }
           
-          sh(script: """
+          sh(script: '''
 
             cd ../cloudbees-ci-config-bundle
             git init
