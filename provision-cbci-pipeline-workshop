@@ -5,13 +5,14 @@ pipeline {
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
+    GitHubApp = event.installation.app_slug.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString().toLowerCase()
     whatEven = GitHubUsername.toLowerCase()
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
     controllerFolder = GitHubOrganization.toLowerCase()
-    controllerName = "${GitHubUsername}-controller"
-    bundleDir = "${controllerFolder}-${controllerName}"
+    controllerName = "${controllerFolder}-controller"
+    bundleName = "${controllerFolder}-${controllerName}"
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
@@ -107,7 +108,13 @@ spec:
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
             
-            sleep 5
+            waitUntil {
+              script {
+                def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/helloworld-nodejs/git/ref/heads/main''', returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
             
             cd helloworld-nodejs
             git init
@@ -119,6 +126,14 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" hello.js
             git commit -am 'updating $GitHubOrganization/helloworld-nodejs hello.js for $GitHubUsername'
             git push origin main
+            
+            waitUntil {
+              script {
+                def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-library/git/ref/heads/main''', returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd ../pipeline-library
             git init
@@ -134,6 +149,14 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-library/module-2/vars/configBundleUpdate.groovy > vars/configBundleUpdate.groovy
             git commit -a -m 'updating $GitHubOrganization/pipeline-library configBundleUpdate.groovy for $GitHubUsername'
             git push -u origin module-2
+            
+            waitUntil {
+              script {
+                def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/main''', returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd ../pipeline-template-catalog
             git init
@@ -153,6 +176,14 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
             git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
             git push -u origin cross-team-collab-lab
+            
+            waitUntil {
+              script {
+                def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/main''', returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
 
             cd ../cloudbees-ci-config-bundle
             git init
@@ -188,27 +219,28 @@ spec:
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                   https://api.github.com/orgs/$GitHubOrganization/hooks \
-                  --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$bundleDir/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
+                  --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
         }
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh(script: '''
-            rm -rf ./$bundleDir
-            mkdir -p $bundleDir
-            cp cloudbees-ci-config-bundle/*.yaml $bundleDir
-            kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/$bundleDir || true
-            kubectl cp --namespace sda $bundleDir cjoc-0:/var/jenkins_home/jcasc-bundles-store/
-          ''')
+          sh "rm -rf ./${bundleName}"
+          sh "mkdir -p ${bundleName}"
+          sh "cp ops-controller/*.yaml ${bundleName}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
         sh '''
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_ENVIRONMENT_PREFIX/$ENVIRONMENT_PREFIX/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/provision-controller-with-casc.groovy 
         '''
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
