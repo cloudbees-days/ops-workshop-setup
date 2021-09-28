@@ -42,6 +42,7 @@ spec:
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
+        environment name: 'TARGET_TYPE', value: 'Organization'
       }
       steps {
         echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
@@ -232,6 +233,11 @@ spec:
             """
         }
       }
+    }
+  }
+  post {
+    always {
+      echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
     }
   }
 }
