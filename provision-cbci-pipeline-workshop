@@ -11,7 +11,7 @@ pipeline {
     whatEven = GitHubUsername.toLowerCase()
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
     controllerFolder = GitHubOrganization.toLowerCase()
-    controllerName = "${controllerFolder}-controller"
+    controllerName = "controller"
     bundleName = "${controllerFolder}-${controllerName}"
   }
   triggers {
