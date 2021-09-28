@@ -126,6 +126,14 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
             git push -u origin main
 
+            waitUntil {
+              script {
+                def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/main", returnStdout: true
+                echo "returned status: ${status}"
+                return (status=="200")
+              }
+            }
+
             cd ../cloudbees-ci-config-bundle
             git init
             git config user.email "cloudbees-ci.bot@cloudbees.com"
