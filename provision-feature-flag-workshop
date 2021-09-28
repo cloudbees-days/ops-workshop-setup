@@ -137,7 +137,7 @@ spec:
           
           sh(script: """
 
-            cd ../cloudbees-ci-config-bundle
+            cd cloudbees-ci-config-bundle
             git init
             git config user.email "cloudbees-ci.bot@cloudbees.com"
             git config user.name "CloudBees CI Bot"
