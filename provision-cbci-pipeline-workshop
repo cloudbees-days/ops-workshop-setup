@@ -119,7 +119,6 @@ spec:
           }
           
           sh(script: '''
-            
             cd helloworld-nodejs
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
@@ -141,8 +140,7 @@ spec:
           }
           
           sh(script: '''
-
-            cd ../pipeline-library
+            cd pipeline-library
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
@@ -168,7 +166,7 @@ spec:
           
           sh(script: '''
 
-            cd ../pipeline-template-catalog
+            cd pipeline-template-catalog
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
@@ -198,7 +196,7 @@ spec:
           
           sh(script: '''
 
-            cd ../cloudbees-ci-config-bundle
+            cd cloudbees-ci-config-bundle
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
