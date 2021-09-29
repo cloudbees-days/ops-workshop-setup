@@ -2,6 +2,18 @@ def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none
   options { timeout(time: 10, unit: 'MINUTES') }
+  environment {
+    WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
+    GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+    TARGET_TYPE = event.installation.target_type.toString()
+    GitHubApp = event.installation.app_slug.toString()
+    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+    GitHubUsername = event.sender.login.toString().toLowerCase()
+    controllerFolder = GitHubOrganization.toLowerCase()
+    controllerName = "controller"
+    bundleName = "${controllerFolder}-${controllerName}"
+    WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
+  }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-workshop'")
   } 
@@ -11,17 +23,6 @@ pipeline {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
         environment name: 'TARGET_TYPE', value: 'Organization'
-      }
-      environment {
-        WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
-        GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
-        targetType = event.installation.target_type.toString()
-        GitHubApp = event.installation.app_slug.toString()
-        GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-        GitHubUsername = event.sender.login.toString().toLowerCase()
-        controllerFolder = GitHubOrganization.toLowerCase()
-        controllerName = "controller"
-        bundleName = "${controllerFolder}-${controllerName}"
       }
       agent {
         kubernetes {
@@ -47,12 +48,12 @@ spec:
       steps {
         echo "installation.account.login:${GitHubOrganization}"
         checkout scm
-        echo "GitHub target type (should be Organization): ${targetType}"
+        echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
         echo "GitHub username: ${GitHubUsername}"
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId will be: ${GitHubUsername}"
         script {
-          if(targetType != "Organization") {
+          if(TARGET_TYPE != "Organization") {
             error "Installing Workshop GitHub App only supports GitHub Organizations, not Users."
           }
         }
@@ -367,6 +368,11 @@ spec:
             """
         }
       }
+    }
+  }
+  post {
+    always {
+      echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
     }
   }
 }
