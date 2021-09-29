@@ -10,16 +10,18 @@ pipeline {
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
+        environment name: 'TARGET_TYPE', value: 'Organization'
       }
       environment {
         WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
         GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
         targetType = event.installation.target_type.toString()
+        GitHubApp = event.installation.app_slug.toString()
         GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
         GitHubUsername = event.sender.login.toString().toLowerCase()
         controllerFolder = GitHubOrganization.toLowerCase()
-        controllerName = "${GitHubUsername}-controller"
-        bundleDir = "${controllerFolder}-${controllerName}"
+        controllerName = "controller"
+        bundleName = "${controllerFolder}-${controllerName}"
       }
       agent {
         kubernetes {
@@ -332,19 +334,22 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${bundleDir}"
-          sh "mkdir -p ${bundleDir}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleDir}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleDir} || true"
-          sh "kubectl cp --namespace sda ${bundleDir} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "rm -rf ./${bundleName}"
+          sh "mkdir -p ${bundleName}"
+          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleName}"
+          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
         sh """
           sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" ./groovy/provision-controller-with-casc.groovy
+          sed -i "s/REPLACE_ENVIRONMENT_PREFIX/$ENVIRONMENT_PREFIX/g" ./groovy/provision-controller-with-casc.groovy
           sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/provision-controller-with-casc.groovy 
         """
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
