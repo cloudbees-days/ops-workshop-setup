@@ -9,12 +9,14 @@ import jenkins.model.Jenkins
 import hudson.*
 import hudson.model.*
 
+String workshopFolderName = "REPLACE_GITHUB_APP"
 String controllerFolderName = "REPLACE_GITHUB_ORG"
 String masterName = "REPLACE_CONTROLLER_NAME" 
 
-def controllerFolder = Jenkins.instance.getItem(controllerFolderName)
+def workshopFolder = Jenkins.instance.getItem(workshopFolderName)
+def controllerFolder = workshopFolder.getItem(controllerFolderName)
 
-println "Master '${masterName}' already exists. Updating it."
+println "Controller '${masterName}' already exists. Updating it."
 ManagedMaster managedMaster = controllerFolder.getItem(masterName)
 
 
