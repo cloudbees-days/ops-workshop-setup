@@ -372,7 +372,8 @@ spec:
   }
   post {
     always {
-      echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
+      echo "installation.account.login:${GitHubOrganization}"
+      error: "GitHub target type (should be Organization): ${TARGET_TYPE}"
     }
   }
 }
