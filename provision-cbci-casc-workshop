@@ -14,6 +14,7 @@ pipeline {
     bundleName = "${controllerFolder}-${controllerName}"
     workshopId = "cloudbees-ci-casc-workshop"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
+    AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-casc-workshop'")
@@ -164,6 +165,7 @@ spec:
             git pull origin main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml 
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
