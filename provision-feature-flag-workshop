@@ -36,6 +36,7 @@ spec:
     bundleName = "${controllerFolder}-${controllerName}"
     workshopId = "cloudbees-fm-workshop"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
+    AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
   }
   stages {
     stage('Provision Managed Controller') {
@@ -149,7 +150,8 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugin-catalog.yaml > plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbff/plugins.yaml > plugins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/mc-create-pipeline-template-job.groovy > create-pipeline-template-job.groovy  
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
+            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
