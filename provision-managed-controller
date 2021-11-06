@@ -210,7 +210,7 @@ spec:
             git pull origin main
             git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -226,8 +226,8 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/plugins.yaml > plugins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                       
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -238,8 +238,8 @@ spec:
             git checkout -b pipeline-policies-lab
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-policies-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-policies-lab/jenkins.yaml > jenkins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -252,8 +252,8 @@ spec:
             git add rbac.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/rbac-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/rbac-lab/jenkins.yaml > jenkins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -269,8 +269,8 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugin-catalog.yaml > plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugins.yaml > plugins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-module-2-create-pipeline-template-job.groovy > groovy/create-pipeline-template-job.groovy  
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                       
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -286,8 +286,8 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/plugins.yaml > plugins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -301,8 +301,8 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/collab-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/collab-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/collab-lab/plugins.yaml > plugins.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s/REPLACE_AVAILABILITY_PATTERN/$AVAILABILITY_PATTERN/g" bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                      
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
@@ -359,8 +359,8 @@ spec:
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
           sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
