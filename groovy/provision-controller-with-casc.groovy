@@ -101,6 +101,7 @@ user.save()
 logger.info("controllerFolderName is ${controllerFolderName}")
 
 String controllerName = "REPLACE_CONTROLLER_NAME" 
+String cascRegexPath = "${workshopFolderName}/${controllerFolderName}/${controllerName}"
 String controllerDefinitionYaml = """
 provisioning:
   cpus: 1
@@ -142,7 +143,7 @@ provisioning:
 def yamlMapper = Serialization.yamlMapper()
 Map controllerDefinition = yamlMapper.readValue(controllerDefinitionYaml, Map.class);
 
-logger.info("Create/update of controller '${controllerName}'.")
+logger.info("Create/update of controller '${controllerName}' beginning with CasC RegEx: ${cascRegexPath}.")
 
 //Either update or create the mm with this config
 def existingController = controllerFolder.getItem(controllerName)
@@ -150,10 +151,10 @@ if (existingController != null) {
   return
 } else {
     //item with controller name does not exist in target folder
-    createMM(controllerName, controllerFolderName, controllerDefinition, workshopFolder)
+    createMM(controllerName, cascRegexPath, controllerFolderName, controllerDefinition, workshopFolder)
 }
 sleep(2500)
-logger.info("Finished with controller '${controllerName}'.\n")
+logger.info("Finished with controller '${controllerName}' with CasC RegEx: ${cascRegexPath}.\n")
 
 
 //
@@ -161,7 +162,7 @@ logger.info("Finished with controller '${controllerName}'.\n")
 // only function definitions below here
 //
 //
-private void createMM(String controllerName, String controllerFolderName, def controllerDefinition, def workshopFolder) {
+private void createMM(String controllerName, String cascRegexPath, String controllerFolderName, def controllerDefinition, def workshopFolder) {
   Logger logger = Logger.getLogger("oc-create-update-managed-controller")
   logger.info "controller '${controllerName}' does not exist yet. Creating it now."
 
@@ -169,6 +170,8 @@ private void createMM(String controllerName, String controllerFolderName, def co
   controllerDefinition.provisioning.each { k, v ->
       configuration["${k}"] = v
   }
+  
+  setRegex("$controllerFolderName-$controllerName", cascRegexPath)
   
   def controllerFolder = workshopFolder.getItem(controllerFolderName) 
   ManagedMaster controller = controllerFolder.createProject(ManagedMaster.class, controllerName)
@@ -218,4 +221,11 @@ private void createMM(String controllerName, String controllerFolderName, def co
   folderContainer.addRoleFilter("browse");
   
   sleep(500)
+}
+
+private static void setRegex(String bundleName, String cascRegexPath) {
+    sleep(100)
+    ExtensionList.lookupSingleton(BundleStorage.class).initialize();
+    BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl();
+    accessControl.updateRegex(bundleName, cascRegexPath);
 }
