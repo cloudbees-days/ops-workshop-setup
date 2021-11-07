@@ -227,5 +227,5 @@ private static void setRegex(String bundleName, String cascRegexPath) {
     sleep(100)
     ExtensionList.lookupSingleton(BundleStorage.class).initialize();
     BundleStorage.AccessControl accessControl = ExtensionList.lookupSingleton(BundleStorage.class).getAccessControl();
-    accessControl.updateRegex(bundleName, cascRegexPath);
+    accessControl.updateRegex(bundleName, cascRegexPath, true);
 }
