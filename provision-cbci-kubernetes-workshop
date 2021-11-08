@@ -7,8 +7,8 @@ pipeline {
     GCP_PROJECT="core-workshop"
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
-    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubUsername = event.sender.login.toString()
+    GitHubOrganization = event.installation.account.login.toString().toLowerCase().replaceAll(" ", "-")
+    GitHubUsername = event.sender.login.toString().toLowerCase()
     controllerFolder = GitHubOrganization.toLowerCase()
     controllerName = "ops-controller"
     workshopId = "cloudbees-ci-kuberenetes-workshop"
