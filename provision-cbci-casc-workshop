@@ -169,6 +169,7 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
             git push origin main
