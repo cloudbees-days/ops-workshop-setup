@@ -35,8 +35,8 @@ spec:
         echo "deleting completed pods in sda namespace"
         container('kubectl') {
           sh """
-            kubectl -n cbci delete pod \$(kubectl -n sda get pods -o jsonpath="{.items[?(@.status['containerStatuses'][*].state.terminated.reason=='Completed')].metadata.name}") || true
-            kubectl -n cbci delete pod  \$(kubectl -n sda get pods -o jsonpath="{.items[?(@.status.reason=='DeadlineExceeded')].metadata.name}") || true
+            kubectl -n cbci delete pod \$(kubectl -n cbci get pods -o jsonpath="{.items[?(@.status['containerStatuses'][*].state.terminated.reason=='Completed')].metadata.name}") || true
+            kubectl -n cbci delete pod  \$(kubectl -n cbci get pods -o jsonpath="{.items[?(@.status.reason=='DeadlineExceeded')].metadata.name}") || true
           """
         }
       }
