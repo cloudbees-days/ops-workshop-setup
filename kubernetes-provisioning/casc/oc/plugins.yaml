@@ -1,0 +1,10 @@
+plugins:
+- {id: antisamy-markup-formatter}
+- {id: cloudbees-casc-client}
+- {id: cloudbees-casc-items-api}
+- {id: cloudbees-casc-items-commons}
+- {id: cloudbees-casc-items-server}
+- {id: cloudbees-casc-server}
+- {id: external-notification}
+- {id: operations-center-notification}
+- {id: operations-center-rbac}

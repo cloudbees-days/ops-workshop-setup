@@ -1,0 +1,60 @@
+removeStrategy:
+  rbac: SYNC
+  items: NONE
+items:
+- kind: folder
+  displayName: operations
+  name: operations
+  filteredRoles:
+  - workshop-admin
+  - browse
+  items:
+  - kind: managedController
+    displayName: ops
+    name: ops
+    properties:
+    - configurationAsCode:
+        bundle: ops
+    - healthReporting:
+        enabled: true
+    configuration:
+      kubernetes:
+        allowExternalAgents: false
+        terminationGracePeriodSeconds: 1200
+        memory: 6000
+        fsGroup: '1000'
+        cpus: 2.0
+        readinessTimeoutSeconds: 5
+        livenessInitialDelaySeconds: 300
+        readinessInitialDelaySeconds: 30
+        clusterEndpointId: default
+        disk: 40
+        readinessFailureThreshold: 100
+        livenessTimeoutSeconds: 10
+        domain: operations-ops
+        livenessPeriodSeconds: 10
+        javaOptions: -XshowSettings:vm -XX:+AlwaysPreTouch -XX:+UseG1GC -XX:+DisableExplicitGC
+          -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -Dhudson.slaves.NodeProvisioner.initialDelay=0
+        yaml: |
+          kind: "StatefulSet"
+          spec:
+            template:
+              metadata:
+                labels:
+                  networking/allow-internet-access: "true"
+              spec:
+                containers:
+                - name: "jenkins"
+                  env:
+                  - name: "SECRETS"
+                    value: "/var/jenkins_home/jcasc_secrets"
+                  volumeMounts:
+                  - mountPath: "/var/jenkins_home/jcasc_secrets"
+                    name: "jcasc-secrets"
+                volumes:
+                - name: "jcasc-secrets"
+                  csi:
+                    driver: secrets-store.csi.k8s.io
+                    readOnly: true
+                    volumeAttributes:
+                      secretProviderClass: "cbci-ops-secret-provider"

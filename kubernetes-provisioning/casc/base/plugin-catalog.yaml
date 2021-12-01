@@ -1,0 +1,9 @@
+displayName: CloudBees CI Workshop Plugin Catalog
+name: cbci-workshop-catalog
+type: plugin-catalog
+version: '1'
+configurations:
+- description: Workshop Additional Plugins
+  includePlugins:
+    cloudbees-restricted-credentials: {version: '0.1'}
+    pipeline-utility-steps: {version: '2.10.0'}
