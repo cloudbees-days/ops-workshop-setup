@@ -214,7 +214,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml            
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml 
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml                    
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin main
@@ -231,7 +232,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on casc-gitops-lab branch for ${GitHubUsername}'
             git push -u origin casc-gitops-lab
 
@@ -243,7 +245,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on pipeline-policies-lab branch for ${GitHubUsername}'
             git push -u origin pipeline-policies-lab
 
@@ -257,7 +260,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" rbac.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on rbac-lab branch for ${GitHubUsername}'
             git push -u origin rbac-lab
@@ -274,7 +278,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/create-pipeline-template-job.groovy
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
@@ -291,7 +296,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on dev-casc-lab branch for ${GitHubUsername}'
             git push -u origin dev-casc-lab
 
@@ -306,7 +312,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
             sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml         
+            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on collab-lab branch for ${GitHubUsername}'
             git push -u origin collab-lab
             git checkout main

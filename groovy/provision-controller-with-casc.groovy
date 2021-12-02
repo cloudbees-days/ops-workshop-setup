@@ -107,6 +107,7 @@ provisioning:
   cpus: 1
   disk: 20
   memory: 4000
+  namespace: controllers
   domain: "${controllerFolderName}-${controllerName}"
   yaml: |
     kind: "StatefulSet"
