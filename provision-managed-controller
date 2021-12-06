@@ -210,12 +210,7 @@ spec:
             git pull origin main
             git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml 
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml                    
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml                  
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin main
@@ -228,12 +223,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/casc-gitops-lab/plugins.yaml > plugins.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                       
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml       
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on casc-gitops-lab branch for ${GitHubUsername}'
             git push -u origin casc-gitops-lab
 
@@ -241,12 +231,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-policies-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-policies-lab/jenkins.yaml > jenkins.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml       
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on pipeline-policies-lab branch for ${GitHubUsername}'
             git push -u origin pipeline-policies-lab
 
@@ -256,12 +241,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/rbac-lab/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/rbac-lab/jenkins.yaml > jenkins.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml   
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml        
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml     
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" rbac.yaml
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on rbac-lab branch for ${GitHubUsername}'
             git push -u origin rbac-lab
@@ -274,12 +254,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/cbci-module-2-setup/plugins.yaml > plugins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-module-2-create-pipeline-template-job.groovy > groovy/create-pipeline-template-job.groovy  
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                       
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml       
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/create-pipeline-template-job.groovy
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
@@ -292,12 +267,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/dev-casc-lab/plugins.yaml > plugins.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                        
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml       
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on dev-casc-lab branch for ${GitHubUsername}'
             git push -u origin dev-casc-lab
 
@@ -308,12 +278,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/collab-lab/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/collab-lab/plugins.yaml > plugins.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml                      
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jenkins.yaml
-            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jenkins.yaml
-            sed -i "s/REPLACE_BUNDLE_ID/$bundleName/g" jenkins.yaml  
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" jenkins.yaml         
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml        
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle on collab-lab branch for ${GitHubUsername}'
             git push -u origin collab-lab
             git checkout main
