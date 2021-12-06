@@ -127,6 +127,8 @@ provisioning:
               value: "REPLACE_GITHUB_APP"
             - name: "CONTROLLER_SUBDOMAIN"
               value: "${controllerFolderName}-${controllerName}"
+            - name: "CASC_BUNDLE_ID"
+              value: "${controllerFolderName}-${controllerName}"
             - name: "ENVIRONMENT_PREFIX"
               value: "${environmentPrefix}"
             volumeMounts:
