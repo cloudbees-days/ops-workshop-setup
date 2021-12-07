@@ -13,6 +13,10 @@ spec:
   serviceAccount: cjoc
   serviceAccountName: cjoc
   containers:
+  - name: jnlp
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: jnlp
   - name: kubectl
     image: gcr.io/cloud-builders/kubectl
     resources:
