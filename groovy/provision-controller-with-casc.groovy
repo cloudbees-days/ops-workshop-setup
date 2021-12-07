@@ -217,7 +217,6 @@ private void createMM(String controllerName, String cascRegexPath, String contro
   Group group = new Group(folderContainer, groupName);
   group.doAddMember("REPLACE_JENKINS_USER");
   group.doAddMember("REPLACE_JENKINS_USER-admin");
-  group.doAddMember("team-admin");
   group.doGrantRole(roleName, 0, Boolean.TRUE);
   folderContainer.addGroup(group);
   folderContainer.addRoleFilter(roleName);
