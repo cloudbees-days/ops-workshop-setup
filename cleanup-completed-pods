@@ -10,6 +10,7 @@ kind: Pod
 metadata:
   name: kubectl
 spec:
+  serviceAccount: cjoc
   serviceAccountName: cjoc
   containers:
   - name: kubectl
