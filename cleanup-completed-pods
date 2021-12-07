@@ -14,6 +14,7 @@ spec:
   serviceAccountName: cjoc
   containers:
   - name: jnlp
+    image: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.319.1.5
     env:
     - name: CONTAINER_ENV_VAR
       value: jnlp
