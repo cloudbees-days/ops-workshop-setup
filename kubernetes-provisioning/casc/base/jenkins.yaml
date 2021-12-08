@@ -1,0 +1,48 @@
+jenkins:
+  authorizationStrategy: "cloudBeesRoleBasedAccessControl"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: false
+  numExecutors: 0
+  projectNamingStrategy:
+    pattern:
+      description: "All project (job) names must be alphanumeric, lower case, may contain dashes/underscores and contain\
+        \ no spaces with a limit of 50 characters and a minimum of 3 characters."
+      forceExistingJobs: false
+      namePattern: "^[a-z0-9-_]{3,50}$"
+  quietPeriod: 0
+  systemMessage: "Controller configured using CloudBees CI Base Configuration Bundle"
+unclassified:
+  buildDiscarders:
+    configuredBuildDiscarders:
+    - "jobBuildDiscarder"
+    - simpleBuildDiscarder:
+        discarder:
+          logRotator:
+            numToKeepStr: "5"
+  cloudBeesSCMReporting:
+    enabled: true
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleOnOver
+  globalDefaultFlowDurabilityLevel:
+    durabilityHint: PERFORMANCE_OPTIMIZED
+  hibernationConfiguration:
+    activities:
+    - "build"
+    - "web"
+    enabled: true
+    gracePeriod: 2400
+beekeeper:
+  enabled: true
+  securityWarnings:
+    enabledForCore: true
+    enabledForPlugins: true
+  upgrades:
+    autoDowngradePlugins: false
+    autoUpgradePlugins: false
+notificationConfiguration:
+  enabled: true
+  router: "operationsCenter"
+tool:
+  cloudbeesPluginUsageAnalyzer:
+    enabled: true

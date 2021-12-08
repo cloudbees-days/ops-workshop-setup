@@ -107,6 +107,7 @@ provisioning:
   cpus: 1
   disk: 20
   memory: 4000
+  namespace: controllers
   domain: "${controllerFolderName}-${controllerName}"
   yaml: |
     kind: "StatefulSet"
@@ -125,6 +126,8 @@ provisioning:
             - name: "GITHUB_APP"
               value: "REPLACE_GITHUB_APP"
             - name: "CONTROLLER_SUBDOMAIN"
+              value: "${controllerFolderName}-${controllerName}"
+            - name: "CASC_BUNDLE_ID"
               value: "${controllerFolderName}-${controllerName}"
             - name: "ENVIRONMENT_PREFIX"
               value: "${environmentPrefix}"
@@ -214,8 +217,8 @@ private void createMM(String controllerName, String cascRegexPath, String contro
   Group group = new Group(folderContainer, groupName);
   group.doAddMember("REPLACE_JENKINS_USER");
   group.doAddMember("REPLACE_JENKINS_USER-admin");
-  group.doAddMember("team-admin");
-  group.doGrantRole(roleName, 0, Boolean.TRUE);
+  group.doGrantRole(roleName, 1, Boolean.TRUE);
+  group.doGrantRole("browse", 0, Boolean.TRUE);
   folderContainer.addGroup(group);
   folderContainer.addRoleFilter(roleName);
   folderContainer.addRoleFilter("browse");

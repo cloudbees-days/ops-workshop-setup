@@ -1,0 +1,171 @@
+removeStrategy:
+  rbac: SYNC
+  items: NONE
+items:
+- kind: pipeline
+  name: casc-workshop-provision-controller
+  concurrentBuild: true
+  resumeBlocked: false
+  description: ''
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: casc-workshop-provision-controller
+      scm:
+        gitSCM:
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/controller-provisioning.git
+          branches:
+          - branchSpec:
+              name: '*/main'
+      lightweight: true
+  disabled: false
+  properties:
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: controller.action=='provision'
+- kind: pipeline
+  name: cbci-casc-workshop-setup
+  concurrentBuild: true
+  displayName: cbci-casc-workshop-setup
+  resumeBlocked: false
+  description: ''
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: provision-cbci-casc-workshop
+      scm:
+        gitSCM:
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/ops-workshop-setup.git
+          branches:
+          - branchSpec:
+              name: '*/master'
+      lightweight: true
+  disabled: false
+  properties:
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: action=='created' && installation.app_slug=='cloudbees-ci-casc-workshop'
+- concurrentBuild: true
+  kind: pipeline
+  displayName: cbci-pipeline-workshop-setup
+  resumeBlocked: false
+  name: cbci-pipeline-workshop-setup
+  description: ''
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: provision-cbci-pipeline-workshop
+      scm:
+        gitSCM:
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/ops-workshop-setup.git
+          branches:
+          - branchSpec:
+              name: '*/master'
+      lightweight: true
+  disabled: false
+  properties:
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'
+- concurrentBuild: true
+  kind: pipeline
+  displayName: cbci-workshop-module-2-setup
+  resumeBlocked: false
+  name: cbci-workshop-module-2-setup
+  description: ''
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: cbci-module-2-setup
+      scm:
+        gitSCM:
+          gitTool: Default
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/ops-workshop-setup.git
+          branches:
+          - branchSpec:
+              name: master
+      lightweight: true
+  disabled: false
+  properties:
+  - githubProjectProperty:
+      projectUrlStr: https://github.com/cloudbees-days/ops-workshop-setup/
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: action=='closed' && pull_request.head.ref=='cbci-module-2-setup'
+                && sender.login !='cloudbees-ci-workshop[bot]'
+- kind: pipeline
+  concurrentBuild: true
+  displayName: cbci-workshop-setup
+  resumeBlocked: false
+  name: cbci-workshop-setup
+  description: Sets up CBCI workshop based on GitHub App install.
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: provision-managed-controller
+      scm:
+        gitSCM:
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/ops-workshop-setup.git
+          branches:
+          - branchSpec:
+              name: master
+      lightweight: true
+  disabled: false
+  properties:
+  - githubProjectProperty:
+      displayName: ''
+      projectUrlStr: https://github.com/cloudbees-days/ops-workshop-setup/
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: "action=='created' && installation.app_slug=='cloudbees-ci-workshop'"
+- kind: pipeline
+  name: cbci-kubernetes-workshop-setup
+  concurrentBuild: true
+  resumeBlocked: false
+  description: ''
+  definition:
+    cpsScmFlowDefinition:
+      scriptPath: provision-cbci-kubernetes-workshop
+      scm:
+        gitSCM:
+          userRemoteConfigs:
+          - userRemoteConfig:
+              credentialsId: field-workshops-github-app
+              url: https://github.com/cloudbees-days/ops-workshop-setup.git
+          branches:
+          - branchSpec:
+              name: '*/master'
+      lightweight: true
+  disabled: false
+  properties:
+  - pipelineTriggers:
+      triggers:
+      - eventTrigger:
+          condition:
+            jmespathQuery:
+              query: action=='created' && installation.app_slug=='cloudbees-ci-kubernetes-workshop'

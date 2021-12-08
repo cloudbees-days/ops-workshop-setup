@@ -1,0 +1,126 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - string:
+          description: "Webhook secret for https://github.com/apps/cloudbees-ci-field-workshops"
+          id: "github-webhook-secret"
+          secret: "${gitHubWebhookSecret}"
+      - string:
+          description: "Workshop Attendees Password"
+          id: "workshop-attendees-password"
+          secret: "${cbciWorkshopAttendeePassword}"
+      - string:
+          description: "CasC Workshop Controller Provision Secret"
+          id: "casc-workshop-controller-provision-secret"
+          secret: "${cbciCascWorkshopControllerProvisionSecret}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "77731"
+          description: "GitHub App Credential for CloudBees CI: field-workshops"
+          id: "field-workshops-github-app"
+          privateKey: "${opsGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "77562"
+          description: "CloudBees CI Workshop GitHub App credential"
+          id: "cloudbees-ci-workshop-github-app"
+          privateKey: "${workshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "101639"
+          description: "Staging CloudBees CI Workshop GitHub App credential"
+          id: "staging-cloudbees-ci-workshop-github-app"
+          privateKey: "${staging-workshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "103013"
+          description: "CloudBees CI Pipeline Workshop GitHub App credential"
+          id: "cloudbees-ci-pipeline-workshop-github-app"
+          privateKey: "${cbciPipelineWorkshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "79627"
+          description: "CloudBees Feature Flags Workshop GitHub App base credential"
+          id: "cloudbees-feature-flags-workshop-github-app"
+          privateKey: "${featureFlagWorkshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "125049"
+          description: "CloudBees CI CasC Workshop GitHub App base credential"
+          id: "cloudbees-ci-casc-workshop-github-app"
+          privateKey: "${cbciCascWorkshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "135904"
+          description: "Staging CloudBees CI CasC Workshop GitHub App base credential"
+          id: "staging-cloudbees-ci-casc-workshop-github-app"
+          privateKey: "${staging-cbciCascWorkshopGitHubAppPrivateKey}"
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "149118"
+          description: "CloudBees CI Kubernetes Workshop GitHub App base credential"
+          id: "cloudbees-ci-kubernetes-workshop-github-app"
+          privateKey: "${cbciKubernetesWorkshopGitHubAppPrivateKey}"
+jenkins:
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "ENVIRONMENT_PREFIX"
+        value: "staging-"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: false
+  numExecutors: 0
+  quietPeriod: 0
+  systemMessage: "Jenkins configured using CloudBees CI CasC"
+notificationConfiguration:
+  enabled: true
+  router: "operationsCenter"
+globalCloudBeesPipelineTemplateCatalog:
+  catalogs:
+  - branchOrTag: "main"
+    scm:
+      github:
+        configuredByUrl: true
+        credentialsId: "field-workshops-github-app"
+        repoOwner: "cloudbees-days"
+        repository: "pipeline-template-catalog"
+        repositoryUrl: "https://github.com/cloudbees-days/pipeline-template-catalog.git"
+        traits:
+        - gitHubBranchDiscovery:
+            strategyId: 1
+        - gitHubPullRequestDiscovery:
+            strategyId: 1
+        - gitHubForkDiscovery:
+            strategyId: 1
+            trust: "gitHubTrustPermissions"
+    updateInterval: "1d"
+unclassified:
+  experimentalPlugins:
+    enabled: true
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookSecretConfigs:
+    - credentialsId: "github-webhook-secret"
+    hookUrl: "https://staging-cbci.workshop.cb-sa.io/operations-ops/github-webhook/"
+  globallibraries:
+    libraries:
+    - defaultVersion: "main"
+      name: "pipeline-library"
+      retriever:
+        modernSCM:
+          scm:
+            github:
+              credentialsId: "field-workshops-github-app"
+              repoOwner: "cloudbees-days"
+              repository: "pipeline-library"
+  headerLabel:
+    text: "ops controller staging"
+  hibernationConfiguration:
+    enabled: false
+  pollSCM:
+    pollingThreadCount: 10
+  usageStatisticsCloudBees:
+    usageStatisticsCollected: false

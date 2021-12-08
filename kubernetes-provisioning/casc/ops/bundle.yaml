@@ -1,0 +1,12 @@
+apiVersion: "1"
+id: "1-ops"
+description: "Workshop Ops Managed Controller Config Bundle"
+version: "4"
+parent: "base"
+availabilityPattern: "operations/ops"
+plugins:
+  - "plugins.yaml"
+jcasc:
+  - "jenkins.yaml"
+items:
+- "items/"
