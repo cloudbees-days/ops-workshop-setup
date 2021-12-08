@@ -119,8 +119,9 @@ spec:
             sh """
                 curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleDir}.controllers.svc.cluster.local/${bundleDir}/casc-bundle-mgnt/check-bundle-update 
                 curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XPOST http://${bundleDir}.controllers.svc.cluster.local/${bundleDir}/casc-bundle-mgnt/reload-bundle
+                java -jar jenkins-cli.jar -s http://${bundleDir}.controllers.svc.cluster.local/${bundleDir}/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW groovy =<./groovy/cbci-module-2-create-pipeline-template-job.groovy
+                
                 alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                cli groovy =<./groovy/cbci-module-2-create-pipeline-template-job.groovy
                 cli groovy =<./groovy/ops-delete-github-app-credential.groovy
             """
         }
