@@ -64,9 +64,23 @@ spec:
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: """
             rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./pipeline-template-catalog || true
             mkdir -p cloudbees-ci-config-bundle
+            mkdir -p pipeline-template-catalog 
 
-            cd cloudbees-ci-config-bundle
+            cd pipeline-template-catalog
+            git init
+            git config user.email "${GitHubUsername}@workshop.cb-sa.io"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
+            git pull origin main
+            git checkout main
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cbic-workshop-module-2/templates/casc-bundle/Jenkinsfile > templates/casc-bundle/Jenkinsfile
+            git add *
+            git commit -a -m 'updating ${GitHubOrganization}/pipeline-template-catalog bundle for ${GitHubUsername}'
+            git push -u origin main        
+
+            cd ../cloudbees-ci-config-bundle
             git init
             git config user.email "cloudbees-ci.bot@cloudbees.com"
             git config user.name "CloudBees CI Bot"
