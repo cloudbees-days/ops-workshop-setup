@@ -105,7 +105,8 @@ String cascRegexPath = "${workshopFolderName}/${controllerFolderName}/${controll
 String controllerDefinitionYaml = """
 provisioning:
   cpus: 1
-  disk: 20
+  disk: 10
+  storageClassName: premium-rwo
   memory: 4000
   namespace: controllers
   domain: "${controllerFolderName}-${controllerName}"
