@@ -23,7 +23,6 @@ if (configOpsJob == null) {
       <com.cloudbees.hudson.plugins.folder.properties.SubItemFilterProperty plugin="cloudbees-folders-plus@3.10">
         <allowedTypes>
           <string>workshopCatalog/maven</string>
-          <string>workshopCatalog/pipeline-policies</string>
           <string>workshopCatalog/casc-bundle</string>
         </allowedTypes>
       </com.cloudbees.hudson.plugins.folder.properties.SubItemFilterProperty>
