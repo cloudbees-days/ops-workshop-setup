@@ -216,8 +216,8 @@ spec:
             cli groovy =<./groovy/create-workshop-users.groovy
             
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
-              https://my-operation-center.com/casc-items/create-items?path=/$GitHubApp \
-              --data-binary @/ops-controller/controller.yaml -H 'Content-Type:text/yaml'
+              http://cjoc/cjoc/casc-items/create-items?path=/$GitHubApp \
+              --data-binary @./ops-controller/controller.yaml -H 'Content-Type:text/yaml'
           '''
         }
         
