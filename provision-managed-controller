@@ -307,7 +307,7 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"cbci-module-2-setup"}' \
+                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
 
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
