@@ -1,4 +1,5 @@
 import jenkins.model.Jenkins
+import hudson.model.User
 
 import java.util.logging.Logger
 
