@@ -272,7 +272,7 @@ spec:
             
             curl \
               -X PATCH \
-              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
               -H "Accept: application/vnd.github.antiope-preview+json" \
               https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle \
               -d '{"delete_branch_on_merge":true}'
@@ -285,7 +285,7 @@ spec:
             
             curl \
               -X PATCH \
-              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
               -H "Accept: application/vnd.github.antiope-preview+json" \
               https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog \
               -d '{"delete_branch_on_merge":true}'
