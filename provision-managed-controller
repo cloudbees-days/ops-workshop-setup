@@ -283,17 +283,17 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"casc-gitops-lab"}' \
+                 --data '{"title":"Pipeline Policies lab updates","head":"pipeline-policies-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"pipeline-policies-lab"}' \
+                 --data '{"title":"RBAC lab updates","head":"rbac-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"rbac-lab"}' \
+                 --data '{"title":"CasC for Devs lab updates","head":"dev-casc-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/pulls
 
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
