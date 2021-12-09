@@ -270,11 +270,25 @@ spec:
             git push -u origin dev-casc-lab
             git checkout main
             
+            curl \
+              -X PATCH \
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'
+              -H "Accept: application/vnd.github.antiope-preview+json" \
+              https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle \
+              -d '{"delete_branch_on_merge":true}'
+            
             echo "create pull requests"
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                  --data '{"title":"Cross Team Collaboration: Add Event Trigger","head":"cross-team-collab-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
+            
+            curl \
+              -X PATCH \
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'
+              -H "Accept: application/vnd.github.antiope-preview+json" \
+              https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog \
+              -d '{"delete_branch_on_merge":true}'
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
