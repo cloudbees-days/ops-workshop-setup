@@ -94,9 +94,12 @@ spec:
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
+            git config pull.rebase false
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-k8s-cloudshell-tutorials.git
             git pull origin main
             git checkout main
+            sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" cbci-install.md
+            sed -i "s/REPLACE_GCP_PROJECT/$GCP_PROJECT/g" cbci-install.md
             sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" install-cbci.sh
             sed -i "s/REPLACE_GCP_PROJECT/$GCP_PROJECT/g" install-cbci.sh
             sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" cbci-controllers.md
