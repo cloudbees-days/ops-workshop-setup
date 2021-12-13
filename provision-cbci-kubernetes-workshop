@@ -97,8 +97,10 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-k8s-cloudshell-tutorials.git
             git pull origin main
             git checkout main
-            sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" tutorial.md
-            sed -i "s/REPLACE_GCP_PROJECT/$GCP_PROJECT/g" tutorial.md
+            sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" install-cbci.sh
+            sed -i "s/REPLACE_GCP_PROJECT/$GCP_PROJECT/g" install-cbci.sh
+            sed -i "s/REPLACE_GITHUB_USER/$GitHubUsername/g" cbci-controllers.md
+            sed -i "s/REPLACE_GCP_PROJECT/$GCP_PROJECT/g" cbci-controllers.md
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" README.md
             git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-k8s-cloudshell-tutorials variable replacement'
             git push origin main
