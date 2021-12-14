@@ -101,7 +101,7 @@ if (cbciLabJob == null) {
           </entry>
           <entry>
             <string>githubCredentialId</string>
-            <string>field-workshops-github-app</string>
+            <string>field-workshops-app</string>
           </entry>
           <entry>
             <string>name</string>
@@ -148,4 +148,236 @@ if (cbciLabJob == null) {
   logger.info("created $cbciLabJobName job")
 } else {
   logger.info("$cbciLabJobName job already exists")
+}
+
+def cbciCascLabJobName = "cloudbees-ci-casc-workshop-labs"
+def cbciCascLabJobFullName = "labs-slides/${cbciCascLabJobName}"
+def cbciCascLabJob = jenkins.getItemByFullName(cbciCascLabJobFullName)
+if (cbciCascLabJob == null) {
+
+  //hugo job for CBCI CasC workshop from Pipeline Template
+  def cbciCascLabJobXml = """
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
+  <properties>
+    <com.cloudbees.pipeline.governance.templates.classic.multibranch.GovernanceMultibranchPipelinePropertyImpl plugin="cloudbees-workflow-template@3.7">
+      <instance>
+        <model>workshopCatalog/hugo</model>
+        <values class="tree-map">
+          <entry>
+            <string>baseUrl</string>
+            <string>https://cloudbees-ci-casc.labs.cb-sa.io</string>
+          </entry>
+          <entry>
+            <string>bucketFolderName</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>bucketName</string>
+            <string>cbci-casc-workshop</string>
+          </entry>
+          <entry>
+            <string>changesetDir</string>
+            <string>labs/cloudbees-ci-casc/</string>
+          </entry>
+          <entry>
+            <string>clusterNameMaster</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>clusterNamePR</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>config</string>
+            <string>../cloudbees-ci-casc/config.toml</string>
+          </entry>
+          <entry>
+            <string>contentDir</string>
+            <string>../cloudbees-ci-casc/content/</string>
+          </entry>
+          <entry>
+            <string>deployTypeMaster</string>
+            <string>managed</string>
+          </entry>
+          <entry>
+            <string>deployTypePR</string>
+            <string>managed</string>
+          </entry>
+          <entry>
+            <string>gcpProject</string>
+            <string>core-workshop</string>
+          </entry>
+          <entry>
+            <string>gcpRegionMaster</string>
+            <string>us-east1</string>
+          </entry>
+          <entry>
+            <string>gcpRegionPR</string>
+            <string>us-east1</string>
+          </entry>
+          <entry>
+            <string>githubCredentialId</string>
+            <string>field-workshops-app</string>
+          </entry>
+          <entry>
+            <string>name</string>
+            <string>cloudbees-ci-casc-workshop-labs</string>
+          </entry>
+          <entry>
+            <string>namespaceMaster</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>namespacePR</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>projectName</string>
+            <string>cloudbees-ci-casc-workshop-labs</string>
+          </entry>
+          <entry>
+            <string>repo</string>
+            <string>cloudbees-field-workshops</string>
+          </entry>
+          <entry>
+            <string>repoOwner</string>
+            <string>cloudbees-days</string>
+          </entry>
+          <entry>
+            <string>sourceDir</string>
+            <string>labs/base/</string>
+          </entry>
+        </values>
+      </instance>
+    </com.cloudbees.pipeline.governance.templates.classic.multibranch.GovernanceMultibranchPipelinePropertyImpl>
+  </properties>
+  <factory class="com.cloudbees.pipeline.governance.templates.classic.multibranch.FromTemplateBranchProjectFactory" plugin="cloudbees-workflow-template@3.7">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <catalogName>workshopCatalog</catalogName>
+    <templateDirectory>hugo</templateDirectory>
+  </factory>
+</org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
+  """
+
+  def p = labJobsFolder.createProjectFromXML(cbciCascLabJobName, new ByteArrayInputStream(cbciCascLabJobXml.getBytes("UTF-8")));
+
+  logger.info("created $cbciCascLabJobName job")
+} else {
+  logger.info("$cbciCascLabJobName job already exists")
+}
+
+def cbciK8sLabJobName = "cloudbees-ci-k8s-workshop-labs"
+def cbciK8sLabJobFullName = "labs-slides/${cbciK8sLabJobName}"
+def cbciK8sLabJob = jenkins.getItemByFullName(cbciK8sLabJobFullName)
+if (cbciK8sLabJob == null) {
+
+  //hugo job for CBCI CasC workshop from Pipeline Template
+  def cbciK8sLabJobXml = """
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
+  <properties>
+    <com.cloudbees.pipeline.governance.templates.classic.multibranch.GovernanceMultibranchPipelinePropertyImpl plugin="cloudbees-workflow-template@3.7">
+      <instance>
+        <model>workshopCatalog/hugo</model>
+        <values class="tree-map">
+          <entry>
+            <string>baseUrl</string>
+            <string>https://cloudbees-ci-k8s.labs.cb-sa.io</string>
+          </entry>
+          <entry>
+            <string>bucketFolderName</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>bucketName</string>
+            <string>cbci-k8s-workshop</string>
+          </entry>
+          <entry>
+            <string>changesetDir</string>
+            <string>labs/cloudbees-ci-k8s-best-practices/</string>
+          </entry>
+          <entry>
+            <string>clusterNameMaster</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>clusterNamePR</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>config</string>
+            <string>../cloudbees-ci-k8s-best-practices/config.toml</string>
+          </entry>
+          <entry>
+            <string>contentDir</string>
+            <string>../cloudbees-ci-k8s-best-practices/content/</string>
+          </entry>
+          <entry>
+            <string>deployTypeMaster</string>
+            <string>managed</string>
+          </entry>
+          <entry>
+            <string>deployTypePR</string>
+            <string>managed</string>
+          </entry>
+          <entry>
+            <string>gcpProject</string>
+            <string>core-workshop</string>
+          </entry>
+          <entry>
+            <string>gcpRegionMaster</string>
+            <string>us-east</string>
+          </entry>
+          <entry>
+            <string>gcpRegionPR</string>
+            <string>us-east1</string>
+          </entry>
+          <entry>
+            <string>githubCredentialId</string>
+            <string>field-workshops-app</string>
+          </entry>
+          <entry>
+            <string>name</string>
+            <string>cloudbees-ci-kubernetes-workshop-labs</string>
+          </entry>
+          <entry>
+            <string>namespaceMaster</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>namespacePR</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>projectName</string>
+            <string>cloudbees-ci-kubernetes-workshop-labs</string>
+          </entry>
+          <entry>
+            <string>repo</string>
+            <string>cloudbees-field-workshops</string>
+          </entry>
+          <entry>
+            <string>repoOwner</string>
+            <string>cloudbees-days</string>
+          </entry>
+          <entry>
+            <string>sourceDir</string>
+            <string>labs/base/</string>
+          </entry>
+        </values>
+      </instance>
+    </com.cloudbees.pipeline.governance.templates.classic.multibranch.GovernanceMultibranchPipelinePropertyImpl>
+  </properties>
+  <factory class="com.cloudbees.pipeline.governance.templates.classic.multibranch.FromTemplateBranchProjectFactory" plugin="cloudbees-workflow-template@3.7">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <catalogName>workshopCatalog</catalogName>
+    <templateDirectory>hugo</templateDirectory>
+  </factory>
+</org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
+  """
+
+  def p = labJobsFolder.createProjectFromXML(cbciK8sLabJobName, new ByteArrayInputStream(cbciK8sLabJobXml.getBytes("UTF-8")));
+
+  logger.info("created $cbciK8sLabJobName job")
+} else {
+  logger.info("$cbciK8sLabJobName job already exists")
 }
