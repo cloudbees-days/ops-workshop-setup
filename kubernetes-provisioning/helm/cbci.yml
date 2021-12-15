@@ -265,6 +265,7 @@ Master:
     dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.319.1.5
   # Master.JavaOpts -- Additional Java options to pass to managed masters. For example, setting up a JMX port
   JavaOpts: 
+    -Dcom.cloudbees.jenkins.plugins.kube.ServiceAccountFilter.defaultServiceAccount=jenkins-agents
     -Duser.timezone="America/New_York"
     -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=120
     -Dcom.cloudbees.analytics.gatherer.Sender.disabled=true
@@ -303,7 +304,7 @@ Persistence:
 # Master hibernation
 Hibernation:
   # Hibernation.Enabled -- Whether to enable the [Hibernation](https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/managing-masters#_hibernation_of_managed_masters) feature
-  Enabled: true
+  Enabled: false
   Image:
     # Hibernation.Image.dockerImage -- Used to override the default docker image
     dockerImage: cloudbees/managed-master-hibernation-monitor:247.c5dfce00a179

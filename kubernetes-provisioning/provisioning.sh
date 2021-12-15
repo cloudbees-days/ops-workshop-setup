@@ -12,6 +12,8 @@ gcloud beta container --project "core-workshop" clusters create $CLUSTER_NAME \
   --enable-dataplane-v2 \
   --autoscaling-profile optimize-utilization --workload-pool "core-workshop.svc.id.goog" --node-locations "us-east1-b","us-east1-c"
 
+kubectl apply -f hnc-apply-spec.yaml
+
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo add jetstack https://charts.jetstack.io
 helm repo add secrets-store-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/secrets-store-csi-driver/master/charts
@@ -31,7 +33,7 @@ helm upgrade --install csi-secrets-store secrets-store-csi-driver/secrets-store-
 #install GCP secrets-store-csi-driver
 kubectl apply -f ./secrets-store-csi-gcp/provider-gcp-plugin.yaml
 
-CBCI_HOSTNAME=staging-cbci.workshop.cb-sa.io
+CBCI_HOSTNAME=pink.workshop.cb-sa.io
 DNS_ZONE=workshop-cb-sa
 #get ingress-nginx lb ip
 INGRESS_IP=$(kubectl get services -n ingress-nginx | grep ingress-nginx-nginx-ingress-controller | awk '{print $4}')
@@ -42,20 +44,17 @@ gcloud dns --project=$PROJECT_ID record-sets transaction execute --zone=$DNS_ZON
 
 gcloud iam service-accounts add-iam-policy-binding \
   --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:core-workshop.svc.id.goog[sda/jenkins]" \
+  --member "serviceAccount:core-workshop.svc.id.goog[cbci/jenkins]" \
   core-cloud-run@core-workshop.iam.gserviceaccount.com
 
-kubectl create ns sda
-kubectl -n sda create configmap cbci-oc-init-groovy --from-file=groovy-init/ --dry-run=client -o yaml | kubectl apply -f -
-kubectl -n sda create configmap cbci-oc-quickstart-groovy --from-file=groovy-quickstart/ --dry-run=client -o yaml | kubectl apply -f -
-kubectl -n sda create configmap cbci-op-casc-bundle --from-file=ops-config-bundle/ --dry-run=client -o yaml | kubectl apply -f -
-
-kubectl apply -f ./k8s/cbci-jenkins-sa.yml
 helm upgrade --install cbci cloudbees/cloudbees-core \
   --wait \
   --set OperationsCenter.HostName=$CBCI_HOSTNAME \
   --set nginx-ingress.Enabled=false \
   --set OperationsCenter.Ingress.tls.Host=$CBCI_HOSTNAME \
-  --namespace='sda'  --create-namespace \
+  --namespace='cbci'  --create-namespace \
   --set-file 'OperationsCenter.ExtraGroovyConfiguration.z-quickstart-hook\.groovy'=./groovy-license-activated/z-quickstart-hook.groovy \
-  --values ./helm/cbci-blue.yml
+  --values ./helm/cbci.yml --post-renderer ./kustomize-wrapper.sh
+
+cd controllers
+

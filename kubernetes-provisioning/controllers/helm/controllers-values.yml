@@ -1,0 +1,111 @@
+# Default values for CloudBees CI controller
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Subdomain -- Whether to use a DNS subdomain for each controller.
+Subdomain: false
+
+# Operations Center options
+OperationsCenter:
+  # OperationsCenter.Enabled -- Disable for particular use case like setting up namespaces to host masters only
+  Enabled: false
+
+  # OperationsCenter.HostName -- The hostname used to access Operations Center through the ingress controller.
+  HostName: null
+
+  # OperationsCenter.Protocol -- the protocol used to access CJOC. Possible values are http/https.
+  Protocol: https
+
+  Ingress:
+    # OperationsCenter.Ingress.Class -- Ingress class to use for OC and MM ingresses
+    # Should be set to the same value as nginx-ingress.controller.ingressClass if enabled
+    Class: nginx
+    # OperationsCenter.Ingress.Annotations -- annotations to put on Ingress object
+    Annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: 'true'
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    tls:
+      # OperationsCenter.Ingress.tls.Enable -- Set this to true in order to enable TLS on the ingress record
+      Enable: true
+      SecretName: cbci-tls
+      Host: jenkins.cluster.local
+
+# Master options
+Master:
+  # Master.Enabled -- Whether to create the resources required to schedule masters.
+  Enabled: true
+  # Master.OperationsCenterNamespace -- When deploying Master resources, this grants an Operations Center deployed in another namespace the right to deploy masters
+  OperationsCenterNamespace: cbci
+
+  # Docker image inserted in Operations Center automatically
+  Image:
+    # Master.Image.dockerImage -- Used to override the default docker image
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.319.1.5
+  # Master.JavaOpts -- Additional Java options to pass to managed masters. For example, setting up a JMX port
+  JavaOpts: 
+    -Dcom.cloudbees.jenkins.plugins.kube.ServiceAccountFilter.defaultServiceAccount=jenkins-agents
+    -Duser.timezone="America/New_York"
+    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=120
+    -Dcom.cloudbees.analytics.gatherer.Sender.disabled=true
+    -Djenkins.security.ManagePermission=true
+    -Djenkins.security.SystemReadPermission=true
+
+# Agent options
+Agents:
+  # Agents.Enabled -- Enable to create agent resources (service account, role)
+  Enabled: true
+  Image:
+    # Agents.Image.dockerImage -- Used to override the default docker image used for agents
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.319.1.5
+
+
+Persistence:
+  # Persistence.StorageClass -- Persistent Volume Storage Class for Jenkins Home
+  # If defined, storageClassName: <storageClass>.
+  # If set to "-", storageClassName: "", which disables dynamic provisioning.
+  # If undefined (the default) or set to null, the default storage class will be used,
+  # unless specified otherwise below.
+  # If setting OperationsCenter.Platform == gke, a storage class backed with
+  # SSD drives will be created by this chart and used automatically.
+  #
+  # StorageClass: "-"
+  StorageClass: premium-rwo
+
+  # Persistence.Annotations -- Annotations to put on the PVC
+  Annotations: {}
+  # Persistence.AccessMode -- Access mode for the PVC ([doc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes))
+  AccessMode: ReadWriteOnce
+
+  # Persistence.Size -- Size of the Operations Center volume
+  Size: 10Gi
+
+# Master hibernation
+Hibernation:
+  # Hibernation.Enabled -- Whether to enable the [Hibernation](https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/managing-masters#_hibernation_of_managed_masters) feature
+  Enabled: true
+  Image:
+    # Hibernation.Image.dockerImage -- Used to override the default docker image
+    dockerImage: gcr.io/core-workshop/managed-master-hibernation-monitor:247
+
+## Install Default RBAC roles and bindings
+rbac:
+  # rbac.install -- Install `role`/`rolebindings`/`serviceAccount`.
+  # If false (and rbac is enabled in the cluster anyway), provide valid names for all service accounts.
+  install: true
+
+  # rbac.installCluster -- Install `clusterrole`/`clusterrolebinding`
+  # These cluster roles are optional but prevent usage of some features, so we recommend setting them up.
+  # Defaults to true, except on Openshift 3 where it defaults to false
+  # Please refer to templates/cjoc-clusterrole-master-management.yaml in the chart
+  #installCluster: true
+
+  # rbac.serviceAccountName -- Name of the service account Operations Center will run as
+  serviceAccountName: cjoc
+  # rbac.masterServiceAccountName -- Name of the service account Jenkins masters will run as
+  masterServiceAccountName: jenkins
+  # rbac.agentServiceAccountName -- Name of the service account Jenkins agents will run as
+  agentsServiceAccountName: jenkins-agents
+  # rbac.hibernationMonitorServiceAccountName -- Name of the service account the Hibernation monitor will run as (if enabled)
+  hibernationMonitorServiceAccountName: managed-master-hibernation-monitor
