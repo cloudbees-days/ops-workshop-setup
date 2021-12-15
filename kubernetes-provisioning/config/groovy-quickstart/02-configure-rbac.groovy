@@ -78,13 +78,6 @@ jenkins.setSecurityRealm(hudsonPrivateSecurityRealm)
      rootGroups.add(g);
      config.setGroups(rootGroups);
 
-    //Create Workshop Group with workshop role and all authenticated users as members in Teams folder
-    teamsFolder = jenkins.getItem("Teams")
-    if (teamsFolder == null) {
-        println("teamsFolder does not exist so creating")
-        jenkins.createProject(Folder.class, "Teams");
-    }
-
      matrixAuthorizationPlugin.configuration = config
      matrixAuthorizationPlugin.save()
      logger.info("RBAC Roles and Groups defined")

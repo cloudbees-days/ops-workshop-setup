@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+- name: cbci-oc-init-groovy
+  files:
+    - config/init_groovy/09-license-activate.groovy
+- name: cbci-oc-quickstart-groovy
+  files:
+    - config/groovy-quickstart/04-create-k8s-secret-with-jenkins-token.groovy
+    - config/groovy-quickstart/07-create-k8s-shared-cloud.groovy
+- name: oc-casc-bundle
+  files:
+    - casc/oc/bundle.yaml
+    - casc/oc/jenkins.yaml
+    - casc/oc/plugins.yaml
+    - casc/oc/items.yaml
+resources:
+- resources/controller-subnamespace.yml
+- resources/cbci-cjoc-secret-provider.yml
+- resources/cbci-ops-secret-provider.yml
+- resources/cbci-mc-secret-provider.yml
+- resources/oc-smee-client-deployment.yml
+- chart.yaml
+transformers:
+  - transformers/pod-labels.yaml
+patches:
+  - path: patches/cjoc-sts-patch.yaml
+    target:
+      kind: StatefulSet
+      name: cjoc
+  - path: patches/cjoc-sa-patch.yaml
+    target:
+      kind: ServiceAccount
+      name: cjoc
+  - path: patches/jenkins-sa-patch.yaml
+    target:
+      kind: ServiceAccount
+      name: jenkins
+  - path: patches/cjoc-rolebinding-patch.yaml
+    target:
+      kind: RoleBinding
+      name: cjoc-role-binding
+  - path: patches/controller-rolebinding-patch.yaml
+    target:
+      kind: RoleBinding
+      name: cjoc-master-role-binding

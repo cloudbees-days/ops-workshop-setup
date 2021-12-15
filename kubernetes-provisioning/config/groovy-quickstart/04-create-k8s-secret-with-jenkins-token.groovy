@@ -1,6 +1,5 @@
 import hudson.model.User
 import jenkins.model.Jenkins
-import io.fabric8.kubernetes.client.DefaultKubernetesClient
 import jenkins.security.ApiTokenProperty
 
 import com.cloudbees.hudson.plugins.folder.*
@@ -12,14 +11,12 @@ import com.cloudbees.plugins.credentials.domains.*
 
 import java.util.logging.Logger
 
-String scriptName = "05-create-k8s-secret-with-jenkins-token.groovy"
+String scriptName = "04-create-k8s-secret-with-jenkins-token.groovy"
 Logger logger = Logger.getLogger(scriptName)
 logger.info("Starting ${scriptName}")
 
 def userName = 'admin'
 def jenkinsTokenName = 'token-for-k8s-secret'
-def k8sTokenName = "cbci-admin-token-secret"
-def namespace = "sda"
 
 def user = User.get(userName, false)
 def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
@@ -49,9 +46,3 @@ AbstractFolder<?> folderAbs = AbstractFolder.class.cast(opsFolder)
 FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredentialsProperty.class)
 property = new FolderCredentialsProperty([c])
 folderAbs.addProperty(property)
-
-def client = new DefaultKubernetesClient()
-def createdSecret = client.secrets().inNamespace(namespace).createOrReplaceWithNew()
-        .withNewMetadata().withName(k8sTokenName).endMetadata()
-        .addToStringData("apiToken", result)
-        .done()

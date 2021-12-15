@@ -1,5 +1,17 @@
 PROJECT_ID=core-workshop
 
+CLUSTER_NAME=cbci-workshop-pink
+gcloud beta container --project "core-workshop" clusters create $CLUSTER_NAME \
+  --region "us-east1" --no-enable-basic-auth --release-channel "regular" \
+  --machine-type "n1-standard-4" --image-type "COS_CONTAINERD" --disk-type "pd-ssd" --disk-size "50" \
+  --service-account "gke-nodes-for-workshop-testing@core-workshop.iam.gserviceaccount.com" \
+  --enable-autoscaling --min-nodes "0" --max-nodes "30" \
+  --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
+  --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 \
+  --maintenance-window-start "2020-08-10T04:00:00Z" --maintenance-window-end "2020-08-11T04:00:00Z" --maintenance-window-recurrence "FREQ=WEEKLY;BYDAY=SA,SU" \
+  --enable-dataplane-v2 \
+  --autoscaling-profile optimize-utilization --workload-pool "core-workshop.svc.id.goog" --node-locations "us-east1-b","us-east1-c"
+
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo add jetstack https://charts.jetstack.io
 helm repo add secrets-store-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/secrets-store-csi-driver/master/charts
