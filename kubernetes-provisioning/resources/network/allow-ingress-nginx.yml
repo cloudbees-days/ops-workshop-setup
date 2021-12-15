@@ -8,6 +8,7 @@ spec:
     matchLabels:
       networking/allow-internet-access: "true"
   policyTypes:
+   - Ingress
   ingress:
   - from:
     - namespaceSelector:
