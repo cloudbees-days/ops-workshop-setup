@@ -15,10 +15,8 @@ configMapGenerator:
     - casc/oc/plugins.yaml
     - casc/oc/items.yaml
 resources:
-- resources/controller-subnamespace.yml
 - resources/cbci-cjoc-secret-provider.yml
 - resources/cbci-ops-secret-provider.yml
-- resources/cbci-mc-secret-provider.yml
 - resources/oc-smee-client-deployment.yml
 - chart.yaml
 transformers:

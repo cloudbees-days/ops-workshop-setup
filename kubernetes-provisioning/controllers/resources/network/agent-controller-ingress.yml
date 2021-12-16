@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/instance: cbci
+    app.kubernetes.io/name: cloudbees-core
+  name: agent-controller-ingress
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          com.cloudbees.cje.type: master
+    ports:
+    - port: http
+      protocol: TCP
+    - port: jnlp
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      jenkins: slave

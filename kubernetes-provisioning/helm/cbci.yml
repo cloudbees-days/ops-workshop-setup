@@ -81,9 +81,9 @@ OperationsCenter:
       Memory: 6G
 
   # Environment variables that get added to the container (useful for e.g. http_proxy)
-  # ContainerEnv:
-  #   - name: http_proxy
-  #     value: "http://192.168.64.1:3128"
+  ContainerEnv:
+    - name: SECRETS
+      value: "/var/jenkins_home/jcasc_secrets"
 
   # OperationsCenter.JavaOpts -- Additional java options to pass to the Operations Center
   JavaOpts: >-
@@ -201,25 +201,12 @@ OperationsCenter:
 
   # OperationsCenter.ExtraVolumes -- Extra volumes to add to the pod
   ExtraVolumes:
-  - name: base-casc-bundle
-    configMap:
-      name: base-casc-bundle
-  - name: ops-casc-bundle
-    projected:
-      sources:
-      - configMap:
-          name: ops-casc-bundle
-          items:
-            - key: bundle.yaml
-              path: bundle.yaml
-            - key: jenkins.yaml
-              path: jenkins.yaml
-            - key: plugins.yaml
-              path: plugins.yaml
-            - key: utility-jobs.yaml
-              path: items/utility-jobs.yaml
-            - key: workshop-setup-jobs.yaml
-              path: items/workshop-setup-jobs.yaml
+  - name: jcasc-secrets
+    csi:
+      driver: secrets-store.csi.k8s.io
+      readOnly: true
+      volumeAttributes:
+        secretProviderClass: "cbci-ops-secret-provider"
   - name: init-groovy
     configMap:
       name: cbci-oc-init-groovy
@@ -235,11 +222,8 @@ OperationsCenter:
 
   # OperationsCenter.ExtraVolumeMounts -- Extra volume mounts to add to the container containing Operations Center
   ExtraVolumeMounts:
-  - name: base-casc-bundle
-    mountPath: /var/jenkins_home/jcasc-bundles-store/base
-    readOnly: true
-  - name: ops-casc-bundle
-    mountPath: /var/jenkins_home/jcasc-bundles-store/ops
+  - name: jcasc-secrets
+    mountPath: /var/jenkins_home/jcasc_secrets
     readOnly: true
   - name: init-groovy
     mountPath: /var/jenkins_config/init.groovy.d

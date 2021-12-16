@@ -29,7 +29,6 @@ int version = 1
 int markerVersion = 0
 Logger logger = Logger.getLogger(scriptName)
 
-
 logger.info("Migrating from version $markerVersion to version $version")
 
 Jenkins jenkins = Jenkins.getInstance()
