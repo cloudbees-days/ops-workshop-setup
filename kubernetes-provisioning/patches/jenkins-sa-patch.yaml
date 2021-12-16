@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: not-important
+  namespace: cbci
+  annotations:
+    iam.gke.io/gcp-service-account: core-cloud-run@core-workshop.iam.gserviceaccount.com

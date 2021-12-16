@@ -38,7 +38,7 @@ def configXml = """
       &lt;slaveConnectTimeout&gt;240&lt;/slaveConnectTimeout&gt;
       &lt;idleMinutes&gt;10&lt;/idleMinutes&gt;
       &lt;activeDeadlineSeconds&gt;120&lt;/activeDeadlineSeconds&gt;
-      &lt;label&gt;default-jnlp&lt;/label&gt;
+      &lt;label&gt;default-jnlp default&lt;/label&gt;
       &lt;serviceAccount&gt;jenkins&lt;/serviceAccount&gt;
       &lt;nodeUsageMode&gt;NORMAL&lt;/nodeUsageMode&gt;
       &lt;hostNetwork&gt;false&lt;/hostNetwork&gt;

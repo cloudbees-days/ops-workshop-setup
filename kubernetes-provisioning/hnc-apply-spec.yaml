@@ -1,0 +1,11 @@
+# apply-spec.yaml
+applySpecVersion: 1
+spec:
+  hierarchyController:
+    # Set to true to enable hierarchical namespaces
+    enabled: true
+    # Comment to disable hierarchical quota:
+    enableHierarchicalResourceQuota: true
+    # Comment to disable hierarchical observability:
+    enablePodTreeLabels: true
+  # ...other fields...

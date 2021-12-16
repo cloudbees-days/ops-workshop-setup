@@ -29,7 +29,6 @@ int version = 1
 int markerVersion = 0
 Logger logger = Logger.getLogger(scriptName)
 
-
 logger.info("Migrating from version $markerVersion to version $version")
 
 Jenkins jenkins = Jenkins.getInstance()
@@ -77,13 +76,6 @@ jenkins.setSecurityRealm(hudsonPrivateSecurityRealm)
      g.setRoleAssignments(Collections.singletonList(new Group.RoleAssignment(ROLE_BROWSE)));
      rootGroups.add(g);
      config.setGroups(rootGroups);
-
-    //Create Workshop Group with workshop role and all authenticated users as members in Teams folder
-    teamsFolder = jenkins.getItem("Teams")
-    if (teamsFolder == null) {
-        println("teamsFolder does not exist so creating")
-        jenkins.createProject(Folder.class, "Teams");
-    }
 
      matrixAuthorizationPlugin.configuration = config
      matrixAuthorizationPlugin.save()

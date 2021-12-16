@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: controllers
+  name: manage-subnamespaces
+rules:
+- apiGroups: ["hnc.x-k8s.io/v1alpha1"]
+  resources: ["subnamespaceanchors"]
+  verbs: ["*"]
