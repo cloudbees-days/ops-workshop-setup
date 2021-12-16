@@ -11,6 +11,9 @@ spec:
     kind: RoleBinding
     mode: propagate
   - apiVersion: v1
+    kind: ConfigMap
+    mode: propagate
+  - apiVersion: v1
     kind: LimitRange
     mode: propagate
   - apiVersion: v1
