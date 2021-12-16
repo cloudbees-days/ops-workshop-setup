@@ -3,7 +3,7 @@ PROJECT_ID=core-workshop
 CLUSTER_NAME=cbci-workshop-pink
 gcloud beta container --project "core-workshop" clusters create $CLUSTER_NAME \
   --region "us-east1" --no-enable-basic-auth --release-channel "regular" \
-  --machine-type "n1-standard-4" --image-type "COS_CONTAINERD" --disk-type "pd-ssd" --disk-size "50" \
+  --machine-type "n1-standard-8" --image-type "COS_CONTAINERD" --disk-type "pd-ssd" --disk-size "50" \
   --service-account "gke-nodes-for-workshop-testing@core-workshop.iam.gserviceaccount.com" \
   --enable-autoscaling --min-nodes "0" --max-nodes "30" \
   --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
@@ -57,4 +57,12 @@ helm upgrade --install cbci cloudbees/cloudbees-core \
   --values ./helm/cbci.yml --post-renderer ./kustomize-wrapper.sh
 
 cd controllers
+
+helm upgrade --install controllers cloudbees/cloudbees-core \
+  --wait \
+  --set OperationsCenter.HostName=$CBCI_HOSTNAME \
+  --set nginx-ingress.Enabled=false \
+  --set OperationsCenter.Ingress.tls.Host=$CBCI_HOSTNAME \
+  --namespace='controllers'  \
+  --values ./helm/controllers-values.yml --post-renderer ./kustomize-wrapper.sh
 

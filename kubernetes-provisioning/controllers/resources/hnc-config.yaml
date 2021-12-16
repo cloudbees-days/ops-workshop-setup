@@ -1,0 +1,30 @@
+apiVersion: hnc.x-k8s.io/v1alpha1
+kind: HNCConfiguration
+metadata:
+  name: config
+spec:
+  types:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    mode: propagate
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    mode: propagate
+  - apiVersion: v1
+    kind: LimitRange
+    mode: propagate
+  - apiVersion: v1
+    kind: ResourceQuota
+    mode: propagate
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    mode: propagate
+  - apiVersion: apps/v1
+    kind: Deployment
+    mode: propagate
+  - apiVersion: v1
+    kind: Service
+    mode: propagate
+  - apiVersion: secrets-store.csi.x-k8s.io/v1alpha1
+    kind: SecretProviderClass
+    mode: propagate
