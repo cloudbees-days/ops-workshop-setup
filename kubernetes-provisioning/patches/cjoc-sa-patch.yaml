@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: not-important
-  namespace: cbci
-  annotations:
-    propagate.hnc.x-k8s.io/none: 'true'

@@ -15,6 +15,10 @@ configMapGenerator:
     - casc/oc/plugins.yaml
     - casc/oc/items.yaml
 resources:
+- resources/network/allow-ingress-nginx.yml
+- resources/network/cjoc-controller-ingress.yaml
+- resources/network/controller-cjoc-ingress.yaml
+- resources/network/deny-all-ingress.yml
 - resources/cbci-cjoc-secret-provider.yml
 - resources/cbci-ops-secret-provider.yml
 - resources/oc-smee-client-deployment.yml
@@ -22,23 +26,7 @@ resources:
 transformers:
   - transformers/pod-labels.yaml
 patches:
-  - path: patches/cjoc-sts-patch.yaml
-    target:
-      kind: StatefulSet
-      name: cjoc
-  - path: patches/cjoc-sa-patch.yaml
-    target:
-      kind: ServiceAccount
-      name: cjoc
   - path: patches/jenkins-sa-patch.yaml
     target:
       kind: ServiceAccount
       name: jenkins
-  - path: patches/cjoc-rolebinding-patch.yaml
-    target:
-      kind: RoleBinding
-      name: cjoc-role-binding
-  - path: patches/controller-rolebinding-patch.yaml
-    target:
-      kind: RoleBinding
-      name: cjoc-master-role-binding
