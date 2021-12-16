@@ -1,5 +1,5 @@
 PROJECT_ID=core-workshop
-
+gcloud config set project $PROJECT_ID
 CLUSTER_NAME=cbci-workshop-pink
 gcloud beta container --project "core-workshop" clusters create $CLUSTER_NAME \
   --region "us-east1" --no-enable-basic-auth --release-channel "regular" \
@@ -48,6 +48,7 @@ gcloud iam service-accounts add-iam-policy-binding \
   --member "serviceAccount:core-workshop.svc.id.goog[cbci/jenkins]" \
   core-cloud-run@core-workshop.iam.gserviceaccount.com
 
+chmod +x kustomize-wrapper.sh
 helm upgrade --install cbci cloudbees/cloudbees-core \
   --wait \
   --set OperationsCenter.HostName=$CBCI_HOSTNAME \
@@ -58,7 +59,7 @@ helm upgrade --install cbci cloudbees/cloudbees-core \
   --values ./helm/cbci.yml --post-renderer ./kustomize-wrapper.sh
 
 cd controllers
-
+chmod +x kustomize-wrapper.sh
 helm upgrade --install controllers cloudbees/cloudbees-core \
   --wait \
   --set OperationsCenter.HostName=$CBCI_HOSTNAME \
