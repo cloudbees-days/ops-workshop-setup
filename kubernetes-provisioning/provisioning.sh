@@ -31,6 +31,7 @@ kubectl apply -f ./k8s/cluster-issuers.yml
 
 helm upgrade --install csi-secrets-store secrets-store-csi-driver/secrets-store-csi-driver
 #install GCP secrets-store-csi-driver
+git clone https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp.git
 kubectl apply -f ./secrets-store-csi-gcp/provider-gcp-plugin.yaml
 
 CBCI_HOSTNAME=pink.workshop.cb-sa.io
