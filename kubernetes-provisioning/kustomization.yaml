@@ -15,19 +15,26 @@ configMapGenerator:
     - casc/oc/plugins.yaml
     - casc/oc/items.yaml
 resources:
+- resources/network/cert-manager-allow-all.yaml
 - resources/network/allow-ingress-nginx.yml
 - resources/network/cjoc-controller-ingress.yaml
+- resources/network/cjoc-smee-client-ingress.yaml
 - resources/network/controller-cjoc-ingress.yaml
+- resources/network/smee-smee-client-ingress.yaml
 - resources/network/deny-all-ingress.yml
 - resources/cluster-issuers.yml
+- resources/regional-pd-ssd.yaml
 - resources/cbci-cjoc-secret-provider.yml
 - resources/cbci-ops-secret-provider.yml
-- resources/oc-smee-client-deployment.yml
 - chart.yaml
 transformers:
   - transformers/pod-labels.yaml
 patches:
-  - path: patches/jenkins-sa-patch.yaml
+  - path: patches/workload-identity-sa-patch.yaml
     target:
       kind: ServiceAccount
       name: jenkins
+  - path: patches/workload-identity-sa-patch.yaml
+    target:
+      kind: ServiceAccount
+      name: cjoc
