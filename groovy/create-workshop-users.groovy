@@ -5,6 +5,13 @@ import java.util.logging.Logger
 
 Logger logger = Logger.getLogger("create-workshop-users")
 
+def workshopFolderName = "REPLACE_GITHUB_APP"
+def workshopFolder = Jenkins.instance.getItem(workshopFolderName)
+if (workshopFolder == null) {
+    logger.info("$workshopFolderName Folder does not exist so creating")
+    workshopFolder = Jenkins.instance.createProject(Folder.class, workshopFolderName);
+}
+
 String jenkinsUserId = "REPLACE_JENKINS_USER"
 def user = User.get(jenkinsUserId, false)
 try {
