@@ -1,11 +1,13 @@
-# apply-spec.yaml
-applySpecVersion: 1
+apiVersion: configmanagement.gke.io/v1
+kind: ConfigManagement
+metadata:
+  name: config-management
 spec:
+  # Set to true to enable hierarchical namespaces
   hierarchyController:
-    # Set to true to enable hierarchical namespaces
     enabled: true
-    # Comment to disable hierarchical quota:
+    # Comment to disable hierarhical quota:
     enableHierarchicalResourceQuota: true
     # Comment to disable hierarchical observability:
     enablePodTreeLabels: true
-  # ...other fields...
+   # ...other fields...
