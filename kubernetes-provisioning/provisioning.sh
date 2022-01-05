@@ -32,16 +32,23 @@ kubectl apply -f ./k8s/cluster-issuers.yml
 helm upgrade --install csi-secrets-store secrets-store-csi-driver/secrets-store-csi-driver
 #install GCP secrets-store-csi-driver
 git clone https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp.git
-kubectl apply -f ./secrets-store-csi-gcp/provider-gcp-plugin.yaml
+kubectl apply -f ./secrets-store-csi-driver-provider-gcp/deploy/provider-gcp-plugin.yaml
 
 CBCI_HOSTNAME=pink.workshop.cb-sa.io
 DNS_ZONE=workshop-cb-sa
 #get ingress-nginx lb ip
 INGRESS_IP=$(kubectl get services -n ingress-nginx | grep ingress-nginx-nginx-ingress-controller | awk '{print $4}')
-#update DNS entry for CBCI above hostname to map to that IP
+gcloud dns record-sets delete $CBCI_HOSTNAME. --type=A --zone=$DNS_ZONE
+#create DNS entry for CBCI above hostname to map to that IP
 gcloud dns --project=$PROJECT_ID record-sets transaction start --zone=$DNS_ZONE
 gcloud dns --project=$PROJECT_ID record-sets transaction add $INGRESS_IP --name=$CBCI_HOSTNAME. --ttl=300 --type=A --zone=$DNS_ZONE
 gcloud dns --project=$PROJECT_ID record-sets transaction execute --zone=$DNS_ZONE
+
+# Select the latest version of HNC
+HNC_VERSION=v0.9.0
+
+# Install HNC. Afterwards, wait up to 30s for HNC to refresh the certificates on its webhooks.
+kubectl apply -f https://github.com/kubernetes-sigs/hierarchical-namespaces/releases/download/${HNC_VERSION}/hnc-manager.yaml 
 
 gcloud iam service-accounts add-iam-policy-binding \
   --role roles/iam.workloadIdentityUser \
@@ -55,7 +62,7 @@ helm upgrade --install cbci cloudbees/cloudbees-core \
   --set nginx-ingress.Enabled=false \
   --set OperationsCenter.Ingress.tls.Host=$CBCI_HOSTNAME \
   --namespace='cbci'  --create-namespace \
-  --set-file 'OperationsCenter.ExtraGroovyConfiguration.z-quickstart-hook\.groovy'=./groovy-license-activated/z-quickstart-hook.groovy \
+  --set-file 'OperationsCenter.ExtraGroovyConfiguration.z-quickstart-hook\.groovy'=./config/groovy-license-activated/z-quickstart-hook.groovy \
   --values ./helm/cbci.yml --post-renderer ./kustomize-wrapper.sh
 
 cd controllers
