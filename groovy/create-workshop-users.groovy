@@ -1,5 +1,6 @@
 import jenkins.model.Jenkins
 import hudson.model.User
+import com.cloudbees.hudson.plugins.folder.*;
 
 import java.util.logging.Logger
 
