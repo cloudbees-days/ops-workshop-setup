@@ -203,8 +203,6 @@ spec:
           sh "cp ops-controller/*.yaml ${bundleName}"
           sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
           sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
-          sh 'sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./subnamespace.yaml'
-          sh "kubectl apply -f ./subnamespace.yaml"
         }
         
         echo "provisioning managed controller"
