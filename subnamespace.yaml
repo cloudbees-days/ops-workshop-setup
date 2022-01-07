@@ -4,4 +4,4 @@ metadata:
   labels:
     com.cloudbees.ci.type: controller
   namespace: controllers
-  name: REPLACE_GITHUB_ORG
+  name: REPLACE_GITHUB_APP
