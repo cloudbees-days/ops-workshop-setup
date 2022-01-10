@@ -187,7 +187,6 @@ spec:
             
             git checkout -b add-provisioning
             mkdir jcasc
-            rm plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/credentials.yaml > jcasc/credentials.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/jenkins.yaml > jcasc/jenkins.yaml
