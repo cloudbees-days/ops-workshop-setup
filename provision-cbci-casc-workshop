@@ -15,6 +15,7 @@ pipeline {
     bundleName = "${controllerFolder}-${controllerName}"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
     AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
+    DEV_AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${devControllerName}"
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='${ENVIRONMENT_PREFIX}cloudbees-ci-casc-workshop'")
@@ -216,9 +217,8 @@ spec:
             
             git checkout -b main
             git pull origin main
-            git checkout -b provision-with-bundle
+            git checkout -b provision            
             
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/dev-controller/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/main/controller.yaml > controller.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
@@ -226,12 +226,26 @@ spec:
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             git add *
-            git commit -a -m 'adding bundle.yaml and controller.yaml for provisioning lab'
-            git push -u origin provision-with-bundle
+            git commit -a -m 'adding controller.yaml for provisioning lab'
+            git push -u origin provision
+            
+            git checkout -b add-bundle
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/dev-controller/bundle.yaml > bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$DEV_AVAILABILITY_PATTERN|g" bundle.yaml
+            git add *
+            git commit -a -m 'adding bundle.yaml for provisioning lab'
+            git push -u origin add-bundle
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Provision Controller with CasC Bundle","head":"provision-with-bundle","base":"main"}' \
+                 --data '{"title":"Provision Controller","head":"provision","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Add CasC Bundle","head":"add-bundle","base":"provision"}' \
                  https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
           ''')
             
