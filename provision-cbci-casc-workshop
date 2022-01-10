@@ -188,6 +188,7 @@ spec:
             
             git fetch origin
             git checkout -b add-provisioning origin/add-provisioning
+            git pull origin main --allow-unrelated-histories
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
