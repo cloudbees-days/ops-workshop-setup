@@ -225,6 +225,7 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" controller.yaml
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            git add *
             git commit -a -m 'adding bundle.yaml and controller.yaml for provisioning lab'
             git push -u origin provision-with-bundle
             
