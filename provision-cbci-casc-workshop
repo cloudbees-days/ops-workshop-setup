@@ -230,12 +230,12 @@ spec:
             git push -u origin provision-with-bundle
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Provision Controller with CasC Bundle","head":"provision-with-bundle","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
           ''')
             
-          }
+        }
         echo "creating config bundle on OC"
         container('kubectl') {
           sh "rm -rf ./${bundleName}"
