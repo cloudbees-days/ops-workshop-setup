@@ -201,6 +201,13 @@ spec:
             git push origin add-provisioning
             git checkout main
             
+            curl \
+              -X PATCH \
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+              -H "Accept: application/vnd.github.antiope-preview+json" \
+              https://api.github.com/repos/${GitHubOrganization}/ops-controller \
+              -d '{"delete_branch_on_merge":true}'
+            
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Add provisioning job","head":"add-provisioning","base":"main"}' \
