@@ -11,6 +11,7 @@ pipeline {
     GitHubUsername = event.sender.login.toString()
     controllerFolder = GitHubOrganization.toLowerCase()
     controllerName = "ops-controller"
+    devControllerName = "dev-controller"
     bundleName = "${controllerFolder}-${controllerName}"
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
     AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
@@ -95,10 +96,12 @@ spec:
             rm -rf ./ops-controller || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
+            rm -rf ./dev-controller || true
             
             mkdir -p ops-controller
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
+            mkdir -p dev-controller
           ''')
           
           waitUntil {
@@ -188,14 +191,50 @@ spec:
                  -H 'Accept: application/vnd.github.nebula-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/orgs/${GitHubOrganization}/repos \
-                 --data '{"name":"dev-controller","description":"Example repository to be used for dynamic provisioning of a CloudBees CI managed controller with CasC.","visibility":"public","auto_init":true,"license_template":"mit"}'
+                 --data '{"name":"dev-controller","description":"Example repository to be used for dynamic provisioning of a CloudBees CI managed controller with CasC.","visibility":"public","auto_init":true,"license_template":"mit","delete_branch_on_merge":true}'
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/orgs/$GitHubOrganization/hooks \
                  --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
-        }
+            
+          waitUntil {
+            script {
+              def status = sh script: '''curl -s -o /dev/null -w '%{http_code}' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/dev-controller/git/ref/heads/main''', returnStdout: true
+              echo "returned status: ${status}"
+              return (status=="200")
+            }
+          }
+
+          sh(script: '''
+            cd dev-controller
+            git init
+            git config user.email "${GitHubUsername}@workshop.cb-sa.io"
+            git config user.name "${GitHubOrganization}"
+            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/dev-controller.git
+            
+            git checkout -b main
+            git pull origin main
+            git checkout -b provision-with-bundle
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/dev-controller/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/main/controller.yaml > controller.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" controller.yaml
+            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            git commit -a -m 'adding bundle.yaml and controller.yaml for provisioning lab'
+            git push -u origin provision-with-bundle
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                 --data '{"title":"Provision Controller with CasC Bundle","head":"provision-with-bundle","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
+          ''')
+            
+          }
         echo "creating config bundle on OC"
         container('kubectl') {
           sh "rm -rf ./${bundleName}"
