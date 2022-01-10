@@ -182,6 +182,30 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
             git push origin main
             
+            git checkout -b add-provisioning
+            git pull origin add-provisioning
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
+            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            git add *
+            git commit -a -m 'add-provisioning'
+            git push origin add-provisioning
+            git checkout main
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Add provisioning job","head":"add-provisioning","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
+            
             curl -X PATCH \
                  -H "Accept: application/vnd.github.v3+json" \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
