@@ -245,7 +245,7 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Add provisioning job","head":"add-provisioning","base":"add-parent-bundle"}' \
+                 --data '{"title":"Add provisioning job","head":"add-provisioning","base":"main}' \
                  https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
             
             curl -X PATCH \
