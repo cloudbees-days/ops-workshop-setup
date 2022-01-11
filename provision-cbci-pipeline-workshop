@@ -6,8 +6,8 @@ pipeline {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
-    GitHubOrganizationRaw = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubOrganization = GitHubOrganizationRaw.toLowerCase()
+    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+    GitHubOrganizationLowercase = GitHubOrganizationRaw.toLowerCase()
     GitHubUsername = event.sender.login.toString().toLowerCase()
     whatEven = GitHubUsername.toLowerCase()
     WEBHOOK_BASE_URL = "$ENVIRONMENT_PREFIX"+"cbci.workshop.cb-sa.io"
