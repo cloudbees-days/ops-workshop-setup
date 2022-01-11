@@ -8,7 +8,7 @@ pipeline {
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubOrganization = GitHubOrganizationRaw.toLowerCase()
+    GitHubOrganizationLowercase = GitHubOrganization.toLowerCase()
     GitHubUsername = event.sender.login.toString()
     controllerFolder = GitHubOrganization.toLowerCase()
     controllerName = "ops-controller"
