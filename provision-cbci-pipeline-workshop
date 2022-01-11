@@ -27,7 +27,7 @@ pipeline {
         environment name: 'TARGET_TYPE', value: 'User'
       }
       steps {
-        echo "installation.account.login:${GitHubOrganizationRaw}"
+        echo "installation.account.login:${GitHubOrganization}"
         echo "GitHub username: ${GitHubUsername}"
         echo "GitHub Org Name: ${GitHubOrganization}"
         error "GitHub target type (should be Organization): ${TARGET_TYPE}"
