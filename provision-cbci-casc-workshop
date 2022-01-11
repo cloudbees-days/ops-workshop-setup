@@ -56,7 +56,7 @@ spec:
         echo "Jenkins userId will be: ${GitHubUsername}"
         
         echo "begin config bundle updates"
-        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-create-github-app-credential.groovy"
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganizationRaw/g\" ./groovy/ops-create-github-app-credential.groovy"
         sh "sed -i \"s/REPLACE_BASE_CREDENTIAL_ID/${ENVIRONMENT_PREFIX}cloudbees-ci-casc-workshop-github-app/g\" ./groovy/ops-create-github-app-credential.groovy"
         
         sh "curl -O http://operations-ops/operations-ops/jnlpJars/jenkins-cli.jar"
@@ -66,7 +66,7 @@ spec:
                 cli groovy =<./groovy/ops-create-github-app-credential.groovy
             '''
         }
-        withCredentials([usernamePassword(credentialsId: "$GitHubOrganization",
+        withCredentials([usernamePassword(credentialsId: "$GitHubOrganizationRaw",
                                           usernameVariable: 'GITHUB_APP',
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: '''
@@ -273,7 +273,7 @@ spec:
           '''
         }
         
-        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
+        sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganizationRaw/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             sh '''
                 alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
