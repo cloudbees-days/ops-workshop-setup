@@ -184,9 +184,33 @@ spec:
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
             git push origin main
+            
+            git checkout -b after-add-parent-bundle
+            mkdir jcasc
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/jcasc/credentials.yaml > jcasc/credentials.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/jcasc/jenkins.yaml > jcasc/jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/controller-casc-update > controller-casc-update
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/controller.yaml > controller.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/items.yaml > items.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/plugins.yaml > plugins.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" jcasc/jenkins.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
+            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            git add *
+            git commit -a -m 'after-add-parent-bundle'
+            git push origin after-add-parent-bundle
 
             git checkout -b add-provisioning
-            mkdir jcasc
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/credentials.yaml > jcasc/credentials.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/jenkins.yaml > jcasc/jenkins.yaml
