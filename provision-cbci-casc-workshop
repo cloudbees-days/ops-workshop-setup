@@ -185,7 +185,7 @@ spec:
             git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
             git push origin main
             
-            git checkout -b add-parent-bundle
+            git checkout -b after-add-parent-bundle
             mkdir jcasc
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-parent-bundle/jcasc/credentials.yaml > jcasc/credentials.yaml
@@ -207,8 +207,8 @@ spec:
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             git add *
-            git commit -a -m 'add-parent-bundle'
-            git push origin add-parent-bundle
+            git commit -a -m 'after-add-parent-bundle'
+            git push origin after-add-parent-bundle
             
             git checkout -b add-provisioning
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/bundle.yaml > bundle.yaml
