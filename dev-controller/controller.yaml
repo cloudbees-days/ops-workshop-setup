@@ -24,6 +24,8 @@ items:
     properties:
     - healthReporting:
         enabled: true
+    - configurationAsCode:
+        bundle: REPLACE_GITHUB_ORG-dev-controller
     configuration:
       kubernetes:
         memory: 4000
