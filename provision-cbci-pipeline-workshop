@@ -20,6 +20,19 @@ pipeline {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-pipeline-workshop'")
   } 
   stages {
+    stage('Using GitHub User instead of Org') {
+      when {
+        beforeAgent true
+        triggeredBy 'EventTriggerCause'
+        environment name: 'TARGET_TYPE', value: 'User'
+      }
+      steps {
+        echo "installation.account.login:${GitHubOrganizationRaw}"
+        echo "GitHub username: ${GitHubUsername}"
+        echo "GitHub Org Name: ${GitHubOrganization}"
+        error "GitHub target type (should be Organization): ${TARGET_TYPE}"
+      }
+    }
     stage('Provision Managed Controller') {
       when {
         beforeAgent true
@@ -277,11 +290,6 @@ spec:
             '''
         }
       }
-    }
-  }
-  post {
-    always {
-      echo "GitHub target type (should be Organization): ${TARGET_TYPE}  -- GitHubOrganization=${GitHubOrganization} and GitHubUsername=${GitHubUsername}"
     }
   }
 }
