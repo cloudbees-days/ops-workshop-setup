@@ -61,11 +61,11 @@ spec:
         }
       }
       steps {
-        echo "installation.account.login:${GitHubOrganizationRaw}"
+        echo "installation.account.login:${GitHubOrganization}"
         checkout scm
         echo "GitHub target type (should be Organization): ${TARGET_TYPE}"
         echo "GitHub username: ${GitHubUsername}"
-        echo "GitHub Org Name: ${GitHubOrganizationRaw}"
+        echo "GitHub Org Name: ${GitHubOrganization}"
         echo "Jenkins userId will be: ${GitHubUsername}"
         
         echo "begin config bundle updates"
