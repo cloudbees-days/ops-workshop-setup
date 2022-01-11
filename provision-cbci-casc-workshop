@@ -243,6 +243,11 @@ spec:
                  -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true}'
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Add provisioning job","head":"add-provisioning","base":"after-add-parent-bundle"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'Accept: application/vnd.github.nebula-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/orgs/${GitHubOrganization}/repos \
