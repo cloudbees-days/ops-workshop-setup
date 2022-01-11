@@ -25,7 +25,7 @@ items:
     - healthReporting:
         enabled: true
     - configurationAsCode:
-        bundle: REPLACE_GITHUB_ORG-dev-controller
+        bundle: REPLACE_FOLDER_NAME-REPLACE_CONTROLLER_NAME
     configuration:
       kubernetes:
         memory: 4000
@@ -33,7 +33,7 @@ items:
         clusterEndpointId: default
         disk: 10
         storageClassName: premium-rwo
-        domain: REPLACE_GITHUB_ORG-REPLACE_CONTROLLER_NAME
+        domain: REPLACE_FOLDER_NAME-REPLACE_CONTROLLER_NAME
         namespace: controllers
         yaml: |
           kind: "StatefulSet"
