@@ -211,7 +211,6 @@ spec:
             git push origin add-parent-bundle
             
             git checkout -b add-provisioning
-            mkdir jcasc
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/credentials.yaml > jcasc/credentials.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/add-provisioning/jcasc/jenkins.yaml > jcasc/jenkins.yaml
