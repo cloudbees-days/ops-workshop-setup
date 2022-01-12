@@ -26,6 +26,10 @@ items:
         enabled: true
     - configurationAsCode:
         bundle: REPLACE_FOLDER_NAME-REPLACE_CONTROLLER_NAME
+    - optOutProperty:
+        securityEnforcerOptOutMode:
+          authorizationOptOutMode: {
+            }
     configuration:
       kubernetes:
         memory: 4000
