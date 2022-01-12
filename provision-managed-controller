@@ -211,7 +211,14 @@ spec:
             git pull origin main
             git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml                  
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml 
+
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
+            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/cloudbees-ci-config bundle for ${GitHubUsername}'
             git push origin main
@@ -333,29 +340,28 @@ spec:
         }
         
         echo "provisioning managed controller"
-        sh """
-          sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_ENVIRONMENT_PREFIX/$ENVIRONMENT_PREFIX/g" ./groovy/provision-controller-with-casc.groovy
-          sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/provision-controller-with-casc.groovy 
-        """
+        sh '''          
+          sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/create-workshop-users.groovy
+          sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/create-workshop-users.groovy 
+          sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" ./groovy/create-workshop-users.groovy 
+        '''
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
-          sh """
+          sh  '''
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-            cli groovy =<./groovy/provision-controller-with-casc.groovy
-          """
+            cli groovy =<./groovy/create-workshop-users.groovy
+            
+            curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
+              http://cjoc/cjoc/casc-items/create-items?path=/$GitHubApp \
+              --data-binary @./cloudbees-ci-config-bundle/controller.yaml -H 'Content-Type:text/yaml'
+          '''
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
-            sh """
-                alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
-                cli groovy =<./groovy/ops-delete-github-app-credential.groovy
-            """
+          sh """
+              alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
+              cli groovy =<./groovy/ops-delete-github-app-credential.groovy
+          """
         }
       }
     }
