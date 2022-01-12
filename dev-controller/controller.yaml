@@ -55,9 +55,9 @@ items:
                   - name: "GITHUB_APP"
                     value: "REPLACE_GITHUB_APP"
                   - name: "CONTROLLER_SUBDOMAIN"
-                    value: "REPLACE_GITHUB_ORG-REPLACE_CONTROLLER_NAME"
+                    value: "REPLACE_FOLDER_NAME-REPLACE_CONTROLLER_NAME"
                   - name: "CASC_BUNDLE_ID"
-                    value: "REPLACE_GITHUB_ORG-REPLACE_CONTROLLER_NAME"
+                    value: "REPLACE_FOLDER_NAME-REPLACE_CONTROLLER_NAME"
                   volumeMounts:
                   - name: "jcasc-secrets"
                     mountPath: "/var/jenkins_home/jcasc_secrets"
