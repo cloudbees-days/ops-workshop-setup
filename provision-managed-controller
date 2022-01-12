@@ -211,7 +211,9 @@ spec:
             git pull origin main
             git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml 
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml             
+            
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml
 
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
