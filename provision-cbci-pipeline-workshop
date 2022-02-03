@@ -221,6 +221,8 @@ spec:
             git checkout main
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
             git add .markerfile
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/items.yaml > items.yaml
+            git add items.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
@@ -234,10 +236,6 @@ spec:
             
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugin-catalog.yaml > plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugins.yaml > plugins.yaml
-
-            mkdir groovy
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/groovy/cbci-pipeline-workshop-create-jobs.groovy > groovy/cbci-pipeline-workshop-create-jobs.groovy 
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" groovy/cbci-pipeline-workshop-create-jobs.groovy
 
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
