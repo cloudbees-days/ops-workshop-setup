@@ -171,7 +171,6 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-template-catalog.git
             git pull origin main
             git checkout main
-            rm Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/container-build-deploy/template.yaml
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
             git push -u origin main
