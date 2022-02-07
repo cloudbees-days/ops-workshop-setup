@@ -154,19 +154,6 @@ spec:
             }
           }
           
-          sh(script: '''
-            cd pipeline-library
-            git init
-            git config user.email "$GitHubUsername@workshop.cb-sa.io"
-            git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-library.git
-            git pull origin main
-            git checkout main
-            rm Jenkinsfile
-            git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
-            git push origin main
-          ''')
-          
           waitUntil {
             script {
               def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/git/ref/heads/main", returnStdout: true
