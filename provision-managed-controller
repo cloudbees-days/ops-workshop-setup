@@ -187,9 +187,6 @@ spec:
             git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/pipeline-template-catalog.git
             git pull origin main
             git checkout main
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" Jenkinsfile
-            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" Jenkinsfile
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" create-pipeline-template-catalog.json
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" templates/pipeline-policies/Jenkinsfile
