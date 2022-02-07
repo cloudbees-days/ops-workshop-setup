@@ -144,6 +144,14 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
+
+            curl \
+              -X PATCH \
+              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+              -H "Accept: application/vnd.github.antiope-preview+json" \
+              https://api.github.com/repos/${GitHubOrganization}/insurance-frontend \
+              -d '{"delete_branch_on_merge":true}'
+            
           ''')
           
           waitUntil {
