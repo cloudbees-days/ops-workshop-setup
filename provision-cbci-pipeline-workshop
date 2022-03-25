@@ -248,6 +248,7 @@ spec:
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
           sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleName}"
+          sh "rm ${bundleName}/controller.yaml || true"
           sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
           sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
