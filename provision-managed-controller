@@ -350,7 +350,7 @@ spec:
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
             cli groovy =<./groovy/create-workshop-users.groovy           
             
-            
+            sleep 5
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
               http://cjoc/cjoc/casc-bundle/validate-uploaded-bundle?bundleId=${bundleName}           
             
