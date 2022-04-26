@@ -199,7 +199,6 @@ spec:
             git fetch
             
             git checkout -b bundle-export
-            mkdir groovy
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-export/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-export/jenkins.yaml > jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-export/items.yaml > items.yaml
