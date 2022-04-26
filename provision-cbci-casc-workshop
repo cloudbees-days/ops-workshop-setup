@@ -196,6 +196,7 @@ spec:
             git add *
             git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
             git push origin main
+            git fetch
             
             git checkout -b bundle-export
             mkdir groovy
