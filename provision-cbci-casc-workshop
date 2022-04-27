@@ -232,7 +232,6 @@ spec:
             git push origin bundle-folders
             
             git checkout -b bundle-inheritance
-            mkdir jcasc
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/bundle.yaml > bundle.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/jcasc/jenkins.yaml > jcasc/jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/plugins.yaml > plugins.yaml
