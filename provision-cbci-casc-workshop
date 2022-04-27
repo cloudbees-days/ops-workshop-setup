@@ -231,6 +231,20 @@ spec:
             git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-folders"
             git push origin bundle-folders
             
+            git checkout -b bundle-inheritance
+            mkdir jcasc
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/jcasc/jenkins.yaml > jcasc/jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-inheritance/plugins.yaml > plugins.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml   
+            git rm plugin-catalog.yaml
+            git add jcasc/*.yaml
+            git add *
+            git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-inheritance"
+            git push origin bundle-inheritance
+            
             git checkout main
             
             curl -X PATCH \
@@ -252,6 +266,11 @@ spec:
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Bundle Folders","head":"bundle-folders","base":"bundle-management"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Bundle Inheritance","head":"bundle-inheritance","base":"bundle-folders"}' \
                  https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
