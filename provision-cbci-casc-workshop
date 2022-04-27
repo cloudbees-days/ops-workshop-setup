@@ -233,6 +233,12 @@ spec:
             
             git checkout main
             
+            curl -X PATCH \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 https://api.github.com/repos/$GitHubOrganization/ops-controller \
+                 -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true}'
+            
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Bundle Export","head":"bundle-export","base":"main"}' \
@@ -247,12 +253,6 @@ spec:
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Bundle Folders","head":"bundle-folders","base":"bundle-management"}' \
                  https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
-            
-            curl -X PATCH \
-                 -H "Accept: application/vnd.github.v3+json" \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/$GitHubOrganization/ops-controller \
-                 -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true}'
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'Accept: application/vnd.github.nebula-preview+json' \
