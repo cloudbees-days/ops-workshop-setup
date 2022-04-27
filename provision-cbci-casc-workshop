@@ -137,7 +137,7 @@ spec:
             git pull origin main
             git checkout main
             rm Jenkinsfile
-            git commit -a -m 'removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername'
+            git commit -a -m "removing Jenkinsfile from $GitHubOrganization/pipeline-library for $GitHubUsername"
             git push origin main
           ''')
           
@@ -159,7 +159,7 @@ spec:
             git pull origin main
             git checkout main
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" templates/pipeline-policies/Jenkinsfile
-            git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
+            git commit -a -m "updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername"
             git push origin main
           ''')
             
@@ -191,7 +191,7 @@ spec:
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             git add *
-            git commit -a -m 'updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}'
+            git commit -a -m "updating ${GitHubOrganization}/ops-controller for ${GitHubUsername}"
             git push origin main
             git fetch
             
@@ -207,15 +207,15 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml 
             git add plugin-catalog.yaml
             git add *
-            git commit -a -m 'updating ${GitHubOrganization}/ops-controller bundle for bundle-export'
+            git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-export"
             git push origin bundle-export
             
             git checkout -b bundle-management
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-management/items.yaml > items.yaml 
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml 
             git add *
-            git commit -a -m 'updating ${GitHubOrganization}/ops-controller bundle for bundle-management'
-            git push origin bundle-export
+            git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-management"
+            git push origin bundle-management
             
             git checkout -b bundle-folders
             mkdir jcasc
@@ -228,7 +228,7 @@ spec:
             git rm jenkins.yaml
             git add jcasc/*.yaml
             git add *
-            git commit -a -m 'updating ${GitHubOrganization}/ops-controller bundle for bundle-folders'
+            git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-folders"
             git push origin bundle-folders
             
             git checkout main
