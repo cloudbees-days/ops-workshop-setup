@@ -212,8 +212,8 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
 
             cd bundle
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
