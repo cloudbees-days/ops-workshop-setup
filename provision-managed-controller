@@ -7,6 +7,7 @@ pipeline {
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
+    GitHubAppId = event.installation.app_id.toString()
     GitHubOrganization= event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubOrganizationLowercase = GitHubOrganization.toLowerCase()
     GitHubUsername = event.sender.login.toString().toLowerCase()
@@ -212,6 +213,7 @@ spec:
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.yaml
 
             cd bundle
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
