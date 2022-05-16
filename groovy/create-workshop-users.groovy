@@ -1,6 +1,7 @@
 import jenkins.model.Jenkins
 import hudson.model.User
-import com.cloudbees.hudson.plugins.folder.*;
+import com.cloudbees.hudson.plugins.folder.*
+import jenkins.security.ApiTokenProperty
 
 import java.util.logging.Logger
 
@@ -14,6 +15,7 @@ if (workshopFolder == null) {
 }
 
 String jenkinsUserId = "REPLACE_JENKINS_USER"
+def jenkinsTokenName = 'api-token'
 def user = User.get(jenkinsUserId, false)
 try {
   logger.info("user full name: " + user.getFullName())
@@ -26,6 +28,17 @@ if(user==null) {
 while(user == null) {
   user = User.get(jenkinsUserId, false)
 }
+def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
+if(tokens.size() != 0) {
+    logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
+    tokens.each {
+        apiTokenProperty.tokenStore.revokeToken(it.getUuid())
+    }
+}
+def tokenValue
+new File("/var/jenkins_home/jcasc_secrets/userApiToken").withReader { tokenValue = it.readLine() }  
+apiTokenProperty.tokenStore.addFixedNewToken(jenkinsTokenName, tokenValue)
 user.save()
 
 String adminUserId = "REPLACE_JENKINS_USER-admin"
