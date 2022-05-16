@@ -5,12 +5,12 @@ pipeline {
     eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
   }
   environment {
-    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubApp = event.installation.app_slug.toString()
+    GitHubOrganization = event.organization.login.toString().replaceAll(" ", "-")
+    GitHubApp = "cloudbees-ci-workshop"
     GitHubUsername = event.sender.login.toString().toLowerCase()
     controllerFolder = GitHubOrganization.toLowerCase()
     controllerName = "controller"
-    bundleDir = "${controllerFolder}-${controllerName}"
+    bundleName = "${controllerFolder}-${controllerName}"
   }
   stages {
     stage('Update Config Bundle') {
@@ -126,24 +126,25 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${bundleDir}"
-          sh "mkdir -p ${bundleDir}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleDir}"
-          sh "kubectl cp --namespace cbci ${bundleDir} cjoc-0:/var/jenkins_home/jcasc-bundles-store/ -c jenkins"
+          sh "rm -rf ./${bundleName}"
+          sh "mkdir -p ${bundleName}"
+          sh "cp cloudbees-ci-config-bundle/bundle/*.yaml ${bundleName}"
+          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
             waitUntil {
               script {
-                def UPDATE_AVAILABLE = sh (script: '''curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleDir}.controllers.svc.cluster.local/${bundleDir}/casc-bundle-mgnt/check-bundle-update  | jq '.["update-available"]' | tr -d "\n" ''', 
+                def UPDATE_AVAILABLE = sh (script: '''curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/check-bundle-update  | jq '.["update-available"]' | tr -d "\n" ''', 
                   returnStdout: true) 
                 echo "update available: ${UPDATE_AVAILABLE}"
                 return (UPDATE_AVAILABLE=="true")
               }
             }
             sh """
-                curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XPOST http://${bundleDir}.controllers.svc.cluster.local/${bundleDir}/casc-bundle-mgnt/reload-bundle
+                curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XPOST http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/reload-bundle
 
                 alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-delete-github-app-credential.groovy
