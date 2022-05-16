@@ -6,7 +6,6 @@ pipeline {
   }
   environment {
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
-    GitHubUsername = event.sender.login.toString()
     GitHubApp = event.installation.app_slug.toString()
     GitHubUsername = event.sender.login.toString().toLowerCase()
     controllerFolder = GitHubOrganization.toLowerCase()
