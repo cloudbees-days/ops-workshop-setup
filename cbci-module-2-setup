@@ -1,10 +1,17 @@
-def controllerName
-def GitHubOrganization
-def GitHubUsername
+def event = currentBuild.getBuildCauses()[0].event
 pipeline {
   agent none  
   triggers {
     eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
+  }
+  environment {
+    GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
+    GitHubUsername = event.sender.login.toString()
+    GitHubApp = event.installation.app_slug.toString()
+    GitHubUsername = event.sender.login.toString().toLowerCase()
+    controllerFolder = GitHubOrganization.toLowerCase()
+    controllerName = "controller"
+    bundleDir = "${controllerFolder}-${controllerName}"
   }
   stages {
     stage('Update Config Bundle') {
@@ -34,18 +41,6 @@ spec:
         }
       }
       steps {
-        script {
-          def event = currentBuild.getBuildCauses()[0].event
-          GitHubOrganization = event.organization.login.toString()
-          GitHubUsername = event.sender.login.toString()
-        }
-        script {
-          GitHubOrganization = GitHubOrganization.replaceAll(" ", "-")
-          GitHubApp = "cloudbees-ci-workshop"
-          controllerName = "controller"
-          controllerFolder = GitHubOrganization.toLowerCase()
-          bundleDir = "${controllerFolder}-${controllerName}"
-        }
         echo "GitHub Org Name: ${GitHubOrganization}"
         echo "GitHub username: ${GitHubUsername}"
         
