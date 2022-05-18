@@ -4,6 +4,7 @@ pipeline {
   triggers {
     eventTrigger jmespathQuery("action=='closed' && pull_request.head.ref=='cbci-module-2-setup' && sender.login !='cloudbees-ci-workshop[bot]'")
   }
+  options { timeout(time: 5, unit: 'MINUTES') }
   environment {
     GitHubOrganization = event.organization.login.toString().replaceAll(" ", "-")
     GitHubApp = "cloudbees-ci-workshop"
@@ -138,7 +139,7 @@ spec:
           sh 'sleep 7'
           waitUntil {
             script {
-              def RELOADED = sh (script: '''curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${BUNDLE_ID}.controllers.svc.cluster.local/${BUNDLE_ID}/casc-bundle-mgnt/reload-bundle  | jq '.["reloaded"]' | tr -d "\n" ''', 
+              def RELOADED = sh (script: '''curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/reload-bundle  | jq '.["reloaded"]' | tr -d "\n" ''', 
                 returnStdout: true) 
               echo "reloaded: ${RELOADED}"
               return (RELOADED=="true")
