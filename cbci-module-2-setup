@@ -137,6 +137,7 @@ spec:
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh 'sleep 7'
+          sh '''curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/reload-bundle'''
           waitUntil {
             script {
               def RELOADED = sh (script: '''curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/reload-bundle  | jq '.["reloaded"]' | tr -d "\n" ''', 
