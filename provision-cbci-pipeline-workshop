@@ -208,26 +208,33 @@ spec:
             
             git pull origin main
             git checkout main
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
-            git add .markerfile
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/items.yaml > items.yaml
-            git add items.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle.yaml > bundle.yaml 
             
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml   
-            
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/jenkins.yaml > jenkins.yaml
-            
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugin-catalog.yaml > plugin-catalog.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/plugins.yaml > plugins.yaml
-
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
+            sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" controller.yaml
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/.markerfile > .markerfile
+            git add .markerfile
+            
+            cd bundle
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items.yaml > items.yaml
+            git add items.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/bundle.yaml > bundle.yaml 
+            
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml   
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/jenkins.yaml > jenkins.yaml
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/plugin-catalog.yaml > plugin-catalog.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/plugins.yaml > plugins.yaml
+            git add *
+
+            cd ..
 
             git add *
             git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
