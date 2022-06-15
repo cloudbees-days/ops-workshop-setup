@@ -327,17 +327,20 @@ spec:
             git pull origin main
             git checkout -b provision            
             
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/dev-controller/controller.yaml > controller.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/main/dev-controller/controller.yaml > controller.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" controller.yaml
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
             
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/master/dev-controller/bundle.yaml > bundle.yaml
+            mkdir bundle
+            cd bundle
+            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/main/dev-controller/bundle.yaml > bundle.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$DEV_AVAILABILITY_PATTERN|g" bundle.yaml
+            git add bundle/*
             
             git add *
             git commit -a -m 'adding controller.yaml for provisioning lab'
