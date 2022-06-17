@@ -358,8 +358,8 @@ spec:
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
           sh "cp ops-controller/bundle/*.yaml ${bundleName}"          
-          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
         }
         
         echo "provisioning managed controller"
