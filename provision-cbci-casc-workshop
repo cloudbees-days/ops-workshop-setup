@@ -212,7 +212,6 @@ spec:
             
             git checkout -b bundle-management
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-management/bundle/items.yaml > items.yaml 
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items.yaml 
             git add *
             git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-management"
             git push origin bundle-management
