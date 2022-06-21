@@ -286,7 +286,12 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Bundle Folders","head":"bundle-folders","base":"bundle-management"}' \
+                 --data '{"title":"Bundle Update","head":"bundle-update","base":"bundle-management"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Bundle Folders","head":"bundle-folders","base":"bundle-update"}' \
                  https://api.github.com/repos/${GitHubOrganization}/ops-controller/pulls
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
