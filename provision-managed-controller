@@ -357,12 +357,14 @@ spec:
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
           sh  '''
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
+              -H "Accept: application/json" \
               http://cjoc/cjoc/load-casc-bundles/checkout
             
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
             cli groovy =<./groovy/create-workshop-users.groovy           
 
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
+              -H "Accept: application/json" \
               http://cjoc/cjoc/casc-items/create-items?path=/$GitHubApp \
               --data-binary @./cloudbees-ci-config-bundle/controller.yaml -H 'Content-Type:text/yaml'
           '''
