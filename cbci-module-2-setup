@@ -140,6 +140,7 @@ spec:
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
               http://cjoc/cjoc/load-casc-bundles/checkout
               
+            curl --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XGET http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/check-bundle-update
             curl -s --user $JENKINS_CLI_USR:$JENKINS_CLI_PSW -XPOST http://${bundleName}.controllers.svc.cluster.local/${bundleName}/casc-bundle-mgnt/reload-bundle
           '''
           sh """
