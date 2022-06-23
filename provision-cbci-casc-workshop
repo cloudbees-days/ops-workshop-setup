@@ -210,20 +210,20 @@ spec:
             git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-export"
             git push origin bundle-export
             
-            cd ..
             git checkout -b bundle-management
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-management/bundle/items.yaml > items.yaml 
             git add *
             git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-management"
             git push origin bundle-management
             
-            cd bundle
+            cd ..
             git checkout -b bundle-update
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-update/controller-casc-update > controller-casc-update
             git add *
             git commit -a -m "updating ${GitHubOrganization}/ops-controller bundle for bundle-update"
             git push origin bundle-update
             
+            cd bundle
             git checkout -b bundle-folders
             mkdir jcasc
             curl https://raw.githubusercontent.com/cloudbees-days/ops-controller/bundle-folders/bundle/bundle.yaml > bundle.yaml
