@@ -336,7 +336,7 @@ spec:
             git pull origin main
             git checkout -b provision            
             
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/main/dev-controller/controller.yaml > controller.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/provision/controller.yaml > controller.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" controller.yaml
@@ -346,7 +346,7 @@ spec:
             
             mkdir bundle
             cd bundle
-            curl https://raw.githubusercontent.com/cloudbees-days/ops-workshop-setup/main/dev-controller/bundle.yaml > bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/provision/bundle/bundle.yaml > bundle.yaml
             sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" bundle.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$DEV_AVAILABILITY_PATTERN|g" bundle.yaml
@@ -355,9 +355,47 @@ spec:
             git commit -a -m 'adding controller.yaml for provisioning lab'
             git push -u origin provision
             
+            git checkout -b rbac
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/rbac/bundle/bundle.yaml > bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$DEV_AVAILABILITY_PATTERN|g" bundle.yaml
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/rbac/bundle/rbac.yaml > rbac.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" rbac.yaml
+            
+            git add *
+            git commit -a -m 'adding rbac updates for rbac lab'
+            git push -u origin rbac
+            
+            git checkout -b folder-rbac
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/folder-rbac/bundle/bundle.yaml > bundle.yaml
+            sed -i "s/REPLACE_CONTROLLER_NAME/$devControllerName/g" bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" bundle.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$DEV_AVAILABILITY_PATTERN|g" bundle.yaml
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/folder-rbac/bundle/rbac.yaml > rbac.yaml
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" rbac.yaml
+            
+            curl https://raw.githubusercontent.com/cloudbees-days/dev-controller/folder-rbac/bundle/folder.yaml > folder.yaml
+            
+            git add *
+            git commit -a -m 'adding folder rbac updates for folder rbac lab'
+            git push -u origin folder-rbac
+            
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Provision Controller","head":"provision","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Controller RBAC","head":"rbac","base":"provision"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Folder RBAC","head":"folder-rbac","base":"rbac"}' \
                  https://api.github.com/repos/${GitHubOrganization}/dev-controller/pulls
           ''')
             
