@@ -395,6 +395,7 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" variables.yaml
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" variables.yaml
             
+            git rm rbac.yaml
             git add *
             git commit -a -m 'adding variables updates for variables lab'
             git push -u origin variables
