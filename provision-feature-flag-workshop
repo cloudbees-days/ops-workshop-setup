@@ -216,9 +216,9 @@ spec:
         container('kubectl') {
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
-          sh "cp cloudbees-ci-config-bundle/*.yaml ${bundleName}"
-          sh "kubectl exec --namespace sda cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace sda ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "cp cloudbees-ci-config-bundle/bundle/*.yaml ${bundleName}"
+          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
         }
         
         echo "provisioning managed controller"
