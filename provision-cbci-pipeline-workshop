@@ -185,9 +185,14 @@ spec:
             
             git fetch
             git checkout -B cross-team-collab-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/cross-team-collab-lab/templates/maven/Jenkinsfile > templates/maven/Jenkinsfile
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/pipeline-collab-lab/templates/container-build-deploy/Jenkinsfile > templates/container-build-deploy/Jenkinsfile
             git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
             git push -u origin cross-team-collab-lab
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Add Cross Team Collaboration Trigger","head":"cross-team-collab-lab","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
           ''')
           
           waitUntil {
