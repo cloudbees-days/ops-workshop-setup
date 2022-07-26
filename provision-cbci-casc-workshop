@@ -406,7 +406,7 @@ spec:
             git push -u origin variables
                  
             curl -X PUT \
-                 -H 'Accept: application/vnd.github+json' \ 
+                 -H 'Accept: application/vnd.github+json' \
                  -H "Authorization: token $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/repos/$GitHubOrganization/dev-controller/topics \
                  -d '{"names":["casc-bundle","controller"]}'
