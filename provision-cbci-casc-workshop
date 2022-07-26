@@ -271,14 +271,14 @@ spec:
             git checkout main
             
             curl -X PATCH \
-                 -H "Accept: application/vnd.github.v3+json" \
+                 -H 'Accept: application/vnd.github.v3+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/repos/$GitHubOrganization/ops-controller \
                  -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true}'
                  
             curl \
                   -X PUT \
-                  -H "Accept: application/vnd.github+json" \ 
+                  -H 'Accept: application/vnd.github+json' \ 
                   -H "Authorization: token $GITHUB_ACCESS_TOKEN" \
                   https://api.github.com/repos/$GitHubOrganization/ops-controller/topics \
                   -d '{"names":["casc-bundle","controller"]}'
@@ -409,7 +409,7 @@ spec:
                  
             curl \
                   -X PUT \
-                  -H "Accept: application/vnd.github+json" \ 
+                  -H 'Accept: application/vnd.github+json' \ 
                   -H "Authorization: token $GITHUB_ACCESS_TOKEN" \
                   https://api.github.com/repos/$GitHubOrganization/dev-controller/topics \
                   -d '{"names":["casc-bundle","controller"]}'
