@@ -1,3 +1,14 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - gitHubApp:
+          apiUri: "https://api.github.com"
+          appID: "125049"
+          description: "CloudBees CI CasC Workshop GitHub App base credential"
+          id: "cloudbees-ci-casc-workshop-github-app"
+          owner: "cloudbees-days"
+          privateKey: "${cbciCascWorkshopGitHubAppPrivateKey}"
 jenkins:
   authorizationStrategy: "cloudBeesRoleBasedAccessControl"
   securityRealm:
@@ -62,12 +73,38 @@ tool:
   cloudbeesPluginUsageAnalyzer:
     enabled: true
 unclassified:
+  bundleStorageService:
+    activated: true
+    bundles:
+    - name: "scm-bundles"
+      retriever:
+        SCM:
+          defaultVersion: "main"
+          scmSource:
+            github:
+              configuredByUrl: true
+              credentialsId: "cloudbees-ci-casc-workshop-github-app"
+              id: "workshop-casc-bundles"
+              repoOwner: "cloudbees-days"
+              repository: "workshop-casc-bundles"
+              repositoryUrl: "https://github.com/cloudbees-days/workshop-casc-bundles.git"
+              traits:
+              - gitHubBranchDiscovery:
+                  strategyId: 1
+              - gitHubPullRequestDiscovery:
+                  strategyId: 1
+              - gitHubForkDiscovery:
+                  strategyId: 1
+                  trust: "gitHubTrustPermissions"
+    - name: "JCasCBundleFileStore"
+      polling: true
+      retriever:
+        localFolderRetriever:
+          localFolder: "/var/jenkins_config/jcasc-bundles-store"
+    pollingPeriod: 9999
   cascAutoControllerProvisioning:
     provisionControllerOnCreation: true 
-    fireAndForget: true
-    initialDelay: 1
-    timeout: 10
-    waitFor: 5
+    initialDelay: 10
   headerLabel:
     propagate:
       enforce: false
