@@ -16,13 +16,13 @@ if (job != null) {
 println "--> creating $name"
 
 def configXml = """
-<com.cloudbees.opscenter.clouds.kubernetes.KubernetesConfiguration plugin="operations-center-kubernetes-cloud@2.263.0.3">
+<com.cloudbees.opscenter.clouds.kubernetes.KubernetesConfiguration plugin="operations-center-kubernetes-cloud@2.319.0.2">
   <actions/>
   <description></description>
   <snippets>
     <com.cloudbees.opscenter.clouds.kubernetes.KubernetesCloudConfigurationSnippet>
       <value>
-        <string>&lt;org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin=&quot;kubernetes@1.28.7&quot;&gt;
+        <string>&lt;org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin=&quot;kubernetes@1.30.11&quot;&gt;
   &lt;name&gt;kubernetes&lt;/name&gt;
   &lt;defaultsProviderTemplate&gt;default-jnlp&lt;/defaultsProviderTemplate&gt;
   &lt;templates&gt;
@@ -36,7 +36,7 @@ def configXml = """
       &lt;alwaysPullImage&gt;false&lt;/alwaysPullImage&gt;
       &lt;instanceCap&gt;2147483647&lt;/instanceCap&gt;
       &lt;slaveConnectTimeout&gt;240&lt;/slaveConnectTimeout&gt;
-      &lt;idleMinutes&gt;10&lt;/idleMinutes&gt;
+      &lt;idleMinutes&gt;0&lt;/idleMinutes&gt;
       &lt;activeDeadlineSeconds&gt;120&lt;/activeDeadlineSeconds&gt;
       &lt;label&gt;default-jnlp default&lt;/label&gt;
       &lt;serviceAccount&gt;jenkins&lt;/serviceAccount&gt;
@@ -52,7 +52,7 @@ def configXml = """
       &lt;containers&gt;
         &lt;org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate&gt;
           &lt;name&gt;jnlp&lt;/name&gt;
-          &lt;image&gt;gcr.io/core-workshop/k8s-jnlp-agent@sha256:28490f8659bcfdae8159286d6c88fdd7365d6928255103e7500f05dd527bdc8f&lt;/image&gt;
+          &lt;image&gt;us-east1-docker.pkg.dev/core-workshop/workshop-registry/agent:2.346.1.4&lt;/image&gt;
           &lt;privileged&gt;false&lt;/privileged&gt;
           &lt;alwaysPullImage&gt;false&lt;/alwaysPullImage&gt;
           &lt;workingDir&gt;/home/jenkins/agent&lt;/workingDir&gt;
@@ -83,6 +83,7 @@ def configXml = """
       &lt;nodeProperties/&gt;
       &lt;yamlMergeStrategy class=&quot;org.csanchez.jenkins.plugins.kubernetes.pod.yaml.Overrides&quot;/&gt;
       &lt;showRawYaml&gt;true&lt;/showRawYaml&gt;
+      &lt;podRetention class=&quot;org.csanchez.jenkins.plugins.kubernetes.pod.retention.Never&quot;/&gt;
     &lt;/org.csanchez.jenkins.plugins.kubernetes.PodTemplate&gt;
   &lt;/templates&gt;
   &lt;serverUrl&gt;&lt;/serverUrl&gt;
@@ -98,7 +99,7 @@ def configXml = """
   &lt;podLabels&gt;
     &lt;org.csanchez.jenkins.plugins.kubernetes.PodLabel&gt;
       &lt;key&gt;jenkins&lt;/key&gt;
-      &lt;value&gt;slave&lt;/value&gt;
+      &lt;value&gt;agent&lt;/value&gt;
     &lt;/org.csanchez.jenkins.plugins.kubernetes.PodLabel&gt;
   &lt;/podLabels&gt;
   &lt;usageRestricted&gt;false&lt;/usageRestricted&gt;
