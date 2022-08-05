@@ -6,5 +6,7 @@ plugins:
 - {id: cloudbees-casc-items-server}
 - {id: cloudbees-casc-server}
 - {id: external-notification}
+- {id: github}
+- {id: github-branch-source}
 - {id: operations-center-notification}
 - {id: operations-center-rbac}
