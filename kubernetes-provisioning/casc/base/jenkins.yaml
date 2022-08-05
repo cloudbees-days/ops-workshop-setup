@@ -11,7 +11,7 @@ jenkins:
       forceExistingJobs: false
       namePattern: "^[a-z0-9-_]{3,50}$"
   quietPeriod: 0
-  systemMessage: "Controller configured using CloudBees CI Base Configuration Bundle"
+  systemMessage: "Controller configured using CloudBees CI Base Configuration Bundle v1"
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:
