@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: not-important
+spec:
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: jenkins-home
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: regional-pd-ssd-csi-storageclass
+      volumeMode: Filesystem
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: jcasc-bundles-store
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: regional-pd-ssd-csi-storageclass
+      volumeMode: Filesystem
