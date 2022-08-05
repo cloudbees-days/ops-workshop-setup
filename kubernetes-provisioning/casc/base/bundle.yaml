@@ -3,6 +3,7 @@ id: "base"
 version: "1"
 description: "Workshop Parent Configuration Bundle"
 availabilityPattern: ".*"
+mergeStrategy: "override"
 jcasc:
 - "jenkins.yaml"
 plugins:
