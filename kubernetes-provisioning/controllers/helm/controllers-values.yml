@@ -22,7 +22,7 @@ OperationsCenter:
     Class: nginx
     # OperationsCenter.Ingress.Annotations -- annotations to put on Ingress object
     Annotations:
-      kubernetes.io/ingress.class: nginx
+      #kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
@@ -42,12 +42,12 @@ Master:
   # Docker image inserted in Operations Center automatically
   Image:
     # Master.Image.dockerImage -- Used to override the default docker image
-    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.319.1.5
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.346.2.1
   # Master.JavaOpts -- Additional Java options to pass to managed masters. For example, setting up a JMX port
   JavaOpts: 
     -Dcom.cloudbees.jenkins.plugins.kube.ServiceAccountFilter.defaultServiceAccount=jenkins-agents
     -Duser.timezone="America/New_York"
-    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=120
+    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=1
     -Dcom.cloudbees.analytics.gatherer.Sender.disabled=true
     -Djenkins.security.ManagePermission=true
     -Djenkins.security.SystemReadPermission=true
@@ -58,7 +58,7 @@ Agents:
   Enabled: true
   Image:
     # Agents.Image.dockerImage -- Used to override the default docker image used for agents
-    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.319.1.5
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.346.2.1
 
 
 Persistence:
@@ -105,6 +105,9 @@ rbac:
   serviceAccountName: cjoc
   # rbac.masterServiceAccountName -- Name of the service account Jenkins masters will run as
   masterServiceAccountName: jenkins
+  # rbac.serviceAccountAnnaotations -- Optional service account annotations to enable things like [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#authenticating_to) permissions.
+  masterServiceAccountAnnotations:
+    iam.gke.io/gcp-service-account: workshop-controllers@core-workshop.iam.gserviceaccount.com
   # rbac.agentServiceAccountName -- Name of the service account Jenkins agents will run as
   agentsServiceAccountName: jenkins-agents
   # rbac.hibernationMonitorServiceAccountName -- Name of the service account the Hibernation monitor will run as (if enabled)
