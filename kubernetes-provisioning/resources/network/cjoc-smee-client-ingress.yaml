@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cjoc-smee-client-ingress
+  namespace: cbci
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smee-client
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: cjoc
+      app.kubernetes.io/instance: cbci
