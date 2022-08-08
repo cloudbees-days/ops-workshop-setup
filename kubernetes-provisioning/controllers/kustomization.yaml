@@ -1,17 +1,16 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- resources/controllers-namespace.yml
-- resources/hnc-config.yaml
 - resources/network/allow-ingress-nginx.yml
+- resources/network/hibernation-allow-ingress-nginx.yaml
+- resources/network/cert-manager-allow-all.yaml
 - resources/network/agent-controller-ingress.yml
 - resources/network/controller-cjoc-ingress.yaml
 - resources/network/deny-all-ingress.yml
 - resources/cbci-mc-secret-provider.yml
+- resources/controller-secrets-pod.yaml
 - resources/controller-limit-range.yaml
-- resources/controllers-resource-quota.yaml
-- resources/manage-subnamespaces-role.yaml
-- resources/manage-subnamespaces-rolebinding.yaml
+- resources/controller-resource-quota.yaml
 - chart.yaml
 transformers:
   - transformers/pod-labels.yaml
