@@ -1,0 +1,13 @@
+apiVersion: builtin
+kind: LabelTransformer
+metadata:
+  name: notImportantHere
+labels:
+  networking/allow-internet-access: "true"
+fieldSpecs:
+- kind: StatefulSet
+  path: spec/template/metadata/labels
+  create: true
+- kind: Deployment
+  path: spec/template/metadata/labels
+  create: true
