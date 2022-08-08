@@ -32,7 +32,7 @@ OperationsCenter:
   # Operations Center docker image
   Image:
     # OperationsCenter.Image.dockerImage -- Container image to use for Operations Center
-    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-oc:2.319.1.5
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-oc:2.346.2.2
 
     # Configuration as Code (CasC) for Operations Center.
   CasC:
@@ -92,6 +92,7 @@ OperationsCenter:
     -Dcom.cloudbees.masterprovisioning.kubernetes.KubernetesMasterProvisioning.deleteClaim=true
     -Djenkins.security.ManagePermission=true
     -Djenkins.security.SystemReadPermission=true
+  #  -Djenkins.install.SetupWizard.adminInitialApiToken="@/var/jenkins_home/jcasc_secrets/cbciWorkshopCjocAdminToken" 
   #   -Dcom.sun.management.jmxremote.port=4000
   #   -Dcom.sun.management.jmxremote.authenticate=false
   #   -Dcom.sun.management.jmxremote.ssl=false
@@ -162,7 +163,7 @@ OperationsCenter:
     Class: nginx
     # OperationsCenter.Ingress.Annotations -- annotations to put on Ingress object
     Annotations:
-      kubernetes.io/ingress.class: nginx
+      #kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
@@ -206,7 +207,7 @@ OperationsCenter:
       driver: secrets-store.csi.k8s.io
       readOnly: true
       volumeAttributes:
-        secretProviderClass: "cbci-ops-secret-provider"
+        secretProviderClass: "cbci-cjoc-secret-provider"
   - name: init-groovy
     configMap:
       name: cbci-oc-init-groovy
@@ -215,6 +216,9 @@ OperationsCenter:
     configMap:
       name: cbci-oc-quickstart-groovy
       defaultMode: 420
+  - name: jcasc-bundles-store
+    persistentVolumeClaim:
+      claimName: jcasc-bundles-store
   # ExtraVolumes:
   # - name: my-volume
   #   configMap:
@@ -231,6 +235,8 @@ OperationsCenter:
   - name: quickstart-groovy
     mountPath: /var/jenkins_home/quickstart.groovy.d
     readOnly: true
+  - mountPath: /var/jenkins_config/jcasc-bundles-store
+    name: jcasc-bundles-store
   # ExtraVolumeMounts:
   # - name: my-volume
   #   mountPath: /var/my-path
@@ -246,12 +252,12 @@ Master:
   # Docker image inserted in Operations Center automatically
   Image:
     # Master.Image.dockerImage -- Used to override the default docker image
-    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.319.1.5
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/core-mm:2.346.2.2
   # Master.JavaOpts -- Additional Java options to pass to managed masters. For example, setting up a JMX port
   JavaOpts: 
     -Dcom.cloudbees.jenkins.plugins.kube.ServiceAccountFilter.defaultServiceAccount=jenkins-agents
     -Duser.timezone="America/New_York"
-    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=120
+    -Dcom.cloudbees.opscenter.client.casc.ConfigurationUpdaterTask.recurrencePeriod=9999
     -Dcom.cloudbees.analytics.gatherer.Sender.disabled=true
     -Djenkins.security.ManagePermission=true
     -Djenkins.security.SystemReadPermission=true
@@ -263,7 +269,7 @@ Agents:
   Enabled: true
   Image:
     # Agents.Image.dockerImage -- Used to override the default docker image used for agents
-    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.319.1.5
+    dockerImage: gcr.io/cloudbees-ops-gcr/ubi/unified-distribution/agent:2.346.2.2
 
 Persistence:
   # Persistence.StorageClass -- Persistent Volume Storage Class for Jenkins Home
@@ -288,7 +294,7 @@ Persistence:
 # Master hibernation
 Hibernation:
   # Hibernation.Enabled -- Whether to enable the [Hibernation](https://docs.cloudbees.com/docs/cloudbees-ci/latest/cloud-admin-guide/managing-masters#_hibernation_of_managed_masters) feature
-  Enabled: false
+  Enabled: true
   Image:
     # Hibernation.Image.dockerImage -- Used to override the default docker image
     dockerImage: cloudbees/managed-master-hibernation-monitor:247.c5dfce00a179
@@ -307,8 +313,14 @@ rbac:
 
   # rbac.serviceAccountName -- Name of the service account Operations Center will run as
   serviceAccountName: cjoc
+  # rbac.serviceAccountAnnaotations -- Optional service account annotations to enable things like [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#authenticating_to) permissions.
+  serviceAccountAnnotations: 
+    iam.gke.io/gcp-service-account: workshop-controllers@core-workshop.iam.gserviceaccount.com
   # rbac.masterServiceAccountName -- Name of the service account Jenkins masters will run as
   masterServiceAccountName: jenkins
+  # rbac.serviceAccountAnnaotations -- Optional service account annotations to enable things like [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#authenticating_to) permissions.
+  masterServiceAccountAnnotations:
+    iam.gke.io/gcp-service-account: workshop-controllers@core-workshop.iam.gserviceaccount.com
   # rbac.agentServiceAccountName -- Name of the service account Jenkins agents will run as
   agentsServiceAccountName: jenkins-agents
   # rbac.hibernationMonitorServiceAccountName -- Name of the service account the Hibernation monitor will run as (if enabled)
