@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oc-smee
-  namespace: sda
+  name: smee-oc-client
+  namespace: cbci
   labels:
     app: smee-client
 spec:
@@ -12,7 +12,7 @@ spec:
       app: smee-client
   template:
     metadata:
-      namespace: sda
+      namespace: cbci
       labels:
         app: smee-client
     spec:
@@ -20,4 +20,4 @@ spec:
       containers:
         - name: "oc-smee-client"
           image: "deltaprojects/smee-client:latest"
-          args: ["-t", "http://cjoc.sda.svc.cluster.local/cjoc/webhooks/fo7jek4/", "--url", "https://staging-smee.workshop.cb-sa.io/JyhsEUN51XEqXQ"]
+          args: ["-t", "http://cjoc.cbci.svc.cluster.local/cjoc/webhooks/KrlkwAD/", "--url", "http://smee.cbci.svc.cluster.local/hvAj14tSAi7yb7E"]
