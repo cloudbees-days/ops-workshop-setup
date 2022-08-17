@@ -130,8 +130,8 @@ spec:
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
           sh "cp cloudbees-ci-config-bundle/bundle/*.yaml ${bundleName}"
-          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_home/jcasc-bundles-store/"
+          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
+          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
         }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
