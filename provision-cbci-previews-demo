@@ -267,7 +267,7 @@ spec:
 
         }
         echo "INVITE_ID = $INVITE_ID"
-        sh 'echo $INVITE_ID"
+        sh 'echo $INVITE_ID'
         
         sh '''
           curl -X PATCH \
