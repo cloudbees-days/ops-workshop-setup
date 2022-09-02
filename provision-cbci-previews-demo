@@ -4,6 +4,7 @@ pipeline {
   environment {
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+    BEEDEMO_DEV_PAT = credentials('beedemo-dev-github-pat')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
@@ -15,6 +16,7 @@ pipeline {
     controllerName = "controller"
     bundleName = "${controllerFolder}-${controllerName}"    
     AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
+    INVITE_ID=""
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-previews-demo'")
@@ -251,14 +253,26 @@ spec:
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                   https://api.github.com/orgs/$GitHubOrganization/hooks \
                   --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
-
-              curl -X PUT \
-                -H 'Accept: application/vnd.github+json' \
-                -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                https://api.github.com/repos/$GitHubOrganization/insurance-frontend/collaborators/beedemo-dev \
-                -d '{"permission":"admin"}'
           ''')
+          script {
+            env.INVITE_ID = sh(script: ''' 
+                curl -X PUT \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                  https://api.github.com/repos/$GitHubOrganization/insurance-frontend/collaborators/beedemo-dev \
+                  -d '{"permission":"admin"}' \
+                | jq -r '.id' | tr -d '\n' 
+              ''', returnStdout: true)
+          }
+
         }
+        
+        sh '''
+          curl -X PATCH \
+            -H 'Accept: application/vnd.github+json' \ 
+            -H "Authorization: Bearer BEEDEMO_DEV_PAT" \
+            https://api.github.com/user/repository_invitations/$INVITE_ID
+        '''
         
         echo "creating config bundle on OC"
         container('kubectl') {
