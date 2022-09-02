@@ -262,8 +262,10 @@ spec:
           sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
           sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
           
-          sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
-          sh "kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml"
+          sh '''
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
+            kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
+          '''
         }
         
         echo "provisioning managed controller"
