@@ -269,8 +269,8 @@ spec:
         
         sh '''
           curl -X PATCH \
-            -H 'Accept: application/vnd.github+json' \ 
-            -H "Authorization: Bearer BEEDEMO_DEV_PAT" \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $BEEDEMO_DEV_PAT" \
             https://api.github.com/user/repository_invitations/$INVITE_ID
         '''
         
