@@ -1,0 +1,9 @@
+apiVersion: environment.cloudbees.com/v1alpha1
+kind: GitRepository
+metadata:
+  name: REPLACE_GITHUB_ORG-insurance-frontend                             
+  namespace: previews
+spec:
+  url: https://github.com/REPLACE_GITHUB_ORG/insurance-frontend.git
+  apiTokenSecretRef:
+    name: beedemo-dev-github-token
