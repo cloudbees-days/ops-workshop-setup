@@ -16,7 +16,6 @@ pipeline {
     controllerName = "controller"
     bundleName = "${controllerFolder}-${controllerName}"    
     AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
-    INVITE_ID=""
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-previews-demo'")
@@ -255,7 +254,7 @@ spec:
                   --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
           script {
-            INVITE_ID = sh(script: ''' 
+            env.INVITE_ID = sh(script: ''' 
                 curl -X PUT \
                   -H 'Accept: application/vnd.github+json' \
                   -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
