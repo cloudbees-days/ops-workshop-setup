@@ -144,6 +144,13 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
+            
+            curl \
+              -X PUT \
+              -H 'Accept: application/vnd.github+json' \
+              -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+              https://api.github.com/repos/$GitHubOrganization/insurance-frontend/branches/main/protection \
+              -d '{"required_status_checks":{"strict":true,"contexts":["'"stage/Staging PR/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":true}'
 
             curl \
               -X PATCH \
