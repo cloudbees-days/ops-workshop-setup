@@ -258,6 +258,13 @@ spec:
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/orgs/$GitHubOrganization/invitations \
               -d '{"invitee_id":36600505,"role":"admin"}'
+              
+              curl \
+                -X PUT \
+                -H 'Accept: application/vnd.github+json' \ 
+                -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                https://api.github.com/repos/$GitHubOrganization/insurance-frontend/collaborators/beedemo-dev \
+                -d '{"permission":"admin"}'
           ''')
         }
         
