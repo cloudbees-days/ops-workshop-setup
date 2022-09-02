@@ -236,8 +236,8 @@ spec:
             mkdir -p items/pipelines
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/items/pipelines-folder.yaml > items/pipelines-folder.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/items/admin-jobs-folder.yaml > items/admin-jobs-folder.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/items/admin-jobs/update-casc-bundle.yaml > items/admin-jobs/update-casc-bundle.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items/admin-jobs/update-casc-bundle.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/items/update-casc-bundle.yaml > items/update-casc-bundle.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" items/update-casc-bundle.yaml
             git add *
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/bundle.yaml > bundle.yaml 
             
