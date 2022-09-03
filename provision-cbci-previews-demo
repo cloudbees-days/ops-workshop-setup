@@ -160,6 +160,13 @@ spec:
               -H 'Accept: application/vnd.github.antiope-preview+json' \
               https://api.github.com/repos/${GitHubOrganization}/insurance-frontend \
               -d '{"delete_branch_on_merge":true}'
+              
+              curl \
+                -X POST \
+                -H 'Accept: application/vnd.github+json' \
+                -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/hooks \
+                -d '{"name":"previews","active":true,"events":["push","pull_request","issue_comment"],"config":{"url":"https://webhook.previews.workshop.cb-sa.io/","content_type":"json","insecure_ssl":"0"}}'
             
           ''')
           
