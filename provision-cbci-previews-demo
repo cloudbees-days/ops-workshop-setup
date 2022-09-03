@@ -191,7 +191,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/previews-demo/templates/container-build/template.yaml > templates/container-build/template.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/previews-demo/templates/container-build/Jenkinsfile > templates/container-build/Jenkinsfile
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/container-build/template.yaml
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/previews-demo/templates/casc-bundle/template.yaml > templates/casc-bundle/templates.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/previews-demo/templates/casc-bundle/template.yaml > templates/casc-bundle/template.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/previews-demo/templates/casc-bundle/Jenkinsfile > templates/casc-bundle/Jenkinsfile
             
             git add *
