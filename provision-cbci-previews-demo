@@ -249,6 +249,7 @@ spec:
             git commit -a -m 'updating $GitHubOrganization/controller bundle for $GitHubUsername'
             git push -u origin main
             
+            git pull origin main
             git checkout -b add-container-build-job
             cd bundle
             mkdir -p items/pipelines
