@@ -147,6 +147,16 @@ spec:
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
             
+            git checkout -b update-feature-section
+            https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > update-features-section/src/components/sections/FeaturesSection.tsx
+            git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section"
+            git push origin update-feature-section
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
+            
             curl \
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
