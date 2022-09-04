@@ -274,7 +274,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo-add-container-build-job/bundle/bundle.yaml > bundle.yaml 
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml 
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo-add-container-build-job/bundle/jenkins.yaml > jenkins.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo-add-container-build-job/bundle/jcasc/jenkins.yaml > jcasc/jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo-add-container-build-job/bundle/items/pipelines/insurance-frontend.yaml > items/pipelines/insurance-frontend.yaml
             git add *
             git commit -a -m "updating ${GitHubOrganization}/controller bundle for add-container-build-job"
