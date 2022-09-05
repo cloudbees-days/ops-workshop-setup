@@ -148,7 +148,7 @@ spec:
             git push origin main
             
             git checkout -b update-feature-section
-            https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > update-features-section/src/components/sections/FeaturesSection.tsx
+            https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > src/components/sections/FeaturesSection.tsx
             git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section"
             git push origin update-feature-section
             
