@@ -353,6 +353,7 @@ spec:
               -H "Accept: application/json" \
               http://cjoc/cjoc/load-casc-bundles/checkout
             sleep 7
+            curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST https://cjoc/cjoc//casc-bundle/set-availability-pattern?bundleId=${bundleName}&regex=${AVAILABILITY_PATTERN}
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
             cli groovy =<./groovy/create-workshop-users.groovy
             
