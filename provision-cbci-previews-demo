@@ -337,6 +337,7 @@ spec:
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
               -H "Accept: application/json" \
               http://cjoc/cjoc/load-casc-bundles/checkout
+            '''
             sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
 
             sh '''
