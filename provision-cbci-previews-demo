@@ -255,7 +255,7 @@ spec:
             git add *
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/bundle.yaml > bundle.yaml 
             
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
+            sed -i "s/REPLACE_CONTROLLER_NAME/$bundleName/g" bundle.yaml            
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml   
             
             mkdir jcasc
