@@ -326,19 +326,24 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${bundleName}"
-          sh "mkdir -p ${bundleName}"
-          dir("controller/bundle"){
-            sh "cp --parents `find -name \\*.yaml*` ../../${bundleName}/"
+          withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
+            sh "rm -rf ./${bundleName}"
+            sh "mkdir -p ${bundleName}"
+            dir("controller/bundle"){
+              sh "cp --parents `find -name \\*.yaml*` ../../${bundleName}/"
+            }
+            sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
+            sh '''
+            curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
+              -H "Accept: application/json" \
+              http://cjoc/cjoc/load-casc-bundles/checkout
+            sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
+
+            sh '''
+              sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
+              kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
+            '''
           }
-          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_home/cb-casc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
-          
-          sh '''
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
-            kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
-          '''
         }
         
         echo "provisioning managed controller"
