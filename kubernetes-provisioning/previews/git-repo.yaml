@@ -7,3 +7,5 @@ spec:
   url: https://github.com/REPLACE_GITHUB_ORG/insurance-frontend.git
   apiTokenSecretRef:
     name: beedemo-dev-github-token
+  autoUpdateContexts:                           
+  - default
