@@ -263,6 +263,7 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/jcasc/jenkins.yaml > jcasc/jenkins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/jcasc/credentials.yaml > jcasc/credentials.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/jcasc/pod-templates.yaml > jcasc/pod-templates.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/jcasc/pipeline-policies.yaml > jcasc/pipeline-policies.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/plugins.yaml > plugins.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/bundle/variables.yaml > variables.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" variables.yaml
