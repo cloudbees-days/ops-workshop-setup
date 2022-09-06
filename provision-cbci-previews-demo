@@ -179,7 +179,7 @@ spec:
                 -H 'Accept: application/vnd.github+json' \
                 -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/hooks \
-                -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment"],"config":{"url":"https://webhook.previews.workshop.cb-sa.io/","content_type":"json","insecure_ssl":"0"}}'
+                -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment","deployment","deployment_status","repository"],"config":{"url":"https://webhook.staging-previews.workshop.cb-sa.io/","content_type":"json","insecure_ssl":"0"}}'
             
           ''')
           
