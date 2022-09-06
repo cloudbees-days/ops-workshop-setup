@@ -136,6 +136,7 @@ spec:
           }
           
           sh(script: '''
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
             cd insurance-frontend
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
@@ -143,6 +144,7 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/insurance-frontend.git
             git pull origin main
             git checkout main
+            cp ./kubernetes-provisioning/previews/git-repo.yaml insurance-frontend  
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
@@ -338,7 +340,6 @@ spec:
             kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true
             kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
             sleep 7
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
             kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
           '''
         }
