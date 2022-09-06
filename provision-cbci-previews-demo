@@ -144,7 +144,7 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/insurance-frontend.git
             git pull origin main
             git checkout main
-            cp ./kubernetes-provisioning/previews/git-repo.yaml insurance-frontend  
+            cp ../kubernetes-provisioning/previews/git-repo.yaml .
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
