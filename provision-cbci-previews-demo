@@ -165,7 +165,7 @@ spec:
               -H 'Accept: application/vnd.github+json' \
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/repos/$GitHubOrganization/insurance-frontend/branches/main/protection \
-              -d '{"required_status_checks":{"strict":true,"contexts":["'"stage/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":true}'
+              -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
 
             curl \
               -X PATCH \
@@ -297,7 +297,7 @@ spec:
               -H 'Accept: application/vnd.github+json' \
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/repos/$GitHubOrganization/controller/branches/main/protection \
-              -d '{"required_status_checks":{"strict":true,"contexts":["'"stage/Validate CasC Bundle"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":true}'
+              -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Validate CasC Bundle"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
 
             curl -X PATCH \
                  -H 'Accept: application/vnd.github.v3+json' \
