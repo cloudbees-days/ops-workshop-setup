@@ -15,7 +15,6 @@ if (workshopFolder == null) {
 }
 
 String jenkinsUserId = "REPLACE_JENKINS_USER"
-def jenkinsTokenName = 'api-token'
 def user = User.get(jenkinsUserId, false)
 try {
   logger.info("user full name: " + user.getFullName())
@@ -28,7 +27,18 @@ if(user==null) {
 while(user == null) {
   user = User.get(jenkinsUserId, false)
 }
-def apiTokenProperty = user.getProperty(ApiTokenProperty.class)
+user.save()
+
+String adminUserId = "REPLACE_JENKINS_USER-admin"
+def jenkinsTokenName = 'api-token'
+def adminUser = User.get(adminUserId, false)
+if(adminUser==null) {
+  Jenkins.instance.securityRealm.createAccount(adminUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
+}
+while(adminUser == null) {
+  adminUser = User.get(adminUserId, false)
+}
+def apiTokenProperty = adminUser.getProperty(ApiTokenProperty.class)
 def tokens = apiTokenProperty.tokenStore.getTokenListSortedByName().findAll {it.name==jenkinsTokenName}
 if(tokens.size() != 0) {
     logger.info("Token exists. Revoking any with this name and recreating to ensure we have a valid value stored in the secret.")
@@ -39,14 +49,5 @@ if(tokens.size() != 0) {
 def tokenValue
 new File("/var/jenkins_home/jcasc_secrets/userApiToken").withReader { tokenValue = it.readLine() }  
 apiTokenProperty.tokenStore.addFixedNewToken(jenkinsTokenName, tokenValue)
-user.save()
 
-String adminUserId = "REPLACE_JENKINS_USER-admin"
-def adminUser = User.get(adminUserId, false)
-if(adminUser==null) {
-  Jenkins.instance.securityRealm.createAccount(adminUserId, "REPLACE_WORKSHOP_ATTENDEES_PASSWORD")
-}
-while(adminUser == null) {
-  adminUser = User.get(adminUserId, false)
-}
 adminUser.save()
