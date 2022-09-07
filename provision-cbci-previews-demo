@@ -157,7 +157,7 @@ spec:
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
+                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main","draft":true}' \
                  https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
             
             curl \
