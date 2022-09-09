@@ -244,7 +244,7 @@ spec:
           
           sh(script: '''
 
-            cd cloudbees-ci-config-bundle
+            cd controller
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
