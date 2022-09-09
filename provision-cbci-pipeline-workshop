@@ -285,6 +285,7 @@ spec:
             git checkout -B add-job
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/pipelines.yaml > items/pipelines.yaml
             git add *
+            git commit -a -m 'adding template job'
             git push -u origin add-job
 
             curl -X PATCH \
