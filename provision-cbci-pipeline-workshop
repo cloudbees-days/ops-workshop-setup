@@ -371,16 +371,6 @@ spec:
               --data-binary @./controller/controller.yaml -H 'Content-Type:text/yaml'
           '''
         }
-        withCredentials([usernamePassword(credentialsId: "$GitHubOrganization",
-                                          usernameVariable: 'GITHUB_APP',
-                                          passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {                  
-            sh ''' 
-              curl -X PUT \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                https://api.github.com/repos/${GitHubOrganization}/controller/pulls/1/merge
-            '''
-          }
         
         sh "sed -i \"s/REPLACE_GITHUB_ORG/$GitHubOrganization/g\" ./groovy/ops-delete-github-app-credential.groovy" 
         withCredentials([usernamePassword(credentialsId: "admin-cli-token", usernameVariable: 'JENKINS_CLI_USR', passwordVariable: 'JENKINS_CLI_PSW')]) {
