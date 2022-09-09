@@ -218,7 +218,10 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/pipeline-template-catalog.git
             git pull origin main
             git checkout main
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/container-build-deploy/template.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/container-build-deploy/template.yaml            
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/pipeline-collab-lab/templates/casc-bundle/Jenkinsfile > templates/casc-bundle/Jenkinsfile
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/pipeline-collab-lab/templates/casc-bundle/template.yaml > templates/casc-bundle/template.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" templates/casc-bundle/template.yaml
             git commit -a -m 'updating $GitHubOrganization/pipeline-template-catalog bundle for $GitHubUsername'
             git push -u origin main
             
