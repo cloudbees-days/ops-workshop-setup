@@ -4,6 +4,7 @@ pipeline {
   environment {
     WORKSHOP_ATTENDEES_PASSWORD = credentials('workshop-attendees-password')
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
+    BEEDEMO_DEV_PAT = credentials('beedemo-dev-github-pat')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
@@ -84,7 +85,7 @@ spec:
                                           passwordVariable: 'GITHUB_ACCESS_TOKEN')]) {
           sh(script: '''
             echo $GitHubOrganization
-            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/cloudbees-ci-config-bundle
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/controller
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-frontend
@@ -94,7 +95,7 @@ spec:
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"cloudbees-ci-config-bundle"}'
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
                  
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -115,12 +116,12 @@ spec:
                  --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
             
             rm -rf ./insurance-frontend || true
-            rm -rf ./cloudbees-ci-config-bundle || true
+            rm -rf ./controller || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
             
             mkdir -p insurance-frontend
-            mkdir -p cloudbees-ci-config-bundle
+            mkdir -p controller
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
           ''')
@@ -134,6 +135,7 @@ spec:
           }
           
           sh(script: '''
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
             cd insurance-frontend
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
@@ -141,16 +143,39 @@ spec:
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/insurance-frontend.git
             git pull origin main
             git checkout main
+            cp ../kubernetes-provisioning/previews/git-repo.yaml .
+            git add *
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
+            
+            git checkout -b update-feature-section
+            curl https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > src/components/sections/FeaturesSection.tsx
+            git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section"
+            git push origin update-feature-section
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main","draft":true}' \
+                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
+            
+            curl -X PATCH \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+              https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls/1 \
+              -d '{"state":"closed","base":"main"}'
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
             
             curl \
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/repos/$GitHubOrganization/insurance-frontend/branches/main/protection \
-              -d '{"required_status_checks":{"strict":true,"contexts":["'"stage/Staging PR/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":true}'
+              -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
 
             curl \
               -X PATCH \
@@ -158,6 +183,13 @@ spec:
               -H 'Accept: application/vnd.github.antiope-preview+json' \
               https://api.github.com/repos/${GitHubOrganization}/insurance-frontend \
               -d '{"delete_branch_on_merge":true}'
+              
+              curl \
+                -X POST \
+                -H 'Accept: application/vnd.github+json' \
+                -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/hooks \
+                -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment","deployment","deployment_status","repository"],"config":{"url":"https://webhook.${ENVIRONMENT_PREFIX}previews.workshop.cb-sa.io/","content_type":"json","insecure_ssl":"0"}}'
             
           ''')
           
@@ -192,7 +224,7 @@ spec:
             
             git fetch
             git checkout -B cross-team-collab-lab
-            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/pipeline-collab-lab/templates/container-build-deploy/Jenkinsfile > templates/container-build-deploy/Jenkinsfile
+            curl https://raw.githubusercontent.com/cloudbees-days/pipeline-template-catalog/pipeline-collab-lab/templates/container-build/Jenkinsfile > templates/container-build/Jenkinsfile
             git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
             git push -u origin cross-team-collab-lab
             
@@ -204,7 +236,7 @@ spec:
           
           waitUntil {
             script {
-              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/cloudbees-ci-config-bundle/git/ref/heads/main", returnStdout: true
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/controller/git/ref/heads/main", returnStdout: true
               echo "returned status: ${status}"
               return (status=="200")
             }
@@ -216,7 +248,7 @@ spec:
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/cloudbees-ci-config-bundle.git
+            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/controller.git
             
             git pull origin main
             git checkout main
@@ -251,7 +283,7 @@ spec:
             cd ..
 
             git add *
-            git commit -a -m 'updating $GitHubOrganization/cloudbees-ci-config bundle for $GitHubUsername'
+            git commit -a -m 'updating $GitHubOrganization/controller bundle for $GitHubUsername'
             git push -u origin main
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
@@ -259,15 +291,41 @@ spec:
                   https://api.github.com/orgs/$GitHubOrganization/hooks \
                   --data '{"name":"web","config":{"url":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/github-webhook/"'","content_type":"json","secret":"'"$GITHUB_WEBHOOK_SECRET"'","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","pull_request_review_comment","repository"]}'
           ''')
+          script {
+            env.INVITE_ID = sh(script: ''' 
+                curl -X PUT \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                  https://api.github.com/repos/$GitHubOrganization/insurance-frontend/collaborators/beedemo-dev \
+                  -d '{"permission":"admin"}' \
+                | jq -r '.id' | tr -d '\n' 
+              ''', returnStdout: true)
+          }
+
         }
+        echo "INVITE_ID = $INVITE_ID"
+        sh 'echo $INVITE_ID'
+        
+        sh '''
+          curl -X PATCH \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $BEEDEMO_DEV_PAT" \
+            https://api.github.com/user/repository_invitations/$INVITE_ID
+        '''
         
         echo "creating config bundle on OC"
         container('kubectl') {
           sh "rm -rf ./${bundleName}"
           sh "mkdir -p ${bundleName}"
-          sh "cp cloudbees-ci-config-bundle/bundle/*.yaml ${bundleName}"
-          sh "kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true"
-          sh "kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/"
+          dir("controller/bundle"){
+            sh "cp --parents `find -name \\*.yaml*` ../../${bundleName}/"
+          }
+          sh '''
+            kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true
+            kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
+            sleep 7
+            kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
+          '''
         }
         
         echo "provisioning managed controller"
@@ -289,7 +347,7 @@ spec:
             curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
               -H "Accept: application/json" \
               http://cjoc/cjoc/casc-items/create-items?path=/$GitHubApp \
-              --data-binary @./cloudbees-ci-config-bundle/controller.yaml -H 'Content-Type:text/yaml'
+              --data-binary @./controller/controller.yaml -H 'Content-Type:text/yaml'
           '''
         }
         
