@@ -279,16 +279,20 @@ spec:
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/jenkins.yaml > jenkins.yaml
             rm -rf plugin-catalog.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/plugins.yaml > plugins.yaml
+            mkdir items
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/admin-jobs.yaml > items/admin-jobs.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/pipelines.yaml > items/pipelines.yaml
             git add *
             git commit -a -m 'updating $GitHubOrganization/controller bundle for $GitHubUsername'
             git push -u origin main
             
             git checkout -B add-job
-            mkdir items
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/pipelines.yaml > items/pipelines.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop-add-job/bundle/items/pipelines.yaml > items/pipelines.yaml
             git add *
             git commit -a -m 'adding template job'
             git push -u origin add-job
+            
+            git checkout main
 
             curl -X PATCH \
                  -H 'Accept: application/vnd.github.v3+json' \
