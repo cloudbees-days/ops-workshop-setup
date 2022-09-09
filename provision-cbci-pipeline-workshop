@@ -270,8 +270,6 @@ spec:
             git add .markerfile
             
             cd bundle
-            mkdir items
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/admin-jobs.yaml > items/admin-jobs.yaml
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/bundle.yaml > bundle.yaml 
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" bundle.yaml            
@@ -286,6 +284,7 @@ spec:
             git push -u origin main
             
             git checkout -B add-job
+            mkdir items
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/pipeline-workshop/bundle/items/pipelines.yaml > items/pipelines.yaml
             git add *
             git commit -a -m 'adding template job'
