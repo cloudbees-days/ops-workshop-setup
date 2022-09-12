@@ -139,7 +139,8 @@ spec:
           }
           
           sh(script: '''
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" ./kubernetes-provisioning/previews/git-repo.yaml
+            sec -i "s/REPLACE_GITHUB_ORG_LOWERCASE/$GitHubOrganizationLowercase/g" ./kubernetes-provisioning/previews/git-repo.yaml
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" ./kubernetes-provisioning/previews/git-repo.yaml
             cd insurance-frontend
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
