@@ -109,7 +109,9 @@ spec:
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
 
-            curl  -H 'Accept: application/vnd.github.antiope-preview+json' \
+            curl -sI \
+                 -X GET
+                 -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
@@ -149,21 +151,21 @@ spec:
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
 
-            curl \
+            curl -sI \
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/repos/$GitHubOrganization/insurance-frontend/branches/main/protection \
               -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Pull Request/Build and Push Container Image"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
 
-            curl \
+            curl -sI \
               -X PATCH \
               -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
               -H 'Accept: application/vnd.github.antiope-preview+json' \
               https://api.github.com/repos/${GitHubOrganization}/insurance-frontend \
               -d '{"delete_branch_on_merge":true}'
               
-              curl \
+              curl -sI \
                 -X POST \
                 -H 'Accept: application/vnd.github+json' \
                 -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -210,7 +212,14 @@ spec:
             git commit -a -m 'creating $GitHubOrganization/pipeline-template-catalog cross-team-collab-lab branch for $GitHubUsername'
             git push -u origin cross-team-collab-lab
             
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+            curl \
+              -sIX PATCH \
+              -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
+              -H 'Accept: application/vnd.github.antiope-preview+json' \
+              https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog \
+              -d '{"delete_branch_on_merge":true}'
+              
+              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Add Cross Team Collaboration Trigger","head":"cross-team-collab-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
@@ -273,7 +282,8 @@ spec:
             
             git checkout main
 
-            curl -X PATCH \
+            curl -sI \
+                 -X PATCH \
                  -H 'Accept: application/vnd.github.v3+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  https://api.github.com/repos/$GitHubOrganization/controller \
@@ -307,7 +317,7 @@ spec:
         sh 'echo $INVITE_ID'
         
         sh '''
-          curl -X PATCH \
+          curl  -X PATCH \
             -H 'Accept: application/vnd.github+json' \
             -H "Authorization: Bearer $BEEDEMO_DEV_PAT" \
             https://api.github.com/user/repository_invitations/$INVITE_ID
