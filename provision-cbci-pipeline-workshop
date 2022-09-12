@@ -148,28 +148,7 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganizationLowercase/g" chart/values.yaml
             git commit -am 'updating $GitHubOrganization/insurance-frontend chart/values.yaml for $GitHubUsername'
             git push origin main
-            
-            git checkout -b update-feature-section
-            curl https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > src/components/sections/FeaturesSection.tsx
-            git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section and removing Jenkinsfile"
-            git push origin update-feature-section
-            
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main","draft":true}' \
-                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
-            
-            curl -X PATCH \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-              https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls/1 \
-              -d '{"state":"closed","base":"main"}'
-            
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
-                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
-            
+
             curl \
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
