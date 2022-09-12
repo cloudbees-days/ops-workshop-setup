@@ -91,28 +91,28 @@ spec:
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-frontend
             
             sleep 5
-            curl -sIX GET \
+            curl -sIXGET \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
                  
-            curl -sIX GET \
+            curl -sIXGET \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
             
-            curl -sIX GET \
+            curl -sIXGET \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
 
-            curl -sIX GET \
+            curl -sIXGET \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
