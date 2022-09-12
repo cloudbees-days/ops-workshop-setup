@@ -150,8 +150,9 @@ spec:
             git push origin main
             
             git checkout -b update-feature-section
+            git delete Jenkinsfile
             curl https://raw.githubusercontent.com/cloudbees-days/insurance-frontend/update-features-section/src/components/sections/FeaturesSection.tsx > src/components/sections/FeaturesSection.tsx
-            git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section"
+            git commit -a -m "updating ${GitHubOrganization}/insurance-frontend for update-feature-section and removing Jenkinsfile"
             git push origin update-feature-section
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
