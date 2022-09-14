@@ -171,11 +171,6 @@ spec:
               https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls/1 \
               -d '{"state":"closed","base":"main"}'
             
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
-                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
-            
             curl --silent --output /dev/null --show-error \
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
@@ -351,6 +346,11 @@ spec:
             -H 'Accept: application/vnd.github+json' \
             -H "Authorization: Bearer $BEEDEMO_DEV_PAT" \
             https://api.github.com/user/repository_invitations/$INVITE_ID
+            
+          curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+               -H "authorization: Bearer $BEEDEMO_DEV_PAT" \
+               --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
+               https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
         '''
         
         echo "creating config bundle on OC"
