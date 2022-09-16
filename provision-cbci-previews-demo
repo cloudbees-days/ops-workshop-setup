@@ -304,14 +304,6 @@ spec:
             git push origin add-container-build-job
             
             git checkout main
-            
-            curl --silent --output /dev/null --show-error \
-              -X PUT \
-              -H 'Accept: application/vnd.github+json' \
-              -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-              https://api.github.com/repos/$GitHubOrganization/controller-template/branches/main/protection \
-              -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Validate CasC Bundle"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
-
             curl -X PATCH \
                  -H 'Accept: application/vnd.github.v3+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
