@@ -251,7 +251,7 @@ spec:
             
             git pull origin main
             git checkout main
-            
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/README.md > README.md
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/controller.yaml > controller.template
             sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.template
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.template
