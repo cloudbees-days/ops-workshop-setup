@@ -15,7 +15,7 @@ pipeline {
     controllerFolder = GitHubOrganization.toLowerCase()
     controllerName = "controller"
     bundleName = "${controllerFolder}-${controllerName}"    
-    AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/${controllerName}"
+    AVAILABILITY_PATTERN = "${GitHubApp}/${controllerFolder}/REPLACE_REPO"
   }
   triggers {
     eventTrigger jmespathQuery("action=='created' && installation.app_slug=='cloudbees-ci-previews-demo'")
