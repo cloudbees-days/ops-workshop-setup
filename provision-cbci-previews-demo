@@ -34,7 +34,7 @@ pipeline {
         error "GitHub target type (should be Organization): ${TARGET_TYPE}"
       }
     }
-    stage('Provision Managed Controller') {
+    stage('Provision Previews Demo Repositories') {
       when {
         beforeAgent true
         triggeredBy 'EventTriggerCause'
@@ -86,7 +86,7 @@ spec:
           sh(script: '''
             echo $GitHubOrganization
             git config --global init.defaultBranch main
-            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/controller
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/blue-controller
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/controller-template
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
@@ -122,12 +122,12 @@ spec:
                  --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
             
             rm -rf ./insurance-frontend || true
-            rm -rf ./controller || true
+            rm -rf ./controller-template || true
             rm -rf ./pipeline-template-catalog || true
             rm -rf ./pipeline-library || true
             
             mkdir -p insurance-frontend
-            mkdir -p controller
+            mkdir -p controller-template
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
           ''')
@@ -235,7 +235,7 @@ spec:
           
           waitUntil {
             script {
-              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/controller/git/ref/heads/main", returnStdout: true
+              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/controller-template/git/ref/heads/main", returnStdout: true
               echo "returned status: ${status}"
               return (status=="200")
             }
@@ -354,7 +354,7 @@ spec:
                https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
         '''
         
-        echo "provisioning managed controller"
+        echo "provisioning user accounts"
         sh '''          
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/create-workshop-users.groovy
           sed -i "s/REPLACE_WORKSHOP_ATTENDEES_PASSWORD/$WORKSHOP_ATTENDEES_PASSWORD/g" ./groovy/create-workshop-users.groovy 
