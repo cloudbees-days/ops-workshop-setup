@@ -293,6 +293,7 @@ spec:
             
             git pull origin main
             git checkout -b add-container-build-job
+            git rm controller.template
             cd bundle
             curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo-add-container-build-job/bundle/bundle.yaml > bundle.yaml 
             sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" bundle.yaml            
