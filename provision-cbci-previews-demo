@@ -87,6 +87,7 @@ spec:
             echo $GitHubOrganization
             git config --global init.defaultBranch main
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/controller
+            curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/controller-template
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-frontend
@@ -97,7 +98,7 @@ spec:
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller-template"}'
                  
             curl --silent --output /dev/null --show-error \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
@@ -242,24 +243,24 @@ spec:
           
           sh(script: '''
 
-            cd controller
+            cd controller-template
             git init
             git config user.email "$GitHubUsername@workshop.cb-sa.io"
             git config user.name "$GitHubOrganization"
-            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/controller.git
+            git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/controller-template.git
             
             git pull origin main
             git checkout main
             
-            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/controller.yaml > controller.yaml
-            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.yaml
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.yaml
-            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.yaml
-            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
-            sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.yaml
-            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
-            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" controller.yaml
-            git add controller.yaml
+            curl https://raw.githubusercontent.com/cloudbees-days/cloudbees-ci-config-bundle/previews-demo/controller.yaml > controller.template
+            sed -i "s/REPLACE_GITHUB_USERNAME/$GitHubUsername/g" controller.template
+            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" controller.template
+            sed -i "s/REPLACE_CONTROLLER_NAME/$controllerName/g" controller.template
+            sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.template
+            sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.template
+            sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.template
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" controller.template
+            git add controller.template
 
             cd bundle
             mkdir -p items/admin-jobs
@@ -286,7 +287,7 @@ spec:
             git add *
             cd ..
             git add *
-            git commit -a -m 'updating $GitHubOrganization/controller bundle for $GitHubUsername'
+            git commit -a -m "updating ${GitHubOrganization}/controller bundle for $GitHubUsername"
             git push -u origin main
             
             git pull origin main
@@ -307,19 +308,19 @@ spec:
               -X PUT \
               -H 'Accept: application/vnd.github+json' \
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-              https://api.github.com/repos/$GitHubOrganization/controller/branches/main/protection \
+              https://api.github.com/repos/$GitHubOrganization/controller-template/branches/main/protection \
               -d '{"required_status_checks":{"strict":false,"contexts":["'"stage/Validate CasC Bundle"'"]},"enforce_admins":true,"required_pull_request_reviews":null,"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"block_creations":false}'
 
             curl -X PATCH \
                  -H 'Accept: application/vnd.github.v3+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/$GitHubOrganization/controller \
-                 -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true}'
+                 https://api.github.com/repos/$GitHubOrganization/controller-template \
+                 -d '{"homepage":"'"https://$WEBHOOK_BASE_URL/$controllerFolder-$controllerName/"'","delete_branch_on_merge":true,"is_template":true}'
             
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Add Container Build Job","head":"add-container-build-job","base":"main"}' \
-                 https://api.github.com/repos/${GitHubOrganization}/controller/pulls
+                 https://api.github.com/repos/${GitHubOrganization}/controller-template/pulls
             
              curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                   -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -353,21 +354,6 @@ spec:
                https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
         '''
         
-        echo "creating config bundle on OC"
-        container('kubectl') {
-          sh "rm -rf ./${bundleName}"
-          sh "mkdir -p ${bundleName}"
-          dir("controller/bundle"){
-            sh "cp --parents `find -name \\*.yaml*` ../../${bundleName}/"
-          }
-          sh '''
-            kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true
-            kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
-            sleep 7
-            kubectl apply -f ./kubernetes-provisioning/previews/git-repo.yaml
-          '''
-        }
-        
         echo "provisioning managed controller"
         sh '''          
           sed -i "s/REPLACE_JENKINS_USER/$GitHubUsername/g" ./groovy/create-workshop-users.groovy
@@ -382,11 +368,6 @@ spec:
               http://cjoc/cjoc/load-casc-bundles/checkout
             alias cli='java -jar jenkins-cli.jar -s http://cjoc/cjoc/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
             cli groovy =<./groovy/create-workshop-users.groovy
-            
-            curl --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
-              -H "Accept: application/json" \
-              http://cjoc/cjoc/casc-items/create-items?path=/$GitHubApp \
-              --data-binary @./controller/controller.yaml -H 'Content-Type:text/yaml'
           '''
         }
         
