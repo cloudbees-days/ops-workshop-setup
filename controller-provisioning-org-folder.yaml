@@ -1,0 +1,41 @@
+removeStrategy:
+  rbac: SYNC
+  items: NONE
+items:
+  - kind: organizationFolder
+    name: controller-provisioning
+    disabled: false
+    orphanedItemStrategy:
+      defaultOrphanedItemStrategy:
+        pruneDeadBranches: true
+        daysToKeep: -1
+        numToKeep: -1
+    navigators:
+    - github:
+        apiUri: https://api.github.com
+        traits:
+        - gitHubBranchDiscovery:
+            strategyId: 1
+        - headWildcardFilter:
+            excludes: ''
+            includes: main
+        repoOwner: REPLACE_GITHUB_ORG
+        credentialsId: cloudbees-ci-previews-demo-github-app
+    projectFactories:
+    - customMultiBranchProjectFactory:
+        factory:
+          customBranchProjectFactory:
+            marker: controller.yaml
+            definition:
+              cpsScmFlowDefinition:
+                scriptPath: Jenkinsfile
+                scm:
+                  gitSCM:
+                    userRemoteConfigs:
+                    - userRemoteConfig:
+                        credentialsId: field-workshops-github-app
+                        url: https://github.com/cloudbees-days/controller-provisioning-demo.git
+                    branches:
+                    - branchSpec:
+                        name: '*/main'
+                lightweight: true
