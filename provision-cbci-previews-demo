@@ -357,6 +357,14 @@ spec:
                --data '{"title":"Update Feature Section","head":"update-feature-section","base":"main"}' \
                https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/pulls
         '''
+
+        
+        echo "creating GitRepository CRD for insurance-frontend"
+        container('kubectl') {
+          sh '''
+            kubectl apply -f ./insurance-frontend/git-repo.yaml
+          '''
+        }
         
         echo "provisioning user accounts and contoller provisioning job"
         sh '''          
