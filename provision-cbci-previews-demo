@@ -78,6 +78,8 @@ spec:
             sh '''
                 alias cli='java -jar jenkins-cli.jar -s http://operations-ops/operations-ops/ -auth $JENKINS_CLI_USR:$JENKINS_CLI_PSW'
                 cli groovy =<./groovy/ops-create-github-app-credential.groovy
+                curl  --user "$JENKINS_CLI_USR:$JENKINS_CLI_PSW" -XPOST \
+                  http://operations-ops/operations-ops/job/controller-management/job/${controllerFolder}-controller-provisioning/doDelete
             '''
         }
         withCredentials([usernamePassword(credentialsId: "$GitHubOrganization",
