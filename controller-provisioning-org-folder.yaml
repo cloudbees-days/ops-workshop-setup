@@ -3,7 +3,7 @@ removeStrategy:
   items: NONE
 items:
   - kind: organizationFolder
-    name: controller-provisioning
+    name: REPLACE_JOB_NAME-controller-provisioning
     disabled: false
     orphanedItemStrategy:
       defaultOrphanedItemStrategy:
