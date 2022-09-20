@@ -83,7 +83,7 @@ spec:
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${GitHubOrganization}/pipeline-policies
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${GitHubOrganization}/simple-java-maven-app
-            curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${GitHubOrganization}/microblog-frontend
+            curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' https://api.github.com/repos/${GitHubOrganization}/insurance-frontend
             sleep 5
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}'  \
@@ -106,8 +106,8 @@ spec:
             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/microblog-frontend/generate \
-                 --data '{"owner":"${GitHubOrganization}","name":"microblog-frontend"}'
+                 https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
+                 --data '{"owner":"${GitHubOrganization}","name":"insurance-frontend"}'
           """)
           
           waitUntil {
@@ -119,11 +119,11 @@ spec:
           }
           
           sh(script: """
-            rm -rf ./cloudbees-ci-config-bundle || true
-            rm -rf ./microblog-frontend || true
+            rm -rf ./controller || true
+            rm -rf ./insurance-frontend || true
             rm -rf ./pipeline-template-catalog || true
             mkdir -p controller
-            mkdir -p microblog-frontend
+            mkdir -p insurance-frontend
             mkdir -p pipeline-template-catalog
             
             cd pipeline-template-catalog
@@ -191,56 +191,11 @@ spec:
             git commit -a -m 'updating controller bundle'
             git push origin main
             cd ..
-            
-            # update microblog-frontend
-            curl \
-              -X PATCH \
-              -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-              -H 'Accept: application/vnd.github.baptiste-preview+json' \
-              -H 'Accept: application/vnd.github.v3+json' \
-              https://api.github.com/repos/${GitHubOrganization}/microblog-frontend \
-              -d '{"homepage":"https://cloudbees-feature-flags.labs.cb-sa.io","has_issues":false,"has_projects":false,"has_wiki":false}'
-            
-            cd ../microblog-frontend
-            git init
-            git config user.email "cloudbees-ci.bot@cloudbees.com"
-            git config user.name "CloudBees CI Bot"
-            git remote add origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/${GitHubOrganization}/microblog-frontend.git
-            git pull origin main
-            git checkout -B development
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/package.json > package.json
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/public/index.html > public/index.html
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/components/NavMenu.vue > src/components/NavMenu.vue
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/utils/flags.js > src/utils/flags.js
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/views/Posts.vue > src/views/Posts.vue
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.vuejs > .vuejs
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.env.development > .env.development
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/.env.production > .env.production
-            sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" .env
-            git add *
-            git add .vuejs
-            git commit -a -m 'creating ${GitHubOrganization}/microblog-frontend development branch for ${GitHubUsername}'
-            git push -u origin development
 
-             curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                  -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                  https://api.github.com/orgs/${GitHubOrganization}/hooks \
-                  --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/controllers/queue/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
-          """)
-          
-          waitUntil {
-            script {
-              def status = sh script: "curl -s -o /dev/null -w '%{http_code}' -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' -H 'Accept: application/vnd.github.baptiste-preview+json' https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/git/ref/heads/development", returnStdout: true
-              echo "returned status: ${status}"
-              return (status=="200")
-            }
-          }
-          echo "create pull request"
-          sh(script: """
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
-                 --data '{"title":"New Feature","head":"development","base":"main"}' \
-                 https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/pulls
+           curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                https://api.github.com/orgs/${GitHubOrganization}/hooks \
+                --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/controllers/queue/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
           """)
         }
         
