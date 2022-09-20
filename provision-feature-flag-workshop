@@ -156,10 +156,9 @@ spec:
             git config user.name "$GitHubOrganization"
             git remote add origin https://x-access-token:$GITHUB_ACCESS_TOKEN@github.com/$GitHubOrganization/microblog-frontend.git
             git pull origin main
+            git checkout main
             sed -i "s/REPLACE_GITHUB_ORG_LOWERCASE/$controllerFolder/g" git-repo.yaml
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" git-repo.yaml
-            git checkout main
-            cp ../kubernetes-provisioning/previews/git-repo.yaml .
             git add *
             git push origin main
             
