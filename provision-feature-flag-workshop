@@ -196,7 +196,7 @@ spec:
             }
           }
           
-          sh(script: """
+          sh(script: '''
             cd controller
             git init
             git config user.email "cloudbees-ci.bot@cloudbees.com"
@@ -213,6 +213,7 @@ spec:
             sed -i "s/REPLACE_FOLDER_NAME/$controllerFolder/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP_ID/$GitHubAppId/g" controller.yaml
             sed -i "s/REPLACE_GITHUB_APP/$GitHubApp/g" controller.yaml
+            sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" controller.yaml
             sed -i "s|REPLACE_AVAILABILITY_PATTERN|$AVAILABILITY_PATTERN|g" controller.yaml
             
             cd bundle
@@ -241,10 +242,10 @@ spec:
             cd ..
 
            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                -H 'authorization: Bearer ${GITHUB_ACCESS_TOKEN}' \
+                -H "authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
                 https://api.github.com/orgs/${GitHubOrganization}/hooks \
                 --data '{"name":"web","config":{"url":"https://${ENVIRONMENT_PREFIX}cbci.workshop.cb-sa.io/hibernation/ns/controllers/queue/${controllerFolder}-${controllerName}/github-webhook/","content_type":"json","secret":"$GITHUB_WEBHOOK_SECRET","insecure_ssl":"0"},"events": ["check_run","check_suite","create","delete","push","pull_request","repository"]}'
-          """)
+          ''')
           script {
             env.INVITE_ID = sh(script: ''' 
                 curl -X PUT \
