@@ -30,6 +30,7 @@ spec:
     GITHUB_WEBHOOK_SECRET = credentials('github-webhook-secret')
     TARGET_TYPE = event.installation.target_type.toString()
     GitHubApp = event.installation.app_slug.toString()
+    GitHubAppId = event.installation.app_id.toString()
     GitHubOrganization = event.installation.account.login.toString().replaceAll(" ", "-")
     GitHubUsername = event.sender.login.toString()
     controllerFolder = GitHubOrganization.toLowerCase()
