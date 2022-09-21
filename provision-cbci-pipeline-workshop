@@ -344,7 +344,7 @@ spec:
             kubectl delete -f ./insurance-frontend/git-repo.yaml || true
             PREVIEWS_ENV=$(kubectl -n previews get -o name environment -l repo-namespace=${GitHubOrganization})
             kubectl -n previews delete environment -l repo-namespace=${GitHubOrganization} --wait=false
-            kubectl -n previews patch ${PREVIEWS_ENV} -p '{"metadata":{"finalizers":[]}}' --type=merge
+            kubectl -n previews patch ${PREVIEWS_ENV} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
             sleep 1
             kubectl apply -f ./insurance-frontend/git-repo.yaml
           '''
