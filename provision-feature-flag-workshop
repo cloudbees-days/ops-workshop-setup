@@ -161,7 +161,6 @@ spec:
             git push origin main
             
             git checkout -B development
-            curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/package.json > package.json
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/public/index.html > public/index.html
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/components/NavMenu.vue > src/components/NavMenu.vue
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/utils/flags.js > src/utils/flags.js
