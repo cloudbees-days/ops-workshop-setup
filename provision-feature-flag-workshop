@@ -160,7 +160,20 @@ spec:
             sed -i "s/REPLACE_GITHUB_ORG/$GitHubOrganization/g" git-repo.yaml
             git add *
             git push origin main
+          ''')
+          
+          container('kubectl') {
+            sh '''
+              kubectl delete -f ./microblog-frontend/git-repo.yaml || true
+              PREVIEWS_ENV=$(kubectl -n previews get -o name environment -l repo-namespace=${GitHubOrganization})
+              kubectl -n previews delete environment -l repo-namespace=${GitHubOrganization} --wait=false
+              kubectl -n previews patch ${PREVIEWS_ENV} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+              sleep 1
+              kubectl apply -f ./microblog-frontend/git-repo.yaml
+            '''
+          }
             
+          sh(script: '''
             git checkout -B development
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/public/index.html > public/index.html
             curl https://raw.githubusercontent.com/cloudbees-days/microblog-frontend/development/src/components/NavMenu.vue > src/components/NavMenu.vue
@@ -269,21 +282,16 @@ spec:
         
         echo "creating config bundle on OC"
         container('kubectl') {
-          sh "rm -rf ./${bundleName}"
-          sh "mkdir -p ${bundleName}"
+          sh '''
+            rm -rf ./${bundleName}
+            mkdir -p ${bundleName}
+          '''
           dir("controller/bundle"){
             sh "cp --parents `find -name \\*.yaml*` ../../${bundleName}/"
           }
           sh '''
             kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true
             kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
-            
-            kubectl delete -f ./microblog-frontend/git-repo.yaml || true
-            PREVIEWS_ENV=$(kubectl -n previews get -o name environment -l repo-namespace=${GitHubOrganization})
-            kubectl -n previews delete environment -l repo-namespace=${GitHubOrganization} --wait=false
-            kubectl -n previews patch ${PREVIEWS_ENV} -p '{"metadata":{"finalizers":[]}}' --type=merge || true
-            sleep 1
-            kubectl apply -f ./microblog-frontend/git-repo.yaml
           '''
         }
         
