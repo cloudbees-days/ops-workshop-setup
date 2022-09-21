@@ -363,6 +363,9 @@ spec:
         echo "creating GitRepository CRD for insurance-frontend"
         container('kubectl') {
           sh '''
+            kubectl -n previews delete environment -l repo-namespace=${GitHubOrganization} --wait=false
+            kubectl -n previews patch -f ./insurance-frontend/git-repo.yaml -p '{"metadata":{"finalizers":[]}}' --type=merge
+            sleep 1
             kubectl apply -f ./insurance-frontend/git-repo.yaml
           '''
         }
