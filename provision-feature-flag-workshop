@@ -276,7 +276,9 @@ spec:
           sh '''
             kubectl exec --namespace cbci cjoc-0 -- rm -rf /var/jenkins_config/jcasc-bundles-store/${bundleName} || true
             kubectl cp --namespace cbci ${bundleName} cjoc-0:/var/jenkins_config/jcasc-bundles-store/
-            sleep 7
+            kubectl -n previews delete environment -l repo-namespace=${GitHubOrganization} --wait=false
+            kubectl -n previews patch -f ./microblog-frontend/git-repo.yaml -p '{"metadata":{"finalizers":[]}}' --type=merge
+            sleep 1
             kubectl apply -f ./microblog-frontend/git-repo.yaml
           '''
         }
