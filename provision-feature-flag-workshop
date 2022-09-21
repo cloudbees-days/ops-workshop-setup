@@ -173,11 +173,6 @@ spec:
             git add .vuejs
             git commit -a -m 'creating microblog-frontend development branch'
             git push -u origin development
-            
-            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
-                 --data '{"title":"New Feature","head":"development","base":"main"}' \
-                 https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/pulls
 
             curl --silent --output /dev/null --show-error \
               -X POST \
@@ -185,6 +180,11 @@ spec:
               -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
               https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/hooks \
               -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment","deployment","deployment_status","repository"],"config":{"url":"'"https://webhook.${ENVIRONMENT_PREFIX}previews.workshop.cb-sa.io/"'","content_type":"json","insecure_ssl":"0"}}'
+            
+            curl -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
+                 --data '{"title":"New Feature","head":"development","base":"main"}' \
+                 https://api.github.com/repos/${GitHubOrganization}/microblog-frontend/pulls
             
           ''')
           
