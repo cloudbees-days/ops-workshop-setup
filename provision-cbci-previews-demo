@@ -94,6 +94,7 @@ spec:
             curl --silent -X DELETE -H "Accept: application/vnd.github.antiope-preview+json" -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-library
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/pipeline-template-catalog
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-frontend
+            curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-controller
             
             sleep 5
             curl --silent --output /dev/null --show-error \
