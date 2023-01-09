@@ -112,8 +112,8 @@ spec:
             curl \
                  -H 'Accept: application/vnd.github+json' \
                  -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
+                 https://api.github.com/repos/cloudbees-days/insurance-frontend/forks \
+                 --data '{"organization":"'"$GitHubOrganization"'","name":"insurance-frontend","default_branch_only":true}'
           ''')
           
           waitUntil {
@@ -165,15 +165,15 @@ spec:
             curl \
                  -H 'Accept: application/vnd.github+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
+                 https://api.github.com/repos/cloudbees-days/pipeline-library/forks \
+                 --data '{"organization":"'"$GitHubOrganization"'","name":"pipeline-library","default_branch_only":true}'
             
             echo 'create repo from template for pipeline-template-catalog'
             curl \
                  -H 'Accept: application/vnd.github+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
+                 https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/forks \
+                 --data '{"organization":"'"$GitHubOrganization"'","name":"pipeline-template-catalog","default_branch_only":true}'
             
           ''')
           
@@ -233,8 +233,8 @@ spec:
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
+                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/forks \
+                 --data '{"organization":"'"$GitHubOrganization"'","name":"controller","default_branch_only":true}'
           ''')
           
           waitUntil {
