@@ -104,9 +104,8 @@ spec:
 
             echo "create repo from template for insurance-frontend"
             curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'Accept: application/vnd.github+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
           ''')
@@ -158,17 +157,15 @@ spec:
                  
             echo 'create repo from template for pipeline-lilbrary'
             curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'Accept: application/vnd.github+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
             
             echo 'create repo from template for pipeline-template-catalog'
             curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H 'Accept: application/vnd.github+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
             
