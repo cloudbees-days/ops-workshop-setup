@@ -91,33 +91,6 @@ spec:
             curl --silent -X DELETE -H 'Accept: application/vnd.github.antiope-preview+json' -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" https://api.github.com/repos/$GitHubOrganization/insurance-frontend
             
             sleep 5
-            curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
-                 
-            curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
-            
-            curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
-
-            curl \
-                 -H 'Accept: application/vnd.github.antiope-preview+json' \
-                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
-                 -H "Accept: application/vnd.github.baptiste-preview+json" \
-                 https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
-                 --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
             
             rm -rf ./insurance-frontend || true
             rm -rf ./controller || true
@@ -128,6 +101,14 @@ spec:
             mkdir -p controller
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
+
+            //create repo from template for insurance-frontend
+            curl \
+                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/insurance-frontend/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"insurance-frontend"}'
           ''')
           
           waitUntil {
@@ -174,6 +155,22 @@ spec:
                 -H "Authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/hooks \
                 -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment","deployment","deployment_status","repository"],"config":{"url":"'"https://webhook.${ENVIRONMENT_PREFIX}previews.workshop.cb-sa.io/"'","content_type":"json","insecure_ssl":"0"}}'
+                 
+            //create repo from template for pipeline-lilbrary
+            curl \
+                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
+            
+            //create repo from template for pipeline-template-catalog
+            curl \
+                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
             
           ''')
           
@@ -227,6 +224,14 @@ spec:
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  --data '{"title":"Add Cross Team Collaboration Trigger","head":"cross-team-collab-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
+                 
+            //create repo from template for controller
+            curl \
+                 -H 'Accept: application/vnd.github.antiope-preview+json' \
+                 -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
+                 -H "Accept: application/vnd.github.baptiste-preview+json" \
+                 https://api.github.com/repos/cloudbees-days/cloudbees-ci-config-bundle/generate \
+                 --data '{"owner":"'"$GitHubOrganization"'","name":"controller"}'
           ''')
           
           waitUntil {
