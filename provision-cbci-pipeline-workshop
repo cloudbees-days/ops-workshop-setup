@@ -102,7 +102,7 @@ spec:
             mkdir -p pipeline-template-catalog
             mkdir -p pipeline-library
 
-            //create repo from template for insurance-frontend
+            echo "create repo from template for insurance-frontend"
             curl \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -156,7 +156,7 @@ spec:
                 https://api.github.com/repos/${GitHubOrganization}/insurance-frontend/hooks \
                 -d '{"name":"web","active":true,"events":["push","pull_request","issue_comment","deployment","deployment_status","repository"],"config":{"url":"'"https://webhook.${ENVIRONMENT_PREFIX}previews.workshop.cb-sa.io/"'","content_type":"json","insecure_ssl":"0"}}'
                  
-            //create repo from template for pipeline-lilbrary
+            echo 'create repo from template for pipeline-lilbrary'
             curl \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -164,7 +164,7 @@ spec:
                  https://api.github.com/repos/cloudbees-days/pipeline-library/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-library"}'
             
-            //create repo from template for pipeline-template-catalog
+            echo 'create repo from template for pipeline-template-catalog'
             curl \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
@@ -225,7 +225,7 @@ spec:
                  --data '{"title":"Add Cross Team Collaboration Trigger","head":"cross-team-collab-lab","base":"main"}' \
                  https://api.github.com/repos/${GitHubOrganization}/pipeline-template-catalog/pulls
                  
-            //create repo from template for controller
+            echo 'create repo from template for controller'
             curl \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN"  \
