@@ -112,7 +112,7 @@ spec:
                  https://api.github.com/repos/cloudbees-days/pipeline-template-catalog/generate \
                  --data '{"owner":"'"$GitHubOrganization"'","name":"pipeline-template-catalog"}'
 
-            curl --silent --output /dev/null --show-error \
+            curl \
                  -H 'Accept: application/vnd.github.antiope-preview+json' \
                  -H "authorization: Bearer $GITHUB_ACCESS_TOKEN" \
                  -H "Accept: application/vnd.github.baptiste-preview+json" \
